@@ -1,5 +1,6 @@
 import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/presentation/auth_screen/email_auth/registration_screen.dart';
+import 'package:audionyx/repository/service/auth_service/google_auth_service.dart';
 import 'package:flutter/material.dart';
 import '../../core/constants/app_image.dart';
 import '../../core/constants/app_strings.dart';
@@ -39,10 +40,7 @@ class OnboardingScreen extends StatelessWidget {
                   AuthPrimaryButton(
                     label: AppStrings.signUpFree,
                     onPressed: () {
-                      context.push(
-                        context,
-                        target: const RegistrationScreen(),
-                      );
+                      context.push(context, target: const RegistrationScreen());
                     },
                   ),
                   const SizedBox(height: 15),
@@ -50,13 +48,13 @@ class OnboardingScreen extends StatelessWidget {
                     label: AppStrings.continueWithGoogle,
                     iconPath: AppImage.iconGoogle,
                     onPressed: () {
-                      // Handle Google sign-in logic here
+                      GoogleAuthService().signInWithGoogle();
                     },
                   ),
                   const SizedBox(height: 20),
 
                   // Login text
-                    TextButton(
+                  TextButton(
                     onPressed: () {},
                     child: Text(
                       AppStrings.login,
