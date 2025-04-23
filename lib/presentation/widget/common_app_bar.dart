@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/constants/app_strings.dart';
 import '../../core/constants/theme_color.dart';
 
 class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -12,18 +13,13 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      // toolbarHeight: 90,
       title: Text(
         title,
-        style: Theme.of(
-          context,
-        ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w500),
+        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+          fontWeight: FontWeight.w500,
+          color: ThemeColor.whiteColor,
+        ),
       ),
-      // style:  TextStyle(
-      //     color: ThemeColors.black,
-      //     fontFamily: Strings.uberFont,
-      //     fontSize: 24,
-      //     fontWeight: FontWeight.w500)),
       leading: InkWell(
         onTap: () {
           Navigator.of(context).pop();
@@ -31,7 +27,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: const Icon(CupertinoIcons.back, color: Colors.white, size: 26),
       ),
       actions: actions,
-      backgroundColor: ThemeColor.greenColor,
+      backgroundColor: ThemeColor.blackColor,
       elevation: 4.0,
     );
   }

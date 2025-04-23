@@ -41,10 +41,8 @@ dependencies:
   freezed_annotation: ^3.0.0
   json_annotation: ^4.9.0
   flutter_bloc:
-  firebase_auth:
   google_sign_in:
-  firebase_core:
-  flutter_secure_storage:
+
 
 
 dev_dependencies:
