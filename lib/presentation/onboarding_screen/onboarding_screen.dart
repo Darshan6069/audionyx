@@ -1,7 +1,10 @@
 import 'package:audionyx/core/constants/extension.dart';
+import 'package:audionyx/presentation/auth_screen/email_auth/login_screen.dart';
 import 'package:audionyx/presentation/auth_screen/email_auth/registration_screen.dart';
+import 'package:audionyx/repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_bloc_cubit.dart';
 import 'package:audionyx/repository/service/auth_service/google_auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/constants/app_image.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/constants/theme_color.dart';
@@ -55,7 +58,9 @@ class OnboardingScreen extends StatelessWidget {
 
                   // Login text
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      context.pushAndRemoveUntil(context, target: LoginScreen());
+                    },
                     child: Text(
                       AppStrings.login,
                       style: TextStyle(

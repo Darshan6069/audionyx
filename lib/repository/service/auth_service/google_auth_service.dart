@@ -1,36 +1,50 @@
-import 'package:audionyx/core/constants/app_strings.dart';
-import 'package:dio/dio.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:audionyx/repository/service/auth_service/registration_service.dart';
 
 class GoogleAuthService {
-  final GoogleSignIn googleSignIn = GoogleSignIn();
-  final Dio dio = Dio();
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId: 'YOUR_GOOGLE_CLIENT_ID', // Replace with your OAuth Client ID
+    scopes: ['email', 'profile'],
+  );
+  final RegistrationService _registrationService = RegistrationService();
 
-  Future<void> signInWithGoogle() async {
+  Future<Map<String, String>?> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? account = await googleSignIn.signIn();
-      if (account == null) {
-        print('User canceled Google sign-in');
-        return;
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        throw Exception('Google Sign-In canceled');
       }
 
-      final GoogleSignInAuthentication auth = await account.authentication;
-      final String? idToken = auth.idToken;
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final idToken = googleAuth.idToken;
 
       if (idToken == null) {
-        print('Failed to get idToken');
-        return;
+        throw Exception('Failed to get ID token');
       }
 
-      final response = await dio.post(
-        '${AppStrings.baseUrl}auth/google', // replace with your actual backend URL
-        options: Options(headers: {'Content-Type': 'application/json'}),
-        data: {'token': idToken},
+      print('Google Sign-In successful: ${googleUser.displayName}, ${googleUser.email}');
+      print('ID Token: $idToken');
+
+      // Register user in MongoDB via backend
+      final message = await _registrationService.registerUser(
+        name: googleUser.displayName ?? 'Unknown',
+        email: googleUser.email,
+        googleIdToken: idToken,
+        isGoogleAuth: true,
       );
 
-      print('Response: ${response.data}');
+      return {
+        'message': message,
+        'email': googleUser.email,
+        'name': googleUser.displayName ?? 'Unknown',
+      };
     } catch (e) {
-      print('Google sign-in failed: $e');
+      print('Google Sign-In error: $e');
+      throw Exception('Google Sign-In failed: $e');
     }
+  }
+
+  Future<void> signOut() async {
+    await _googleSignIn.signOut();
   }
 }

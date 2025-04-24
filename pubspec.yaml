@@ -42,7 +42,7 @@ dependencies:
   json_annotation: ^4.9.0
   flutter_bloc:
   google_sign_in:
-
+  flutter_secure_storage: ^9.2.2
 
 
 dev_dependencies:

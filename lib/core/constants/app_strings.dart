@@ -1,9 +1,14 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 class AppStrings {
   ///font
   static const String uberFont = 'UberFont';
 
+
+  static FlutterSecureStorage secureStorage = const FlutterSecureStorage();
+
   /// api url
-  static const baseUrl = 'http://192.168.0.81:8000/api/';
+  static const baseUrl = 'http://192.168.0.3:4000/api/';
 
   ///Onboarding Strings
   static const String onboardingTitleLine1 = "Millions of songs.";
