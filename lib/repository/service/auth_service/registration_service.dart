@@ -1,34 +1,52 @@
 import 'package:audionyx/core/constants/app_strings.dart';
+import 'package:audionyx/core/constants/extension.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 
 class RegistrationService {
   final Dio dio = Dio();
-  final String baseUrl = '${AppStrings.baseUrl}auth/register'; // Replace this with your real URL
 
   Future<String> registerUser({
     required String name,
     required String email,
-    required String password,
+    String? password,
+    String? googleIdToken,
+    bool isGoogleAuth = false,
   }) async {
+    // Dynamically set the endpoint based on isGoogleAuth
+    final String endpoint = isGoogleAuth ? 'auth/google' : 'auth/register';
+    final String url = '${AppStrings.baseUrl}$endpoint';
+
+    print('Sending registration to $url');
+    print('Data: {user_name: $name, email: $email, isGoogleAuth: $isGoogleAuth}');
     try {
       final response = await dio.post(
-        baseUrl,
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-        }),
+        url,
+        options: Options(headers: {'Content-Type': 'application/json'}),
         data: {
+          'user_name': name,
           'email': email,
-          'password': password,
+          if (password != null && !isGoogleAuth) 'password': password,
+          if (googleIdToken != null && isGoogleAuth) 'google_id_token': googleIdToken,
+          'is_google_auth': isGoogleAuth,
         },
       );
-
+      print('Response: ${response.statusCode} ${response.data}');
       if (response.statusCode == 201) {
-        return 'User registered successfully';
+        return response.data['msg'] ?? 'User registered successfully';
       } else {
-        throw Exception('Failed to register: ${response.data}');
+        throw Exception('Failed to register: ${response.data['msg'] ?? response.statusMessage}');
+      }
+    } on DioError catch (e) {
+      print('DioError: type=${e.type}, message=${e.message}, response=${e.response}');
+      if (e.response != null) {
+        throw Exception('Error: ${e.response?.data['msg'] ?? e.message}');
+      } else {
+        throw Exception('Network error: ${e.message}');
       }
     } catch (e) {
-      throw Exception('Error: ${e.toString()}');
+      print('Error: $e');
+      throw Exception('Registration error: $e');
     }
   }
 }
