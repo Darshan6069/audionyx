@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
         theme: ThemeData.dark(useMaterial3: true),
-        home: const SongListScreen(),
+        home: const HomeScreen(),
       ),
     );
   }

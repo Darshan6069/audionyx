@@ -234,8 +234,9 @@ class _SongListScreenState extends State<SongListScreen> {
                         return SongData(
                           path: s['mp3Url'],
                           title: s['title'] ?? 'Unknown',
-                          thumbnailPath: s['thumbnailUrl'] ?? '',
-                          isOnline: true,
+                          thumbnailUrl: s['thumbnailUrl'] ?? '',
+                          album: s['album'] ?? '',
+                          artist: s['artist'] ?? '',
                         );
                       }).toList();
 
@@ -246,7 +247,7 @@ class _SongListScreenState extends State<SongListScreen> {
                     MaterialPageRoute(
                       builder:
                           (_) => SongPlayerScreen(
-                            songList: songDataList,
+                            downloadedFiles: songDataList,
                             initialIndex: index,
                           ),
                     ),

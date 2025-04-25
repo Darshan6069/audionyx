@@ -1,3 +1,5 @@
+import 'dart:io';
+
 class SongModel {
   String id;
   String title;
@@ -39,15 +41,52 @@ class SongModel {
 }
 
 class SongData {
-  final String path; // URL or local path
-  final String title;
-  final String thumbnailPath; // URL or local path
-  final bool isOnline;
+  final String path;
+  final String? thumbnailUrl;
+  final String? title;
+  final String? artist;
+  final String? album;
+  final bool isUrl;
 
   SongData({
     required this.path,
-    required this.title,
-    required this.thumbnailPath,
-    required this.isOnline,
+    this.thumbnailUrl,
+    this.title,
+    this.artist,
+    this.album,
+    this.isUrl = false,
   });
+
+  // Convert from Map (e.g., from API or JSON)
+  factory SongData.fromMap(Map<String, dynamic> map) {
+    return SongData(
+      path: map['path'] ?? map['mp3Url'] ?? '',
+      thumbnailUrl: map['thumbnailUrl'],
+      title: map['title'],
+      artist: map['artist'],
+      album: map['album'],
+      isUrl: map['isUrl'] ?? false,
+    );
+  }
+
+  // Convert from File (e.g., from DownloadedSongsScreen)
+  factory SongData.fromFile(File file) {
+    return SongData(
+      path: file.path,
+      title: file.path.split('/').last.replaceAll('.mp3', ''),
+      isUrl: false,
+    );
+  }
+
+  // Convert to Map (e.g., for saving to JSON)
+  Map<String, dynamic> toMap() {
+    return {
+      'path': path,
+      'thumbnailUrl': thumbnailUrl,
+      'title': title,
+      'artist': artist,
+      'album': album,
+      'isUrl': isUrl,
+    };
+  }
 }
