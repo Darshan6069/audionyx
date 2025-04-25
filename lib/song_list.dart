@@ -2,12 +2,15 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/download_song_screen.dart';
+import 'package:audionyx/song_play_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+
+import 'domain/song_model/song_model.dart';
 
 class SongListScreen extends StatefulWidget {
   const SongListScreen({super.key});
@@ -225,7 +228,30 @@ class _SongListScreenState extends State<SongListScreen> {
             children: [
               IconButton(
                 icon: const Icon(Icons.play_arrow, color: Colors.white),
-                onPressed: () => playSong(song['mp3Url']),
+                onPressed: () {
+                  final songDataList =
+                      songs.map<SongData>((s) {
+                        return SongData(
+                          path: s['mp3Url'],
+                          title: s['title'] ?? 'Unknown',
+                          thumbnailPath: s['thumbnailUrl'] ?? '',
+                          isOnline: true,
+                        );
+                      }).toList();
+
+                  final index = songs.indexOf(song);
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => SongPlayerScreen(
+                            songList: songDataList,
+                            initialIndex: index,
+                          ),
+                    ),
+                  );
+                },
               ),
               IconButton(
                 icon: const Icon(Icons.download, color: Colors.white),

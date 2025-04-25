@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:audionyx/song_play_screen.dart';
 import 'package:flutter/material.dart';
 
+import 'domain/song_model/song_model.dart';
+
 class DownloadedSongsScreen extends StatefulWidget {
   const DownloadedSongsScreen({super.key});
 
@@ -32,11 +34,21 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
   }
 
   void _playSong(int index) {
+    final songDataList = downloadedFiles.map<SongData>((file) {
+      final name = file.path.split('/').last;
+      return SongData(
+        path: file.path,
+        title: name,
+        thumbnailPath: file.path.replaceAll('.mp3', '_thumbnail.jpg'),
+        isOnline: false,
+      );
+    }).toList();
+
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SongPlayerScreen(
-          downloadedFiles: downloadedFiles,
+        builder: (_) => SongPlayerScreen(
+          songList: songDataList,
           initialIndex: index,
         ),
       ),
