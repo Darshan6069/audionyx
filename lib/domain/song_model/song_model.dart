@@ -37,3 +37,17 @@ class SongModel {
     };
   }
 }
+
+class SongData {
+  final String path; // URL or local path
+  final String title;
+  final String thumbnailPath; // URL or local path
+  final bool isOnline;
+
+  SongData({
+    required this.path,
+    required this.title,
+    required this.thumbnailPath,
+    required this.isOnline,
+  });
+}
