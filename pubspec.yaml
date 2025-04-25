@@ -43,6 +43,18 @@ dependencies:
   flutter_bloc:
   google_sign_in:
   flutter_secure_storage: ^9.2.2
+  http:
+  file_picker:
+  just_audio:
+  cached_network_image:
+  path_provider:
+  permission_handler:
+  flutter_downloader:
+  connectivity_plus:
+  audio_session:
+  audio_service:
+  provider:
+  just_audio_background:
 
 
 dev_dependencies:
