@@ -26,9 +26,9 @@ class MyHttpOverrides extends HttpOverrides {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Future.delayed(Duration(seconds: 2));
-  await FlutterDownloader.initialize(debug: true); // debug: true for logging
-
+  await Future.delayed(const Duration(seconds: 2));
+  await FlutterDownloader.initialize(debug: true);
+  HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());
 }
 
@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
         theme: ThemeData.dark(useMaterial3: true),
-        home: const SongListScreen(),
+        home: const CheckInternetConnection(),
       ),
     );
   }

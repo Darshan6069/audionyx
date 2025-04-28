@@ -55,6 +55,8 @@ dependencies:
   audio_service:
   provider:
   just_audio_background:
+  device_info_plus:
+  shared_preferences: 
 
 
 dev_dependencies:

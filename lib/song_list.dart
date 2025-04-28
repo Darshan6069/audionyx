@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/download_song_screen.dart';
+import 'package:audionyx/repository/service/song_service/download_song/download_song.dart';
 import 'package:audionyx/song_play_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -36,94 +37,6 @@ class _SongListScreenState extends State<SongListScreen> {
     print('Disposing AudioPlayer');
     _audioPlayer.dispose();
     super.dispose();
-  }
-
-  Future<void> downloadSong(
-    String url,
-    String fileName,
-    String thumbnailUrl,
-    Map<String, dynamic> songMetadata,
-  ) async {
-    PermissionStatus status;
-
-    if (Platform.isAndroid) {
-      if (await Permission.audio.isGranted ||
-          await Permission.storage.isGranted) {
-        status = PermissionStatus.granted;
-      } else {
-        if (await Permission.audio.request().isGranted ||
-            await Permission.storage.request().isGranted) {
-          status = PermissionStatus.granted;
-        } else {
-          status = PermissionStatus.denied;
-        }
-      }
-    } else {
-      status = await Permission.storage.request();
-    }
-
-    if (!status.isGranted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Permission not granted')));
-      return;
-    }
-
-    try {
-      final directory = Directory(
-        '/storage/emulated/0/Download',
-      ); // Download folder
-      if (!directory.existsSync()) {
-        directory.createSync(recursive: true);
-      }
-
-      // Download the MP3 file
-      await FlutterDownloader.enqueue(
-        url: url,
-        savedDir: directory.path,
-        fileName: fileName,
-        showNotification: true,
-        openFileFromNotification: true,
-      );
-
-      // Download the thumbnail (if exists)
-      if (songMetadata['thumbnailUrl'] != null) {
-        final thumbnailUrl = songMetadata['thumbnailUrl'];
-        final thumbnailFileName =
-            '${fileName.replaceAll('.mp3', '')}_thumbnail.jpg';
-        final thumbnailResponse = await http.get(Uri.parse(thumbnailUrl));
-
-        if (thumbnailResponse.statusCode == 200) {
-          final thumbnailFile = File('${directory.path}/$thumbnailFileName');
-          await thumbnailFile.writeAsBytes(thumbnailResponse.bodyBytes);
-          print('Thumbnail saved as $thumbnailFileName');
-        } else {
-          print('Failed to download thumbnail');
-        }
-      }
-
-      // Save song metadata (title, artist, album, etc.)
-      final metadataFile = File(
-        '${directory.path}/${fileName.replaceAll('.mp3', '.json')}',
-      );
-      final metadata = {
-        'title': songMetadata['title'],
-        'artist': songMetadata['artist'],
-        'album': songMetadata['album'],
-        'thumbnail': '${fileName.replaceAll('.mp3', '')}_thumbnail.jpg',
-      };
-
-      await metadataFile.writeAsString(jsonEncode(metadata));
-      print('Metadata saved for $fileName');
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Download started: $fileName')));
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Download failed: $e')));
-    }
   }
 
   Future<void> fetchSongs() async {
@@ -234,8 +147,12 @@ class _SongListScreenState extends State<SongListScreen> {
                         return SongData(
                           path: s['mp3Url'],
                           title: s['title'] ?? 'Unknown',
-                          thumbnailPath: s['thumbnailUrl'] ?? '',
-                          isOnline: true,
+                          thumbnailUrl: s['thumbnailUrl'] ?? '',
+                          isUrl: true,
+                          id: '',
+                          album: '',
+                          artist: '',
+                          genre: '',
                         );
                       }).toList();
 
@@ -259,14 +176,28 @@ class _SongListScreenState extends State<SongListScreen> {
                   final mp3Url = song['mp3Url'].toString();
                   final title = song['title']?.toString() ?? 'song';
                   final thumbnailUrl = song['thumbnailUrl'].toString();
+
+                  final songData = SongData(
+                    path: mp3Url,
+                    title: title,
+                    thumbnailUrl: thumbnailUrl,
+                    isUrl: true,
+                    id: song['id'] ?? '',
+                    album: song['album'] ?? '',
+                    artist: song['artist'] ?? '',
+                    genre: song['genre'] ?? '',
+                  );
+
                   final safeFileName =
                       title.replaceAll(RegExp(r'[^\w\s-]'), '_') + '.mp3';
-                  downloadSong(mp3Url, safeFileName, thumbnailUrl, {
-                    'title': song['title'],
-                    'artist': song['artist'],
-                    'album': song['album'],
-                    'thumbnailUrl': song['thumbnailUrl'],
-                  });
+
+                  DownloadSong().downloadSong(
+                    mp3Url,
+                    safeFileName,
+                    thumbnailUrl,
+                    songData,
+                    context,
+                  );
                 },
               ),
             ],

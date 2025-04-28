@@ -21,7 +21,7 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
   }
 
   Future<void> _loadDownloadedSongs() async {
-    final dir = Directory('/storage/emulated/0/Download');
+    final dir = Directory('/storage/emulated/0/Android/data/com.example.audionyx/files/Downloads');
     final files = dir.existsSync()
         ? dir.listSync().where((file) => file.path.endsWith('.mp3')).toList()
         : [];
@@ -39,8 +39,12 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
       return SongData(
         path: file.path,
         title: name,
-        thumbnailPath: file.path.replaceAll('.mp3', '_thumbnail.jpg'),
-        isOnline: false,
+        thumbnailUrl: file.path.replaceAll('.mp3', '_thumbnail.jpg'),
+        isUrl: false,
+        genre: '',
+        artist: '',
+        album: '',
+        id: '',
       );
     }).toList();
 
@@ -84,6 +88,10 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
         width: 40,
         height: 40,
         fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => const Icon(
+          Icons.music_note,
+          size: 40,
+        ),
       );
     } else {
       print('Thumbnail not found at: $thumbnailPath');
@@ -105,18 +113,21 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
           return ListTile(
             leading: _loadThumbnail(index),
             title: Text(fileName),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.play_arrow),
-                  onPressed: () => _playSong(index),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () => _deleteSong(index),
-                ),
-              ],
+            trailing: SizedBox(
+              width: 100, // Explicit width to constrain the Row
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.play_arrow),
+                    onPressed: () => _playSong(index),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () => _deleteSong(index),
+                  ),
+                ],
+              ),
             ),
           );
         },
