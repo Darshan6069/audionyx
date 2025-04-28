@@ -1,26 +1,38 @@
-import 'dart:convert';
+import 'package:audionyx/add_songs_screen.dart';
+import 'package:audionyx/core/constants/app_image.dart';
+import 'package:audionyx/core/constants/app_strings.dart';
+import 'package:audionyx/core/constants/extension.dart';
+import 'package:audionyx/core/constants/theme_color.dart';
+import 'package:audionyx/download_song_screen.dart';
+import 'package:audionyx/playlist_management_screen.dart';
+import 'package:audionyx/presentation/widget/common_song_card.dart';
+import 'package:audionyx/repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_state.dart';
+import 'package:audionyx/song_browser_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/constants/app_image.dart';
-import '../../../core/constants/app_strings.dart';
-import '../../../core/constants/theme_color.dart';
-import '../../../repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_bloc_cubit.dart';
+import '../../../domain/song_model/song_model.dart';
+import '../../../repository/service/song_service/recently_play_song/recently_played_manager.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State createState() => _HomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  List<SongData> featuredPlaylists = [];
+  List<SongData> recentlyPlayed = [];
+  bool isLoadingPlaylists = false;
+  String? playlistErrorMessage;
+
   @override
   void initState() {
     super.initState();
-    // Fetch songs when the screen is initialized
     context.read<FetchSongBlocCubit>().fetchSongs();
+    RecentlyPlayedManager.loadRecentlyPlayed();
   }
 
   @override
@@ -41,20 +53,58 @@ class _HomeScreenState extends State<HomeScreen> {
                     height: 40,
                     color: ThemeColor.white,
                   ),
-                  BlocProvider(
-                    create: (context) => LoginBlocCubit(),
-                    child: Builder(
-                      builder: (context) => IconButton(
-                        onPressed: () {
-                          context.read<LoginBlocCubit>().logout();
-                        },
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.search, color: ThemeColor.white),
+                        onPressed:
+                            () => context.push(
+                              context,
+                              target: const SongBrowserScreen(),
+                            ),
+                      ),
+                      IconButton(
                         icon: const Icon(
-                          Icons.person,
+                          Icons.library_music_rounded,
                           color: ThemeColor.white,
-                          size: 30,
+                        ),
+                        onPressed:
+                            () => context.push(
+                              context,
+                              target: const DownloadedSongsScreen(),
+                            ),
+                      ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.queue_music,
+                          color: ThemeColor.white,
+                        ),
+                        onPressed:
+                            () => context.push(
+                              context,
+                              target: const PlaylistManagementScreen(),
+                            ),
+                      ),
+                      BlocProvider(
+                        create: (context) => LoginBlocCubit(),
+                        child: Builder(
+                          builder:
+                              (context) => IconButton(
+                                icon: const Icon(
+                                  Icons.person,
+                                  color: ThemeColor.white,
+                                  size: 30,
+                                ),
+                                onPressed: () {
+                                  context.push(
+                                    context,
+                                    target: AddSongsScreen(),
+                                  );
+                                },
+                              ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
                 ],
               ),
@@ -68,10 +118,92 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 20),
+              const Text(
+                'Featured Playlists',
+                style: TextStyle(
+                  color: ThemeColor.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 200,
+                child:
+                    isLoadingPlaylists
+                        ? const Center(
+                          child: CircularProgressIndicator(
+                            color: ThemeColor.white,
+                          ),
+                        )
+                        : playlistErrorMessage != null
+                        ? Center(
+                          child: Text(
+                            playlistErrorMessage!,
+                            style: const TextStyle(color: ThemeColor.white),
+                          ),
+                        )
+                        : featuredPlaylists.isEmpty
+                        ? const Center(
+                          child: Text(
+                            'No playlists found',
+                            style: TextStyle(color: ThemeColor.white),
+                          ),
+                        )
+                        : ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: featuredPlaylists.length,
+                          itemBuilder:
+                              (context, index) => CommonSongCard(
+                                song: featuredPlaylists,
+                                index: index,
+                              ),
+                        ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Recently Played',
+                style: TextStyle(
+                  color: ThemeColor.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 250,
+                child:
+                    recentlyPlayed.isEmpty
+                        ? const Center(
+                          child: Text(
+                            'No recently played songs',
+                            style: TextStyle(color: ThemeColor.white),
+                          ),
+                        )
+                        : ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: recentlyPlayed.length,
+                          itemBuilder:
+                              (context, index) => CommonSongCard(
+                                song: recentlyPlayed,
+                                index: index,
+                              ),
+                        ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Trending Tracks',
+                style: TextStyle(
+                  color: ThemeColor.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
               BlocBuilder<FetchSongBlocCubit, FetchSongState>(
                 builder: (context, state) {
                   return SizedBox(
-                    height: 200,
+                    height: 250,
                     child: () {
                       if (state is FetchSongInitial) {
                         return const Center(
@@ -81,12 +213,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         );
                       } else if (state is FetchSongLoading) {
-                        return const Center(child: CircularProgressIndicator());
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: ThemeColor.white,
+                          ),
+                        );
                       } else if (state is FetchSongSuccess) {
                         if (state.songs.isEmpty) {
                           return const Center(
                             child: Text(
-                              'No songs available',
+                              'No trending tracks available',
                               style: TextStyle(color: ThemeColor.white),
                             ),
                           );
@@ -95,11 +231,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           scrollDirection: Axis.horizontal,
                           itemCount: state.songs.length,
                           itemBuilder: (context, index) {
-                            final song = state.songs[index];
-                            return _buildFeaturedCard(
-                              image: song.thumbnail,
-                              title: song.title,
-                              subtitle: song.artist,
+                            //final  song = state.songs[index];
+                            return CommonSongCard(
+                              song: state.songs,
+                              index: index,
                             );
                           },
                         );
@@ -111,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         );
                       }
-                      return const SizedBox(); // Fallback for unexpected states
+                      return const SizedBox();
                     }(),
                   );
                 },
@@ -119,69 +254,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildFeaturedCard({
-    String? image,
-    String? title,
-    String? subtitle,
-  }) {
-    // Fallback values for null fields
-    final safeImage = image ?? '';
-    final safeTitle = title ?? 'Unknown Title';
-    final safeSubtitle = subtitle ?? 'Unknown Artist';
-
-    return Container(
-      width: 300,
-      margin: const EdgeInsets.only(right: 10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        image: DecorationImage(
-          image: safeImage.isNotEmpty && safeImage.startsWith('data:image')
-              ? MemoryImage(base64Decode(safeImage.split(',')[1]))
-              : safeImage.isNotEmpty
-              ? NetworkImage(safeImage)
-              : const AssetImage('assets/images/placeholder.jpg'),
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              gradient: LinearGradient(
-                colors: [Colors.black.withOpacity(0.7), Colors.transparent],
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  safeTitle,
-                  style: const TextStyle(
-                    color: ThemeColor.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  safeSubtitle,
-                  style: const TextStyle(color: ThemeColor.grey, fontSize: 14),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

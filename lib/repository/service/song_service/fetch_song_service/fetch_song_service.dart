@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../../../../domain/song_model/song_model.dart';
 
 class FetchSongService {
-  Future<List<SongModel>> fetchSongs() async {
+  Future<List<SongData>> fetchSongs() async {
     try {
       final response = await http.get(
         Uri.parse('http://192.168.0.3:4000/api/songs'),
@@ -11,7 +11,7 @@ class FetchSongService {
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
-        return data.map((json) => SongModel.fromJson(json)).toList();
+        return data.map((json) => SongData.fromMap(json)).toList();
       } else {
         throw Exception('Failed to fetch songs: ${response.statusCode}');
       }

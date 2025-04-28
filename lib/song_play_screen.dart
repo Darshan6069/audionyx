@@ -1,7 +1,6 @@
 import 'dart:io';
+import 'package:audionyx/repository/service/song_service/song_play_service/play_back_service.dart';
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
-
 import 'domain/song_model/song_model.dart';
 
 class SongPlayerScreen extends StatefulWidget {
@@ -19,121 +18,186 @@ class SongPlayerScreen extends StatefulWidget {
 }
 
 class _SongPlayerScreenState extends State<SongPlayerScreen> {
-  late AudioPlayer _player;
-  late int currentIndex;
-  Duration position = Duration.zero;
-  Duration duration = Duration.zero;
-  bool isPlaying = false;
+  late AudioPlayerService _audioPlayerService;
 
-  SongData get currentSong => widget.songList[currentIndex];
+
 
   @override
   void initState() {
     super.initState();
-    _player = AudioPlayer();
-    currentIndex = widget.initialIndex;
-    _initPlayer();
-
-    _player.positionStream.listen((pos) => setState(() => position = pos));
-    _player.playerStateStream.listen((state) => setState(() => isPlaying = state.playing));
+    _audioPlayerService = AudioPlayerService();
+    _audioPlayerService.currentIndex = widget.initialIndex;
+    _initializePlayer();
   }
 
-  Future<void> _initPlayer() async {
-    try {
-      if (currentSong.isOnline) {
-        await _player.setUrl(currentSong.path);
-      } else {
-        await _player.setFilePath(currentSong.path);
-      }
-      duration = _player.duration ?? Duration.zero;
-    } catch (e) {
-      print("Error initializing audio: $e");
-    }
+  Future<void> _initializePlayer() async {
+    await _audioPlayerService.initPlayer(widget.songList[widget.initialIndex]);
+    _audioPlayerService.positionStream.listen((position) {
+      setState(() {
+        _audioPlayerService.position = position;
+      });
+    });
+
+    _audioPlayerService.playerStateStream.listen((state) {
+      setState(() {
+        _audioPlayerService.isPlaying = state.playing;
+      });
+    });
   }
 
   @override
   void dispose() {
-    _player.dispose();
+    _audioPlayerService.dispose();
     super.dispose();
   }
 
-  void _togglePlayPause() {
-    if (isPlaying) {
-      _player.pause();
-    } else {
-      _player.play();
-    }
-  }
-
-  void _playNext() {
-    if (currentIndex + 1 < widget.songList.length) {
-      setState(() {
-        currentIndex++;
-        _initPlayer();
-      });
-    }
-  }
-
-  void _playPrevious() {
-    if (currentIndex > 0) {
-      setState(() {
-        currentIndex--;
-        _initPlayer();
-      });
-    }
-  }
+  String _formatDuration(Duration d) => d.toString().split('.').first.padLeft(8, "0");
 
   @override
   Widget build(BuildContext context) {
-    final thumbnail = currentSong.thumbnailPath;
+    final currentSong = widget.songList[_audioPlayerService.currentIndex];
 
     return Scaffold(
-      appBar: AppBar(title: Text(currentSong.title)),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Container(
-              height: 200,
-              width: 200,
-              color: Colors.grey[300],
-              child: currentSong.isOnline
-                  ? Image.network(thumbnail, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.music_note, size: 50))
-                  : File(thumbnail).existsSync()
-                  ? Image.file(File(thumbnail), fit: BoxFit.cover)
-                  : const Icon(Icons.music_note, size: 50),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              currentSong.title,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            Slider(
-              value: position.inSeconds.toDouble(),
-              max: duration.inSeconds.toDouble().clamp(1.0, double.infinity),
-              onChanged: (value) => _player.seek(Duration(seconds: value.toInt())),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(_formatDuration(position)),
-                Text(_formatDuration(duration)),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(icon: const Icon(Icons.skip_previous, size: 40), onPressed: _playPrevious),
-                IconButton(icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow, size: 48), onPressed: _togglePlayPause),
-                IconButton(icon: const Icon(Icons.skip_next, size: 40), onPressed: _playNext),
-              ],
-            ),
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF1A2A44), Color(0xFF2E4066)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Top App Bar
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Icon(Icons.arrow_back_ios, color: Colors.white),
+                    Text(
+                      'Now Playing - Personal Room',
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                    Icon(Icons.more_vert, color: Colors.white),
+                  ],
+                ),
+              ),
+              // Album Artwork with Overlay
+              Expanded(
+                child: Center(
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 250,
+                        height: 250,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          image: DecorationImage(
+                            image: currentSong.isUrl
+                                ? NetworkImage(currentSong.thumbnailUrl)
+                                : FileImage(File(currentSong.thumbnailUrl)) as ImageProvider,
+                            fit: BoxFit.cover,
+                            onError: (_, __) => const Icon(Icons.music_note, size: 50),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 60,
+                        height: 60,
+                        color: Colors.teal.withOpacity(0.7),
+                        child: Center(
+                          child: Text(
+                            _formatDuration(_audioPlayerService.position).split(':').sublist(1).join(':'),
+                            style: TextStyle(color: Colors.white, fontSize: 20),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              // Song Info
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Column(
+                  children: [
+                    Text(
+                      currentSong.title,
+                      style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      currentSong.artist ?? 'Unknown Artist', // Assuming SongData has an artist field
+                      style: TextStyle(color: Colors.white70, fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+              // Progress Bar
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Row(
+                  children: [
+                    Text(_formatDuration(_audioPlayerService.position), style: TextStyle(color: Colors.white70)),
+                    Expanded(
+                      child: Slider(
+                        value: _audioPlayerService.position.inSeconds.toDouble(),
+                        max: _audioPlayerService.duration.inSeconds.toDouble().clamp(1.0, double.infinity),
+                        activeColor: Colors.green,
+                        inactiveColor: Colors.white24,
+                        onChanged: (value) => _audioPlayerService.seekTo(Duration(seconds: value.toInt())),
+                      ),
+                    ),
+                    Text(_formatDuration(_audioPlayerService.duration), style: TextStyle(color: Colors.white70)),
+                  ],
+                ),
+              ),
+              // Playback Controls
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Icon(Icons.shuffle, color: Colors.white70),
+                    IconButton(
+                      icon: Icon(Icons.skip_previous, color: Colors.white),
+                      onPressed: () => _audioPlayerService.playPrevious(widget.songList),
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        _audioPlayerService.isPlaying ? Icons.pause : Icons.play_arrow,
+                        color: Colors.green,
+                        size: 60,
+                      ),
+                      onPressed: _audioPlayerService.togglePlayPause,
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.skip_next, color: Colors.white),
+                      onPressed: () => _audioPlayerService.playNext(widget.songList),
+                    ),
+                    Icon(Icons.repeat, color: Colors.white70),
+                  ],
+                ),
+              ),
+              // Bottom Buttons
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Icon(Icons.queue_music, color: Colors.white70),
+                    Icon(Icons.favorite_border, color: Colors.white70),
+                    Icon(Icons.share, color: Colors.white70),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
-
-  String _formatDuration(Duration d) => d.toString().split('.').first.padLeft(8, "0");
 }

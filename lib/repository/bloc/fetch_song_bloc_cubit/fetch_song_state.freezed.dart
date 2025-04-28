@@ -110,11 +110,11 @@ String toString() {
 
 
 class FetchSongSuccess implements FetchSongState {
-  const FetchSongSuccess(final  List<SongModel> songs): _songs = songs;
+  const FetchSongSuccess(final  List<SongData> songs): _songs = songs;
   
 
- final  List<SongModel> _songs;
- List<SongModel> get songs {
+ final  List<SongData> _songs;
+ List<SongData> get songs {
   if (_songs is EqualUnmodifiableListView) return _songs;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_songs);
@@ -151,7 +151,7 @@ abstract mixin class $FetchSongSuccessCopyWith<$Res> implements $FetchSongStateC
   factory $FetchSongSuccessCopyWith(FetchSongSuccess value, $Res Function(FetchSongSuccess) _then) = _$FetchSongSuccessCopyWithImpl;
 @useResult
 $Res call({
- List<SongModel> songs
+ List<SongData> songs
 });
 
 
@@ -171,7 +171,7 @@ class _$FetchSongSuccessCopyWithImpl<$Res>
 @pragma('vm:prefer-inline') $Res call({Object? songs = null,}) {
   return _then(FetchSongSuccess(
 null == songs ? _self._songs : songs // ignore: cast_nullable_to_non_nullable
-as List<SongModel>,
+as List<SongData>,
   ));
 }
 
