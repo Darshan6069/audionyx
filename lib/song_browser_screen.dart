@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/core/constants/theme_color.dart';
 import 'package:audionyx/download_song_screen.dart';
@@ -6,14 +5,12 @@ import 'package:audionyx/playlist_management_screen.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/home_screen.dart';
 import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_state.dart';
-import 'package:audionyx/repository/service/song_service/recently_play_song/recently_played_manager.dart';
-import 'package:audionyx/song_play_screen.dart';
+import 'package:audionyx/repository/service/song_service/song_browser_service/song_browser_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 
-import 'domain/song_model/song_model.dart';
+import '../../../domain/song_model/song_model.dart';
 
 class SongBrowserScreen extends StatefulWidget {
   const SongBrowserScreen({super.key});
@@ -23,6 +20,8 @@ class SongBrowserScreen extends StatefulWidget {
 }
 
 class _SongBrowserScreenState extends State<SongBrowserScreen> with SingleTickerProviderStateMixin {
+  final SongBrowserService _service = SongBrowserService();
+
   String searchQuery = '';
   String? selectedGenre;
   String? selectedArtist;
@@ -42,135 +41,6 @@ class _SongBrowserScreenState extends State<SongBrowserScreen> with SingleTicker
     super.dispose();
   }
 
-  Future<List<dynamic>> fetchUserPlaylists() async {
-    try {
-      final response = await http
-          .get(Uri.parse('http://192.168.0.3:4000/api/user/playlists'))
-          .timeout(const Duration(seconds: 10));
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      }
-    } catch (e) {
-      print('Error fetching playlists: $e');
-    }
-    return [];
-  }
-
-  Future<void> addSongToPlaylist(String playlistId, SongData song) async {
-    try {
-      final response = await http
-          .patch(
-        Uri.parse('http://192.168.0.3:4000/api/playlists/$playlistId'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'action': 'add',
-          'song': song.toMap(),
-        }),
-      )
-          .timeout(const Duration(seconds: 10));
-
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Song added to playlist')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to add song')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error adding song: $e')),
-      );
-    }
-  }
-
-  void _showAddToPlaylistDialog(SongData song) async {
-    final playlists = await fetchUserPlaylists();
-    if (!mounted) return;
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add to Playlist'),
-        content: playlists.isEmpty
-            ? const Text('No playlists found. Create a playlist first.')
-            : SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: playlists.length,
-            itemBuilder: (context, index) {
-              final playlist = playlists[index];
-              return ListTile(
-                title: Text(playlist['title'] ?? 'Unknown Playlist'),
-                onTap: () {
-                  addSongToPlaylist(playlist['id'], song);
-                  Navigator.pop(context);
-                },
-              );
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          if (playlists.isEmpty)
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                context.push(context, target: const PlaylistManagementScreen());
-              },
-              child: const Text('Create Playlist'),
-            ),
-        ],
-      ),
-    );
-  }
-
-  void _playSong(SongData song, int index, List<SongData> songs) async {
-    await RecentlyPlayedManager.addSongToRecentlyPlayed(song);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SongPlayerScreen(
-          songList: songs,
-          initialIndex: index,
-        ),
-      ),
-    );
-  }
-
-  List<String> _getUniqueGenres(List<SongData> songs) {
-    return songs.map((song) => song.genre).toSet().toList()..sort();
-  }
-
-  List<String> _getUniqueArtists(List<SongData> songs) {
-    return songs.map((song) => song.artist).toSet().toList()..sort();
-  }
-
-  List<String> _getUniqueAlbums(List<SongData> songs) {
-    return songs.map((song) => song.album).toSet().toList()..sort();
-  }
-
-  List<SongData> _filterSongs(List<SongData> songs) {
-    return songs.where((song) {
-      final matchesSearch = searchQuery.isEmpty ||
-          song.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          song.artist.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          song.album.toLowerCase().contains(searchQuery.toLowerCase());
-
-      final matchesGenre = selectedGenre == null || song.genre == selectedGenre;
-      final matchesArtist = selectedArtist == null || song.artist == selectedArtist;
-      final matchesAlbum = selectedAlbum == null || song.album == selectedAlbum;
-
-      return matchesSearch && matchesGenre && matchesArtist && matchesAlbum;
-    }).toList();
-  }
-
   Widget _buildSongTile(SongData song, int index, List<SongData> songs) {
     return ListTile(
       leading: ClipRRect(
@@ -181,32 +51,14 @@ class _SongBrowserScreenState extends State<SongBrowserScreen> with SingleTicker
           height: 50,
           fit: BoxFit.cover,
           placeholder: (context, url) => const CircularProgressIndicator(),
-          errorWidget: (context, url, error) => const Icon(
-            Icons.music_note,
-            color: ThemeColor.white,
-          ),
+          errorWidget: (context, url, error) => const Icon(Icons.music_note, color: ThemeColor.white),
         ),
       ),
-      title: Text(
-        song.title,
-        style: const TextStyle(color: ThemeColor.white),
-      ),
-      subtitle: Text(
-        song.artist,
-        style: const TextStyle(color: ThemeColor.grey),
-      ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.play_arrow, color: ThemeColor.white),
-            onPressed: () => _playSong(song, index, songs),
-          ),
-          IconButton(
-            icon: const Icon(Icons.add_to_queue, color: ThemeColor.white),
-            onPressed: () => _showAddToPlaylistDialog(song),
-          ),
-        ],
+      title: Text(song.title, style: const TextStyle(color: ThemeColor.white)),
+      subtitle: Text(song.artist, style: const TextStyle(color: ThemeColor.grey)),
+      trailing: IconButton(
+        icon: const Icon(Icons.play_arrow, color: ThemeColor.white),
+        onPressed: () => _service.playSong(context, song, index, songs),
       ),
     );
   }
@@ -272,7 +124,7 @@ class _SongBrowserScreenState extends State<SongBrowserScreen> with SingleTicker
                         value: selectedGenre,
                         isExpanded: true,
                         dropdownColor: ThemeColor.grey,
-                        items: _getUniqueGenres(allSongs).map((genre) {
+                        items: _service.getUniqueGenres(allSongs).map((genre) {
                           return DropdownMenuItem(
                             value: genre,
                             child: Text(genre, style: const TextStyle(color: ThemeColor.white)),
@@ -293,7 +145,7 @@ class _SongBrowserScreenState extends State<SongBrowserScreen> with SingleTicker
                           value: selectedArtist,
                           isExpanded: true,
                           dropdownColor: ThemeColor.grey,
-                          items: _getUniqueArtists(allSongs).map((artist) {
+                          items: _service.getUniqueArtists(allSongs).map((artist) {
                             return DropdownMenuItem(
                               value: artist,
                               child: Text(artist, style: const TextStyle(color: ThemeColor.white)),
@@ -315,7 +167,7 @@ class _SongBrowserScreenState extends State<SongBrowserScreen> with SingleTicker
                           value: selectedAlbum,
                           isExpanded: true,
                           dropdownColor: ThemeColor.grey,
-                          items: _getUniqueAlbums(allSongs).map((album) {
+                          items: _service.getUniqueAlbums(allSongs).map((album) {
                             return DropdownMenuItem(
                               value: album,
                               child: Text(album, style: const TextStyle(color: ThemeColor.white)),
@@ -337,24 +189,16 @@ class _SongBrowserScreenState extends State<SongBrowserScreen> with SingleTicker
           Expanded(
             child: BlocBuilder<FetchSongBlocCubit, FetchSongState>(
               builder: (context, state) {
-                if (state is FetchSongInitial) {
-                  return const Center(
-                    child: Text(
-                      'No songs yet',
-                      style: TextStyle(color: ThemeColor.white),
-                    ),
+                if (state is FetchSongSuccess) {
+                  final filteredSongs = _service.filterSongs(
+                    state.songs,
+                    searchQuery,
+                    selectedGenre,
+                    selectedArtist,
+                    selectedAlbum,
                   );
-                } else if (state is FetchSongLoading) {
-                  return const Center(child: CircularProgressIndicator(color: ThemeColor.white));
-                } else if (state is FetchSongSuccess) {
-                  final filteredSongs = _filterSongs(state.songs);
                   if (filteredSongs.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        'No songs found',
-                        style: TextStyle(color: ThemeColor.white),
-                      ),
-                    );
+                    return const Center(child: Text('No songs found', style: TextStyle(color: ThemeColor.white)));
                   }
                   return ListView.builder(
                     itemCount: filteredSongs.length,
@@ -364,15 +208,12 @@ class _SongBrowserScreenState extends State<SongBrowserScreen> with SingleTicker
                       filteredSongs,
                     ),
                   );
+                } else if (state is FetchSongLoading) {
+                  return const Center(child: CircularProgressIndicator(color: ThemeColor.white));
                 } else if (state is FetchSongFailure) {
-                  return Center(
-                    child: Text(
-                      state.error,
-                      style: const TextStyle(color: ThemeColor.white),
-                    ),
-                  );
+                  return Center(child: Text(state.error, style: const TextStyle(color: ThemeColor.white)));
                 }
-                return const SizedBox();
+                return const Center(child: Text('No songs yet', style: TextStyle(color: ThemeColor.white)));
               },
             ),
           ),

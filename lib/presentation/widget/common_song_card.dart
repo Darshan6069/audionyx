@@ -1,9 +1,12 @@
+import 'package:audionyx/repository/bloc/download_song_bloc_cubit/download_song_bloc_cubit.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/constants/theme_color.dart';
 import '../../domain/song_model/song_model.dart';
 import '../../playlist_screen.dart';
+import '../../repository/bloc/download_song_bloc_cubit/download_song_state.dart';
 import '../../repository/service/song_service/download_song/download_song.dart';
 import '../../repository/service/song_service/recently_play_song/recently_played_manager.dart';
 import '../../song_play_screen.dart';
@@ -12,20 +15,14 @@ class CommonSongCard extends StatefulWidget {
   final List<SongData> song;
   final int index;
 
-  const CommonSongCard({
-    required this.song,
-    super.key, required this.index,
-  });
+  const CommonSongCard({required this.song, super.key, required this.index});
 
   @override
   State<CommonSongCard> createState() => _CommonSongCardState();
 }
 
-
 class _CommonSongCardState extends State<CommonSongCard> {
   List<SongData> recentlyPlayed = [];
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -42,18 +39,23 @@ class _CommonSongCardState extends State<CommonSongCard> {
               width: 150,
               height: 150,
               fit: BoxFit.cover,
-              placeholder: (context, url) => Container(
-                color: ThemeColor.grey,
-                width: 150,
-                height: 150,
-                child: const Center(child: CircularProgressIndicator()),
-              ),
-              errorWidget: (context, url, error) => Container(
-                width: 150,
-                height: 150,
-                color: ThemeColor.grey,
-                child: const Icon(Icons.music_note, color: ThemeColor.white),
-              ),
+              placeholder:
+                  (context, url) => Container(
+                    color: ThemeColor.grey,
+                    width: 150,
+                    height: 150,
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
+              errorWidget:
+                  (context, url, error) => Container(
+                    width: 150,
+                    height: 150,
+                    color: ThemeColor.grey,
+                    child: const Icon(
+                      Icons.music_note,
+                      color: ThemeColor.white,
+                    ),
+                  ),
             ),
           ),
           const SizedBox(height: 8),
@@ -76,32 +78,62 @@ class _CommonSongCardState extends State<CommonSongCard> {
             children: [
               IconButton(
                 icon: const Icon(Icons.play_arrow, color: ThemeColor.white),
-                  onPressed: () async {
-                    await RecentlyPlayedManager.addSongToRecentlyPlayed(widget.song[widget.index]);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SongPlayerScreen(
-                          songList: widget.song,
-                          initialIndex: widget.index,
-                        ),
-                      ),
-                    );
-                  },
-              ),
-              IconButton(
-                icon: const Icon(Icons.download, color: ThemeColor.white),
                 onPressed: () async {
-                  final safeFileName = '${widget.song[widget.index].title.replaceAll(RegExp(r'[^\w\s-]'), '_')}.mp3';
-                  await DownloadSong().downloadSong(
-                    widget.song[widget.index].path,
-                    safeFileName,
-                    widget.song[widget.index].thumbnailUrl,
+                  await RecentlyPlayedManager.addSongToRecentlyPlayed(
                     widget.song[widget.index],
+                  );
+                  Navigator.push(
                     context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => SongPlayerScreen(
+                            songList: widget.song,
+                            initialIndex: widget.index,
+                          ),
+                    ),
                   );
                 },
               ),
+              BlocProvider(
+                create: (context) => DownloadSongBlocCubit(),
+                child: BlocConsumer<DownloadSongBlocCubit, DownloadSongState>(
+                  listener: (context, state) {
+
+                    if (state is DownloadSongSuccess) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Song downloaded successfully!'),
+                        ),
+                      );
+                    } else if (state is DownloadSongFailure) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Download failed: ${state.error}'),
+                        ),
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is DownloadSongDownloading) {
+                      return const CircularProgressIndicator(); // show loading
+                    }
+                    return IconButton(
+                      icon: const Icon(Icons.download, color: Colors.white),
+                      onPressed: () {
+                        final safeFileName = '${widget.song[widget.index].title.replaceAll(RegExp(r'[^\w\s-]'), '_')}.mp3';
+                        context.read<DownloadSongBlocCubit>().downloadSong(
+                          url: widget.song[widget.index].path,
+                          fileName: safeFileName,
+                          thumbnailUrl: widget.song[widget.index].thumbnailUrl,
+                          songData: widget.song[widget.index],
+                          context: context,
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+
               IconButton(
                 icon: const Icon(Icons.add_to_queue, color: ThemeColor.white),
                 onPressed: () => PlaylistsScreen(),
