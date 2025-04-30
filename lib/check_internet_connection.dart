@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:audionyx/download_song_screen.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/home_screen.dart';
+import 'package:audionyx/presentation/onboarding_screen/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:async';
@@ -78,6 +79,6 @@ class _CheckInternetConnectionState extends State<CheckInternetConnection> {
 
     return isOffline
         ? const DownloadedSongsScreen()
-        : const HomeScreen();
+        : const OnboardingScreen();
   }
 }

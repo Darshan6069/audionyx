@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:audionyx/core/constants/app_strings.dart';
 import 'package:http/http.dart' as http;
 import '../../../../domain/song_model/song_model.dart';
 
@@ -6,7 +7,7 @@ class FetchSongService {
   Future<List<SongData>> fetchSongs() async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.0.3:4000/api/songs'),
+        Uri.parse('${AppStrings.baseUrl}songs'),
       );
 
       if (response.statusCode == 200) {

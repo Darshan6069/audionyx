@@ -32,7 +32,11 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     context.read<FetchSongBlocCubit>().fetchSongs();
-    RecentlyPlayedManager.loadRecentlyPlayed();
+    RecentlyPlayedManager.loadRecentlyPlayed().then((song) {
+      setState(() {
+        recentlyPlayed = song;
+      });
+    });
   }
 
   @override
@@ -57,51 +61,47 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.search, color: ThemeColor.white),
-                        onPressed:
-                            () => context.push(
-                              context,
-                              target: const SongBrowserScreen(),
-                            ),
+                        onPressed: () => context.push(
+                          context,
+                          target: const SongBrowserScreen(),
+                        ),
                       ),
                       IconButton(
                         icon: const Icon(
                           Icons.library_music_rounded,
                           color: ThemeColor.white,
                         ),
-                        onPressed:
-                            () => context.push(
-                              context,
-                              target: const DownloadedSongsScreen(),
-                            ),
+                        onPressed: () => context.push(
+                          context,
+                          target: const DownloadedSongsScreen(),
+                        ),
                       ),
                       IconButton(
                         icon: const Icon(
                           Icons.queue_music,
                           color: ThemeColor.white,
                         ),
-                        onPressed:
-                            () => context.push(
-                              context,
-                              target: const PlaylistManagementScreen(),
-                            ),
+                        onPressed: () => context.push(
+                          context,
+                          target: const PlaylistManagementScreen(),
+                        ),
                       ),
                       BlocProvider(
                         create: (context) => LoginBlocCubit(),
                         child: Builder(
-                          builder:
-                              (context) => IconButton(
-                                icon: const Icon(
-                                  Icons.person,
-                                  color: ThemeColor.white,
-                                  size: 30,
-                                ),
-                                onPressed: () {
-                                  context.push(
-                                    context,
-                                    target: AddSongsScreen(),
-                                  );
-                                },
-                              ),
+                          builder: (context) => IconButton(
+                            icon: const Icon(
+                              Icons.person,
+                              color: ThemeColor.white,
+                              size: 30,
+                            ),
+                            onPressed: () {
+                              context.push(
+                                context,
+                                target: AddSongsScreen(),
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ],
@@ -129,36 +129,34 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 10),
               SizedBox(
                 height: 200,
-                child:
-                    isLoadingPlaylists
-                        ? const Center(
-                          child: CircularProgressIndicator(
-                            color: ThemeColor.white,
-                          ),
-                        )
-                        : playlistErrorMessage != null
-                        ? Center(
-                          child: Text(
-                            playlistErrorMessage!,
-                            style: const TextStyle(color: ThemeColor.white),
-                          ),
-                        )
-                        : featuredPlaylists.isEmpty
-                        ? const Center(
-                          child: Text(
-                            'No playlists found',
-                            style: TextStyle(color: ThemeColor.white),
-                          ),
-                        )
-                        : ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: featuredPlaylists.length,
-                          itemBuilder:
-                              (context, index) => CommonSongCard(
-                                song: featuredPlaylists,
-                                index: index,
-                              ),
-                        ),
+                child: isLoadingPlaylists
+                    ? const Center(
+                  child: CircularProgressIndicator(
+                    color: ThemeColor.white,
+                  ),
+                )
+                    : playlistErrorMessage != null
+                    ? Center(
+                  child: Text(
+                    playlistErrorMessage!,
+                    style: const TextStyle(color: ThemeColor.white),
+                  ),
+                )
+                    : featuredPlaylists.isEmpty
+                    ? const Center(
+                  child: Text(
+                    'No playlists found',
+                    style: TextStyle(color: ThemeColor.white),
+                  ),
+                )
+                    : ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: featuredPlaylists.length,
+                  itemBuilder: (context, index) => CommonSongCard(
+                    song: featuredPlaylists,
+                    index: index,
+                  ),
+                ),
               ),
               const SizedBox(height: 20),
               const Text(
@@ -172,23 +170,21 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 10),
               SizedBox(
                 height: 250,
-                child:
-                    recentlyPlayed.isEmpty
-                        ? const Center(
-                          child: Text(
-                            'No recently played songs',
-                            style: TextStyle(color: ThemeColor.white),
-                          ),
-                        )
-                        : ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: recentlyPlayed.length,
-                          itemBuilder:
-                              (context, index) => CommonSongCard(
-                                song: recentlyPlayed,
-                                index: index,
-                              ),
-                        ),
+                child: recentlyPlayed.isEmpty
+                    ? const Center(
+                  child: Text(
+                    'No recently played songs',
+                    style: TextStyle(color: ThemeColor.white),
+                  ),
+                )
+                    : ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: recentlyPlayed.length,
+                  itemBuilder: (context, index) => CommonSongCard(
+                    song: recentlyPlayed,
+                    index: index,
+                  ),
+                ),
               ),
               const SizedBox(height: 20),
               const Text(
@@ -231,7 +227,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           scrollDirection: Axis.horizontal,
                           itemCount: state.songs.length,
                           itemBuilder: (context, index) {
-                            //final  song = state.songs[index];
                             return CommonSongCard(
                               song: state.songs,
                               index: index,

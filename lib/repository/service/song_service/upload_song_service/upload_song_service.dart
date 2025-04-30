@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:audionyx/core/constants/app_strings.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 
@@ -70,7 +71,7 @@ class UploadSongService {
     }
 
     try {
-      final uri = Uri.parse('http://192.168.0.3:4000/api/songs/upload');
+      final uri = Uri.parse('${AppStrings.baseUrl}songs/upload');
       final request = http.MultipartRequest('POST', uri);
 
       // Add song file

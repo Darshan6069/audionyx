@@ -56,7 +56,8 @@ dependencies:
   provider:
   just_audio_background:
   device_info_plus:
-  shared_preferences: 
+  shared_preferences:
+  jwt_decoder:
 
 
 dev_dependencies:

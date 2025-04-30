@@ -20,11 +20,12 @@ class LoginBlocCubit extends Cubit<LoginState> {
     emit(const LoginState.loading());
 
     try {
+      final userId = await loginService.loginUser(email: email, password: password);
       final token = await loginService.loginUser(
         email: email,
         password: password,
       );
-      emit(LoginState.success(token));
+      emit(LoginState.success(token,userId));
     } catch (e) {
       emit(LoginState.failure(e.toString()));
     }

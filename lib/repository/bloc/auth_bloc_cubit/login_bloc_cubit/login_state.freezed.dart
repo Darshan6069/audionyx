@@ -110,10 +110,11 @@ String toString() {
 
 
 class LoginSuccess implements LoginState {
-  const LoginSuccess(this.token);
+  const LoginSuccess(this.token, this.userId);
   
 
  final  String token;
+ final  String userId;
 
 /// Create a copy of LoginState
 /// with the given fields replaced by the non-null parameter values.
@@ -125,16 +126,16 @@ $LoginSuccessCopyWith<LoginSuccess> get copyWith => _$LoginSuccessCopyWithImpl<L
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoginSuccess&&(identical(other.token, token) || other.token == token));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoginSuccess&&(identical(other.token, token) || other.token == token)&&(identical(other.userId, userId) || other.userId == userId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,token);
+int get hashCode => Object.hash(runtimeType,token,userId);
 
 @override
 String toString() {
-  return 'LoginState.success(token: $token)';
+  return 'LoginState.success(token: $token, userId: $userId)';
 }
 
 
@@ -145,7 +146,7 @@ abstract mixin class $LoginSuccessCopyWith<$Res> implements $LoginStateCopyWith<
   factory $LoginSuccessCopyWith(LoginSuccess value, $Res Function(LoginSuccess) _then) = _$LoginSuccessCopyWithImpl;
 @useResult
 $Res call({
- String token
+ String token, String userId
 });
 
 
@@ -162,9 +163,10 @@ class _$LoginSuccessCopyWithImpl<$Res>
 
 /// Create a copy of LoginState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? token = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? token = null,Object? userId = null,}) {
   return _then(LoginSuccess(
 null == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
+as String,null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

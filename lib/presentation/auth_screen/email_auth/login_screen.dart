@@ -2,9 +2,9 @@ import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/presentation/auth_screen/email_auth/registration_screen.dart';
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_state.dart';
-import 'package:audionyx/repository/service/auth_service/login_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../../core/constants/app_image.dart';
 import '../../../core/constants/app_strings.dart';
@@ -20,9 +20,10 @@ class LoginScreen extends StatefulWidget {
   State createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State {
+class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final _storage = const FlutterSecureStorage();
 
   @override
   void dispose() {
@@ -44,17 +45,18 @@ class _LoginScreenState extends State {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
               child: BlocConsumer<LoginBlocCubit, LoginState>(
-                listener: (context, state) {
+                listener: (context, state) async {
                   if (state is LoginSuccess) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(state.token)));
-                    // Navigate to LoginScreen or HomeScreen
-                    context.pushAndRemoveUntil(context, target: HomeScreen());
+                    // Store token in secure storage
+                    await _storage.write(key: 'auth_token', value: state.token);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Login successful: ${state.token}')),
+                    );
+                    context.pushAndRemoveUntil(context, target: const HomeScreen());
                   } else if (state is LoginFailure) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(state.error)));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(state.error)),
+                    );
                   }
                 },
                 builder: (context, state) {
@@ -107,9 +109,7 @@ class _LoginScreenState extends State {
                         labelText: AppStrings.labelTextForPassword,
                         errorText: AppStrings.errorTextForPassword,
                         validator: (value) {
-                          final passwordRegex = RegExp(
-                            AppStrings.passwordRegex,
-                          );
+                          final passwordRegex = RegExp(AppStrings.passwordRegex);
                           if (value == null || value.isEmpty) {
                             return 'Password is required';
                           } else if (!passwordRegex.hasMatch(value)) {
@@ -169,7 +169,7 @@ class _LoginScreenState extends State {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => RegistrationScreen(),
+                              builder: (context) => const RegistrationScreen(),
                             ),
                           );
                         },
