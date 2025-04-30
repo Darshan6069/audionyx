@@ -4,7 +4,7 @@ import 'package:audionyx/core/constants/app_strings.dart';
 import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/core/constants/theme_color.dart';
 import 'package:audionyx/download_song_screen.dart';
-import 'package:audionyx/playlist_management_screen.dart';
+import 'package:audionyx/presentation/playlist_management_screen/playlist_management_screen.dart';
 import 'package:audionyx/presentation/widget/common_song_card.dart';
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_bloc_cubit.dart';
