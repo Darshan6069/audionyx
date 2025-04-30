@@ -8,12 +8,13 @@ import '../../../../domain/song_model/song_model.dart';
 class RecentlyPlayedManager {
   static List<SongData> recentlyPlayed = [];
 
-  static Future<void> loadRecentlyPlayed() async {
+  static Future<List<SongData>> loadRecentlyPlayed() async {
     final prefs = await SharedPreferences.getInstance();
     final songsJson = prefs.getStringList('recentlyPlayed') ?? [];
     recentlyPlayed = songsJson
         .map((e) => SongData.fromMap(json.decode(e)))
         .toList();
+    return recentlyPlayed;
   }
 
   static Future<void> addSongToRecentlyPlayed(SongData song) async {

@@ -20,8 +20,6 @@ class SongPlayerScreen extends StatefulWidget {
 class _SongPlayerScreenState extends State<SongPlayerScreen> {
   late AudioPlayerService _audioPlayerService;
 
-
-
   @override
   void initState() {
     super.initState();
@@ -51,7 +49,8 @@ class _SongPlayerScreenState extends State<SongPlayerScreen> {
     super.dispose();
   }
 
-  String _formatDuration(Duration d) => d.toString().split('.').first.padLeft(8, "0");
+  String _formatDuration(Duration d) =>
+      d.toString().split('.').first.padLeft(8, "0");
 
   @override
   Widget build(BuildContext context) {
@@ -96,11 +95,15 @@ class _SongPlayerScreenState extends State<SongPlayerScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
                           image: DecorationImage(
-                            image: currentSong.isUrl
-                                ? NetworkImage(currentSong.thumbnailUrl)
-                                : FileImage(File(currentSong.thumbnailUrl)) as ImageProvider,
+                            image:
+                                currentSong.isUrl
+                                    ? NetworkImage(currentSong.thumbnailUrl)
+                                    : FileImage(File(currentSong.thumbnailUrl))
+                                        as ImageProvider,
                             fit: BoxFit.cover,
-                            onError: (_, __) => const Icon(Icons.music_note, size: 50),
+                            onError:
+                                (_, __) =>
+                                    const Icon(Icons.music_note, size: 50),
                           ),
                         ),
                       ),
@@ -110,7 +113,9 @@ class _SongPlayerScreenState extends State<SongPlayerScreen> {
                         color: Colors.teal.withOpacity(0.7),
                         child: Center(
                           child: Text(
-                            _formatDuration(_audioPlayerService.position).split(':').sublist(1).join(':'),
+                            _formatDuration(
+                              _audioPlayerService.position,
+                            ).split(':').sublist(1).join(':'),
                             style: TextStyle(color: Colors.white, fontSize: 20),
                           ),
                         ),
@@ -126,11 +131,16 @@ class _SongPlayerScreenState extends State<SongPlayerScreen> {
                   children: [
                     Text(
                       currentSong.title,
-                      style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     SizedBox(height: 8),
                     Text(
-                      currentSong.artist ?? 'Unknown Artist', // Assuming SongData has an artist field
+                      currentSong.artist ?? 'Unknown Artist',
+                      // Assuming SongData has an artist field
                       style: TextStyle(color: Colors.white70, fontSize: 16),
                     ),
                   ],
@@ -138,20 +148,35 @@ class _SongPlayerScreenState extends State<SongPlayerScreen> {
               ),
               // Progress Bar
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
                 child: Row(
                   children: [
-                    Text(_formatDuration(_audioPlayerService.position), style: TextStyle(color: Colors.white70)),
+                    Text(
+                      _formatDuration(_audioPlayerService.position),
+                      style: TextStyle(color: Colors.white70),
+                    ),
                     Expanded(
                       child: Slider(
-                        value: _audioPlayerService.position.inSeconds.toDouble(),
-                        max: _audioPlayerService.duration.inSeconds.toDouble().clamp(1.0, double.infinity),
+                        value:
+                            _audioPlayerService.position.inSeconds.toDouble(),
+                        max: _audioPlayerService.duration.inSeconds
+                            .toDouble()
+                            .clamp(1.0, double.infinity),
                         activeColor: Colors.green,
                         inactiveColor: Colors.white24,
-                        onChanged: (value) => _audioPlayerService.seekTo(Duration(seconds: value.toInt())),
+                        onChanged:
+                            (value) => _audioPlayerService.seekTo(
+                              Duration(seconds: value.toInt()),
+                            ),
                       ),
                     ),
-                    Text(_formatDuration(_audioPlayerService.duration), style: TextStyle(color: Colors.white70)),
+                    Text(
+                      _formatDuration(_audioPlayerService.duration),
+                      style: TextStyle(color: Colors.white70),
+                    ),
                   ],
                 ),
               ),
@@ -164,11 +189,15 @@ class _SongPlayerScreenState extends State<SongPlayerScreen> {
                     Icon(Icons.shuffle, color: Colors.white70),
                     IconButton(
                       icon: Icon(Icons.skip_previous, color: Colors.white),
-                      onPressed: () => _audioPlayerService.playPrevious(widget.songList),
+                      onPressed:
+                          () =>
+                              _audioPlayerService.playPrevious(widget.songList),
                     ),
                     IconButton(
                       icon: Icon(
-                        _audioPlayerService.isPlaying ? Icons.pause : Icons.play_arrow,
+                        _audioPlayerService.isPlaying
+                            ? Icons.pause
+                            : Icons.play_arrow,
                         color: Colors.green,
                         size: 60,
                       ),
@@ -176,7 +205,8 @@ class _SongPlayerScreenState extends State<SongPlayerScreen> {
                     ),
                     IconButton(
                       icon: Icon(Icons.skip_next, color: Colors.white),
-                      onPressed: () => _audioPlayerService.playNext(widget.songList),
+                      onPressed:
+                          () => _audioPlayerService.playNext(widget.songList),
                     ),
                     Icon(Icons.repeat, color: Colors.white70),
                   ],

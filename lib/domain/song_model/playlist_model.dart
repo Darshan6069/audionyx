@@ -1,51 +1,34 @@
+import 'package:audionyx/domain/song_model/song_model.dart';
 
 class PlaylistModel {
   final String id;
   final String name;
-  final String description;
-  final String userId;
-  final List<PlaylistSong> songs;
+  final String? description;
+  final String? thumbnailUrl;
+  final List<SongData> songs;
 
   PlaylistModel({
     required this.id,
     required this.name,
-    required this.description,
-    required this.userId,
-    required this.songs,
+    this.description,
+    this.thumbnailUrl,
+    this.songs = const [],
   });
 
   factory PlaylistModel.fromJson(Map<String, dynamic> json) {
     return PlaylistModel(
-      id: json['_id'],
+      id: json['_id'] ?? json['id'],
       name: json['name'],
-      description: json['description'] ?? '',
-      userId: json['userId'],
-      songs: (json['songs'] as List)
-          .map((song) => PlaylistSong.fromJson(song))
-          .toList(),
+      description: json['description'],
+      thumbnailUrl: json['thumbnailUrl'],
+      songs: List<SongData>.from(json['songs'] ?? []),
     );
   }
-}
 
-class PlaylistSong {
-  final String songId;
-  final String title;
-  final String artist;
-  final String url;
-
-  PlaylistSong({
-    required this.songId,
-    required this.title,
-    required this.artist,
-    required this.url,
-  });
-
-  factory PlaylistSong.fromJson(Map<String, dynamic> json) {
-    return PlaylistSong(
-      songId: json['songId'],
-      title: json['title'],
-      artist: json['artist'],
-      url: json['url'],
-    );
-  }
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'description': description ?? '',
+    'thumbnailUrl': thumbnailUrl ?? '',
+    'songs': songs,
+  };
 }

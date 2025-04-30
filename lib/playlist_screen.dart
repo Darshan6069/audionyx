@@ -32,16 +32,16 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
     });
   }
 
-  void _playPlaylist(List<PlaylistSong> playlistSongs, int initialIndex) {
+  void _playPlaylist(List<PlaylistModel> playlistSongs, int initialIndex) {
     final songDataList = playlistSongs
         .map((song) => SongData(
-      id: song.songId,
-      title: song.title,
-      artist: song.artist,
-      path: song.url,
-      album: '',
-      genre: '',
-      thumbnailUrl: '',
+      id: song.songs[initialIndex].id,
+      title: song.songs[initialIndex].title,
+      artist: song.songs[initialIndex].artist,
+      path: song.songs[initialIndex].path,
+      album: song.songs[initialIndex].album,
+      genre: song.songs[initialIndex].genre,
+      thumbnailUrl: song.songs[initialIndex].thumbnailUrl,
     ))
         .toList();
 
@@ -168,7 +168,7 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
           final playlist = playlists[index];
           return ExpansionTile(
             title: Text(playlist.name),
-            subtitle: Text(playlist.description),
+            subtitle: Text(playlist.songs[index].artist),
             children: playlist.songs.isEmpty
                 ? [
               const ListTile(
@@ -187,15 +187,15 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
                     IconButton(
                       icon: const Icon(Icons.play_arrow),
                       onPressed: () =>
-                          _playPlaylist(playlist.songs, songIndex),
+                          _playPlaylist(playlist.songs.cast<PlaylistModel>(), songIndex),
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete),
                       onPressed: () async {
                         final success =
                         await PlaylistService.removeSongFromPlaylist(
-                          playlist.id,
-                          song.songId,
+                          playlist as String,
+                          "song",
                         );
                         if (success) {
                           await _loadData();
@@ -215,7 +215,7 @@ class _PlaylistsScreenState extends State<PlaylistsScreen> {
                 ListTile(
                   title: const Text('Add Song'),
                   leading: const Icon(Icons.add),
-                  onTap: () => _showAddSongDialog(playlist.id),
+                  onTap: () => _showAddSongDialog(playlist.songs[index].id),
                 ),
               ),
           );

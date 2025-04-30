@@ -9,6 +9,7 @@ import 'package:audionyx/repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/registration_bloc_cubit/registration_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/download_song_bloc_cubit/download_song_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_bloc_cubit.dart';
+import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_bloc_cubit.dart';
 import 'package:audionyx/song_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => UploadSongBlocCubit()),
         BlocProvider(create: (context) => FetchSongBlocCubit()),
         BlocProvider(create: (context) => DownloadSongBlocCubit()),
+        BlocProvider(create: (context) => PlaylistBlocCubit()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
