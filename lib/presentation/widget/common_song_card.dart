@@ -136,7 +136,7 @@ class _CommonSongCardState extends State<CommonSongCard> {
 
               IconButton(
                 icon: const Icon(Icons.add_to_queue, color: ThemeColor.white),
-                onPressed: () => PlaylistsScreen(),
+                onPressed: () {},
               ),
             ],
           ),

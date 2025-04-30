@@ -110,11 +110,11 @@ String toString() {
 
 
 class PlaylistSuccess implements PlaylistState {
-  const PlaylistSuccess(final  List<PlaylistModel> playlists): _playlists = playlists;
+  const PlaylistSuccess(final  List<dynamic> playlists): _playlists = playlists;
   
 
- final  List<PlaylistModel> _playlists;
- List<PlaylistModel> get playlists {
+ final  List<dynamic> _playlists;
+ List<dynamic> get playlists {
   if (_playlists is EqualUnmodifiableListView) return _playlists;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_playlists);
@@ -151,7 +151,7 @@ abstract mixin class $PlaylistSuccessCopyWith<$Res> implements $PlaylistStateCop
   factory $PlaylistSuccessCopyWith(PlaylistSuccess value, $Res Function(PlaylistSuccess) _then) = _$PlaylistSuccessCopyWithImpl;
 @useResult
 $Res call({
- List<PlaylistModel> playlists
+ List<dynamic> playlists
 });
 
 
@@ -171,7 +171,7 @@ class _$PlaylistSuccessCopyWithImpl<$Res>
 @pragma('vm:prefer-inline') $Res call({Object? playlists = null,}) {
   return _then(PlaylistSuccess(
 null == playlists ? _self._playlists : playlists // ignore: cast_nullable_to_non_nullable
-as List<PlaylistModel>,
+as List<dynamic>,
   ));
 }
 
