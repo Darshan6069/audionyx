@@ -1,66 +1,41 @@
+import 'dart:async';
 import 'dart:io';
+
+import 'package:audionyx/core/constants/app_strings.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:audionyx/download_song_screen.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/home_screen.dart';
 import 'package:audionyx/presentation/onboarding_screen/onboarding_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'dart:async';
 
 class CheckInternetConnection extends StatefulWidget {
   const CheckInternetConnection({super.key});
 
   @override
-  State<CheckInternetConnection> createState() => _CheckInternetConnectionState();
+  State<CheckInternetConnection> createState() =>
+      _CheckInternetConnectionState();
 }
 
 class _CheckInternetConnectionState extends State<CheckInternetConnection> {
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
-  bool isOffline = false;
-  bool isLoading = true;
+
+  bool _isLoading = true;
+  bool _isOffline = false;
+  bool _isLoggedIn = false;
 
   @override
   void initState() {
     super.initState();
-    _checkConnectivity();
-    // Listen for connectivity changes
-    _connectivitySubscription = Connectivity()
-        .onConnectivityChanged
-        .listen((List<ConnectivityResult> results) {
-      _checkConnectivity(); // Re-check actual internet on change
+
+    _performChecks();
+
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((
+      List<ConnectivityResult> results,
+    ) {
+      _performChecks();
     });
-  }
-
-  Future<void> _checkConnectivity() async {
-    try {
-      // Step 1: Check network availability
-      final connectivityResults = await Connectivity().checkConnectivity();
-      if (connectivityResults.contains(ConnectivityResult.none) &&
-          connectivityResults.length == 1) {
-        _updateConnectionStatus(true); // No network, offline
-        return;
-      }
-
-      // Step 2: Verify actual internet by pinging a server
-      try {
-        final result = await InternetAddress.lookup('www.google.com');
-        _updateConnectionStatus(result.isEmpty || result[0].rawAddress.isEmpty);
-      } on SocketException catch (_) {
-        _updateConnectionStatus(true); // No internet, offline
-      }
-    } catch (e) {
-      debugPrint('Connectivity check error: $e');
-      _updateConnectionStatus(true); // Assume offline on error
-    }
-  }
-
-  void _updateConnectionStatus(bool offline) {
-    if (mounted) {
-      setState(() {
-        isOffline = offline;
-        isLoading = false;
-      });
-      debugPrint('Connection status: ${offline ? 'Offline' : 'Online'}');
-    }
   }
 
   @override
@@ -69,16 +44,81 @@ class _CheckInternetConnectionState extends State<CheckInternetConnection> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+  Future<bool> _checkIfUserIsLoggedIn() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      final String authToken =
+          AppStrings.secureStorage.read(key: 'jwt_token').toString();
+      bool loggedIn = authToken.isNotEmpty;
+
+      return loggedIn;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<void> _performChecks() async {
+    if (!mounted) return;
+
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+      });
     }
 
-    return isOffline
-        ? const DownloadedSongsScreen()
-        : const OnboardingScreen();
+    bool currentlyOffline;
+    bool currentlyLoggedIn = false;
+
+    final connectivityResults = await Connectivity().checkConnectivity();
+    bool hasNetwork =
+        !(connectivityResults.contains(ConnectivityResult.none) &&
+            connectivityResults.length == 1);
+
+    if (!hasNetwork) {
+      currentlyOffline = true;
+    } else {
+      try {
+        final result = await InternetAddress.lookup(
+          'google.com',
+        ).timeout(const Duration(seconds: 5));
+        currentlyOffline = result.isEmpty || result[0].rawAddress.isEmpty;
+      } on SocketException catch (e) {
+        currentlyOffline = true;
+      } on TimeoutException catch (e) {
+        currentlyOffline = true;
+      } catch (e) {
+        currentlyOffline = true;
+      }
+    }
+
+    if (!currentlyOffline) {
+      currentlyLoggedIn = await _checkIfUserIsLoggedIn();
+    } else {}
+
+    if (mounted) {
+      setState(() {
+        _isOffline = currentlyOffline;
+        _isLoggedIn = currentlyLoggedIn;
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (_isOffline) {
+      return const DownloadedSongsScreen();
+    } else {
+      if (_isLoggedIn) {
+        return const HomeScreen();
+      } else {
+        return const OnboardingScreen();
+      }
+    }
   }
 }

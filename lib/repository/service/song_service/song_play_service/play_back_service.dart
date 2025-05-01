@@ -13,10 +13,10 @@ class AudioPlayerService {
   // Initialize the player with the current song
   Future<void> initPlayer(SongData song) async {
     try {
-      if (song.isUrl) {
-        await _player.setUrl(song.path);
+      if (song.mp3Url.isEmpty) {
+        await _player.setUrl(song.mp3Url);
       } else {
-        await _player.setFilePath(song.path);
+        await _player.setFilePath(song.mp3Url);
       }
       duration = _player.duration ?? Duration.zero;
     } catch (e) {
