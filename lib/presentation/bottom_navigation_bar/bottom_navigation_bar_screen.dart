@@ -3,6 +3,8 @@ import 'package:audionyx/core/constants/theme_color.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/favourite_songs_screen/favourite_songs_screen.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/library_screen/library_screen.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/search_screen/search_screen.dart';
+import 'package:audionyx/presentation/widget/mini_player.dart';
+import 'package:audionyx/song_browser_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +24,7 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
   // List of screens for navigation
   final List<Widget> _screens = [
     const HomeScreen(),
-    const SearchScreen(),
+    const SongBrowserScreen(),
     const LibraryScreen(),
     const FavouriteSongsScreen(),
     const AddSongsScreen()

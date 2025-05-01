@@ -10,6 +10,7 @@ import 'package:audionyx/repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_
 import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_state.dart';
 import 'package:audionyx/song_browser_screen.dart';
+import 'package:audionyx/user_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/song_model/song_model.dart';
@@ -96,9 +97,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               size: 30,
                             ),
                             onPressed: () {
+                              final userId = AppStrings.secureStorage.read(key: 'userId');
                               context.push(
                                 context,
-                                target: AddSongsScreen(),
+                                target: UserProfileScreen(userId: userId.toString()),
                               );
                             },
                           ),

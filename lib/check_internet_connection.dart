@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audionyx/core/constants/app_strings.dart';
+import 'package:audionyx/presentation/bottom_navigation_bar/bottom_navigation_bar_screen.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -115,7 +116,7 @@ class _CheckInternetConnectionState extends State<CheckInternetConnection> {
       return const DownloadedSongsScreen();
     } else {
       if (_isLoggedIn) {
-        return const HomeScreen();
+        return const BottomNavigationBarScreen();
       } else {
         return const OnboardingScreen();
       }
