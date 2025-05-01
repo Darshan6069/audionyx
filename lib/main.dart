@@ -12,6 +12,7 @@ import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_bloc_c
 import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_bloc_cubit.dart';
 import 'package:audionyx/repository/service/song_service/playlist_service/playlist_service.dart';
 import 'package:audionyx/song_list.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -30,8 +31,9 @@ class MyHttpOverrides extends HttpOverrides {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Future.delayed(const Duration(seconds: 2));
-  await FlutterDownloader.initialize(debug: true);
-  HttpOverrides.global = MyHttpOverrides();
+  if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+    await FlutterDownloader.initialize();
+  }  HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());
 }
 

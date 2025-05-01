@@ -1,8 +1,11 @@
+import 'package:audionyx/add_song_into_playlist_screen.dart';
+import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/repository/bloc/download_song_bloc_cubit/download_song_bloc_cubit.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../core/constants/app_strings.dart';
 import '../../core/constants/theme_color.dart';
 import '../../domain/song_model/song_model.dart';
 import '../../playlist_screen.dart';
@@ -23,6 +26,7 @@ class CommonSongCard extends StatefulWidget {
 
 class _CommonSongCardState extends State<CommonSongCard> {
   List<SongData> recentlyPlayed = [];
+
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +126,7 @@ class _CommonSongCardState extends State<CommonSongCard> {
                       onPressed: () {
                         final safeFileName = '${widget.song[widget.index].title.replaceAll(RegExp(r'[^\w\s-]'), '_')}.mp3';
                         context.read<DownloadSongBlocCubit>().downloadSong(
-                          url: widget.song[widget.index].path,
+                          url: widget.song[widget.index].mp3Url,
                           fileName: safeFileName,
                           thumbnailUrl: widget.song[widget.index].thumbnailUrl,
                           songData: widget.song[widget.index],
@@ -136,7 +140,9 @@ class _CommonSongCardState extends State<CommonSongCard> {
 
               IconButton(
                 icon: const Icon(Icons.add_to_queue, color: ThemeColor.white),
-                onPressed: () {},
+                onPressed: () {
+                  context.push(context, target: AddSongToPlaylistScreen( song: widget.song[widget.index]));
+                },
               ),
             ],
           ),

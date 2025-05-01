@@ -96,7 +96,7 @@ class _SongPlayerScreenState extends State<SongPlayerScreen> {
                           borderRadius: BorderRadius.circular(20),
                           image: DecorationImage(
                             image:
-                                currentSong.isUrl
+                                currentSong.mp3Url.isEmpty
                                     ? NetworkImage(currentSong.thumbnailUrl)
                                     : FileImage(File(currentSong.thumbnailUrl))
                                         as ImageProvider,

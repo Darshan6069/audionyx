@@ -12,7 +12,7 @@ class FetchSongService {
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
-        return data.map((json) => SongData.fromMap(json)).toList();
+        return data.map((json) => SongData.fromJson(json)).toList();
       } else {
         throw Exception('Failed to fetch songs: ${response.statusCode}');
       }

@@ -145,10 +145,9 @@ class _SongListScreenState extends State<SongListScreen> {
                   final songDataList =
                       songs.map<SongData>((s) {
                         return SongData(
-                          path: s['mp3Url'],
+                          mp3Url: s['mp3Url'],
                           title: s['title'] ?? 'Unknown',
                           thumbnailUrl: s['thumbnailUrl'] ?? '',
-                          isUrl: true,
                           id: '',
                           album: '',
                           artist: '',
@@ -178,10 +177,9 @@ class _SongListScreenState extends State<SongListScreen> {
                   final thumbnailUrl = song['thumbnailUrl'].toString();
 
                   final songData = SongData(
-                    path: mp3Url,
+                    mp3Url: mp3Url,
                     title: title,
                     thumbnailUrl: thumbnailUrl,
-                    isUrl: true,
                     id: song['id'] ?? '',
                     album: song['album'] ?? '',
                     artist: song['artist'] ?? '',

@@ -12,7 +12,7 @@ class RecentlyPlayedManager {
     final prefs = await SharedPreferences.getInstance();
     final songsJson = prefs.getStringList('recentlyPlayed') ?? [];
     recentlyPlayed = songsJson
-        .map((e) => SongData.fromMap(json.decode(e)))
+        .map((e) => SongData.fromJson(json.decode(e)))
         .toList();
     return recentlyPlayed;
   }

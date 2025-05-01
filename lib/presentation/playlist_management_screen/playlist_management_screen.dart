@@ -1,3 +1,4 @@
+import 'package:audionyx/add_song_into_playlist_screen.dart';
 import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_state.dart';
 import 'package:audionyx/repository/service/song_service/playlist_service/playlist_service.dart';
@@ -10,12 +11,14 @@ import 'package:audionyx/song_browser_screen.dart';
 import 'package:audionyx/presentation/auth_screen/email_auth/login_screen.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/home_screen.dart';
 
+import '../../playlist_screen.dart';
 
 class PlaylistManagementScreen extends StatefulWidget {
   const PlaylistManagementScreen({super.key});
 
   @override
-  State<PlaylistManagementScreen> createState() => _PlaylistManagementScreenState();
+  State<PlaylistManagementScreen> createState() =>
+      _PlaylistManagementScreenState();
 }
 
 class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
@@ -24,43 +27,49 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
   void _showCreatePlaylistDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Create New Playlist'),
-        content: TextField(
-          controller: _playlistNameController,
-          decoration: const InputDecoration(
-            hintText: 'Enter playlist name',
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Create New Playlist'),
+            content: TextField(
+              controller: _playlistNameController,
+              decoration: const InputDecoration(
+                hintText: 'Enter playlist name',
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  final playlistName = _playlistNameController.text.trim();
+                  if (playlistName.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Playlist name cannot be empty'),
+                      ),
+                    );
+                    return;
+                  }
+                  context.read<PlaylistBlocCubit>().createPlaylist(
+                    playlistName,
+                  );
+                  _playlistNameController.clear();
+                  Navigator.pop(context);
+                },
+                child: const Text('Create'),
+              ),
+            ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              final playlistName = _playlistNameController.text.trim();
-              if (playlistName.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Playlist name cannot be empty')),
-                );
-                return;
-              }
-              context.read<PlaylistBlocCubit>().createPlaylist(playlistName);
-              _playlistNameController.clear();
-              Navigator.pop(context);
-            },
-            child: const Text('Create'),
-          ),
-        ],
-      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => PlaylistBlocCubit(PlaylistService())..fetchPlaylists(),
+      create:
+          (context) => PlaylistBlocCubit(PlaylistService())..fetchPlaylists(),
       child: Scaffold(
         backgroundColor: ThemeColor.darkBackground,
         appBar: AppBar(
@@ -80,17 +89,22 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
                 Icons.library_music_rounded,
                 color: ThemeColor.white,
               ),
-              onPressed: () =>
-                  context.push(context, target: const DownloadedSongsScreen()),
+              onPressed:
+                  () => context.push(
+                    context,
+                    target: const DownloadedSongsScreen(),
+                  ),
             ),
             IconButton(
               icon: const Icon(Icons.home, color: ThemeColor.white),
-              onPressed: () => context.push(context, target: const HomeScreen()),
+              onPressed:
+                  () => context.push(context, target: const HomeScreen()),
             ),
             IconButton(
               icon: const Icon(Icons.search, color: ThemeColor.white),
-              onPressed: () =>
-                  context.push(context, target: const SongBrowserScreen()),
+              onPressed:
+                  () =>
+                      context.push(context, target: const SongBrowserScreen()),
             ),
           ],
         ),
@@ -103,17 +117,20 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
                   MaterialPageRoute(builder: (context) => const LoginScreen()),
                 );
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(state.error)),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(state.error)));
               }
             } else if (state is PlaylistSuccess) {
               // Show success message only after createPlaylist to avoid on initial fetch
               if (_playlistNameController.text.isNotEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Playlist created successfully')),
+                  const SnackBar(
+                    content: Text('Playlist created successfully'),
+                  ),
                 );
-                _playlistNameController.text = ''; // Reset to avoid repeated messages
+                _playlistNameController.text =
+                    ''; // Reset to avoid repeated messages
               }
             }
           },
@@ -139,8 +156,10 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
                 itemCount: state.playlists.length,
                 itemBuilder: (context, index) {
                   final playlist = state.playlists[index];
-                  final title = playlist['name']?.toString() ?? 'Unknown Playlist';
-                  final thumbnailUrl = playlist['thumbnailUrl']?.toString() ?? '';
+                  final title =
+                      playlist['name']?.toString() ?? 'Unknown Playlist';
+                  final thumbnailUrl =
+                      playlist['thumbnailUrl']?.toString() ?? '';
                   final playlistId = playlist['_id']?.toString() ?? '';
 
                   return ListTile(
@@ -148,19 +167,24 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
                       onPressed: () {
                         if (playlistId.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Playlist ID is missing')),
+                            const SnackBar(
+                              content: Text('Playlist ID is missing'),
+                            ),
                           );
                           return;
                         }
-                        context.read<PlaylistBlocCubit>().deletePlaylist(playlistId);
+                        context.read<PlaylistBlocCubit>().deletePlaylist(
+                          playlistId,
+                        );
                       },
                       icon: const Icon(Icons.delete),
                     ),
                     leading: Icon(Icons.playlist_play),
-                    title: Text(title, style: const TextStyle(color: ThemeColor.white)),
-                    onTap: () {
-                      // Handle playlist tap (e.g., navigate to PlaylistDetailScreen)
-                    },
+                    title: Text(
+                      title,
+                      style: const TextStyle(color: ThemeColor.white),
+                    ),
+                    onTap: () {},
                   );
                 },
               );
@@ -172,7 +196,6 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
                 ),
               );
             }
-            // Fallback case (should not occur with freezed)
             return const SizedBox.shrink();
           },
         ),

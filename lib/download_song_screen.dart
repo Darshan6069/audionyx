@@ -37,10 +37,9 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
     final songDataList = downloadedFiles.map<SongData>((file) {
       final name = file.path.split('/').last;
       return SongData(
-        path: file.path,
+        mp3Url: file.path,
         title: name,
         thumbnailUrl: file.path.replaceAll('.mp3', '_thumbnail.jpg'),
-        isUrl: false,
         genre: '',
         artist: '',
         album: '',
