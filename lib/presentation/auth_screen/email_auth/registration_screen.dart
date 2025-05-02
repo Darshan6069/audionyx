@@ -1,6 +1,5 @@
 import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/registration_bloc_cubit/registration_state.dart';
-import 'package:audionyx/repository/service/auth_service/registration_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/app_image.dart';
@@ -9,7 +8,6 @@ import '../../../core/constants/theme_color.dart';
 import '../../../repository/bloc/auth_bloc_cubit/registration_bloc_cubit/registration_bloc_cubit.dart';
 import '../../widget/auth_primary_button.dart';
 import '../../widget/comman_textformfield.dart';
-import '../../widget/custom_text_field.dart';
 import 'login_screen.dart';
 
 class RegistrationScreen extends StatefulWidget {

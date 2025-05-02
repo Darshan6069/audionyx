@@ -2,13 +2,11 @@
 import 'package:audionyx/core/constants/theme_color.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/favourite_songs_screen/favourite_songs_screen.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/library_screen/library_screen.dart';
-import 'package:audionyx/presentation/bottom_navigation_bar/search_screen/search_screen.dart';
-import 'package:audionyx/presentation/widget/mini_player.dart';
-import 'package:audionyx/song_browser_screen.dart';
+import 'package:audionyx/presentation/bottom_navigation_bar/search_screen/song_browser_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../add_songs_screen.dart';
+import '../upload_song_screen/add_songs_screen.dart';
 import 'home_screen/home_screen.dart';
 
 class BottomNavigationBarScreen extends StatefulWidget {

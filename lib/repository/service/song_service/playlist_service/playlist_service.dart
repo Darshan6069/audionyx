@@ -1,20 +1,27 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:audionyx/domain/song_model/song_model.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:audionyx/core/constants/app_strings.dart';
 
-import '../../../../domain/song_model/song_model.dart';
-
 class PlaylistService {
   final _storage = const FlutterSecureStorage();
+  final Dio _dio = Dio(
+    BaseOptions(
+      baseUrl: '${AppStrings.baseUrl}playlists',
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+      headers: {'Content-Type': 'application/json'},
+    ),
+  );
 
   Future<String?> _getAuthToken() async {
     final token = await _storage.read(key: 'jwt_token');
-    print('Auth token from secure storage: $token');
+    print('Auth token: $token');
     return token;
   }
 
-  Future<String?> getUserId() async {
+  Future<String?> _getUserId() async {
     final userId = await _storage.read(key: 'userId');
     print('User ID: $userId');
     return userId;
@@ -23,161 +30,93 @@ class PlaylistService {
   Future<List<dynamic>> fetchUserPlaylists() async {
     try {
       final token = await _getAuthToken();
-      if (token == null) {
-        throw Exception('Authentication token is missing');
-      }
+      if (token == null) throw Exception('Token missing');
 
-      final url = '${AppStrings.baseUrl}playlists';
-      print('Fetching playlists from: $url');
+      final response = await _dio.get(
+        '',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
 
-      final response = await http
-          .get(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      )
-          .timeout(const Duration(seconds: 10));
-
-      print(
-          'Fetch playlists response: ${response.statusCode} ${response.body}');
-
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else if (response.statusCode == 404) {
-        throw Exception(
-            'Playlist endpoint not found. Please check the server configuration.');
-      } else {
-        throw Exception(
-            'Failed to load playlists: Status ${response.statusCode}, ${response
-                .body}');
-      }
+      print('Playlists fetched: ${response.data}');
+      return response.data;
     } catch (e) {
       print('Fetch playlists error: $e');
-      throw Exception('Error fetching playlists: $e');
+      rethrow;
     }
   }
 
-  Future<void> createPlaylist(String playlistName) async {
-    if (playlistName.isEmpty) {
-      throw Exception('Playlist name cannot be empty');
-    }
+  Future<void> createPlaylist(String name) async {
+    if (name.isEmpty) throw Exception('Playlist name cannot be empty');
 
     try {
       final token = await _getAuthToken();
-      if (token == null) {
-        throw Exception('Authentication token is missing');
-      }
+      if (token == null) throw Exception('Token missing');
 
-      final url = '${AppStrings.baseUrl}playlists/create';
-      print('Creating playlist at: $url');
-
-      final response = await http
-          .post(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode({
-          'name': playlistName,
+      final response = await _dio.post(
+        '/create',
+        data: {
+          'name': name,
           'description': 'A new playlist created by the user',
           'thumbnailUrl': '',
           'songs': [],
-        }),
-      )
-          .timeout(const Duration(seconds: 10));
-
-      print(
-          'Create playlist response: ${response.statusCode} ${response.body}');
+        },
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
 
       if (response.statusCode != 201) {
-        if (response.statusCode == 404) {
-          throw Exception(
-              'Playlist creation endpoint not found. Please check the server.');
-        }
-        throw Exception(
-            'Failed to create playlist: Status ${response
-                .statusCode}, ${response.body}');
+        throw Exception('Failed to create playlist: ${response.data}');
       }
+
+      print('Playlist created: ${response.data}');
     } catch (e) {
       print('Create playlist error: $e');
-      throw Exception('Error creating playlist: $e');
+      rethrow;
     }
   }
 
   Future<void> deletePlaylist(String playlistId) async {
-    final token = await _getAuthToken();
-    final userId = await getUserId();
-
-    print('Playlist ID: $playlistId');
-    print('User ID: $userId');
-    print('Auth token: $token');
-
-    if (playlistId.isEmpty || token == null || userId == null) {
-      throw Exception('Playlist ID, user ID, or token is missing');
-    }
-
-    final url = '${AppStrings
-        .baseUrl}playlists/users/$userId/playlists/$playlistId';
-    print('Delete playlist URL: $url');
-
     try {
-      final response = await http.delete(
-        Uri.parse(url),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
+      final token = await _getAuthToken();
+      final userId = await _getUserId();
+
+      if (token == null || userId == null || playlistId.isEmpty) {
+        throw Exception('Missing token/userId/playlistId');
+      }
+
+      final response = await _dio.delete(
+        '/users/$userId/playlists/$playlistId',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
-      print(
-          'Delete playlist response: ${response.statusCode} ${response.body}');
-
       if (response.statusCode != 200) {
-        throw Exception(
-            'Failed to delete playlist: Status ${response
-                .statusCode}, ${response.body}');
+        throw Exception('Failed to delete playlist: ${response.data}');
       }
+
+      print('Playlist deleted: ${response.data}');
     } catch (e) {
       print('Delete playlist error: $e');
-      throw Exception('Error deleting playlist: $e');
+      rethrow;
     }
   }
 
-  static const String baseUrl = 'http://192.168.0.59:4000/api/playlists'; // Replace with your backend URL
-
-  // Add a full song to a playlist
-  static Future<Map<String, dynamic>> addSongsToPlaylist(
-      String token,
+  Future<Map<String, dynamic>> addSongToPlaylist(
       String playlistId,
       String songId,
       ) async {
     try {
-      if (playlistId.isEmpty || songId.isEmpty) {
-        throw Exception('Playlist ID and Song ID are required.');
-      }
+      final token = await _getAuthToken();
+      if (token == null) throw Exception('Token missing');
 
-      final response = await http.post(
-        Uri.parse('$baseUrl/add-song'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'playlistId': playlistId,
-          'songId': songId,
-        }),
+      final response = await _dio.post(
+        '/add-song',
+        data: {'playlistId': playlistId, 'songId': songId},
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
-      print('Response: ${response.statusCode} | ${response.body}');
-
       if (response.statusCode == 200) {
-        return json.decode(response.body);
+        return response.data;
       } else {
-        final error = json.decode(response.body);
-        throw Exception(error['message'] ?? 'Unknown error');
+        throw Exception(response.data['message'] ?? 'Unknown error');
       }
     } catch (e) {
       print('Add song error: $e');
@@ -185,4 +124,45 @@ class PlaylistService {
     }
   }
 
+  Future<List<SongData>> fetchSongsFromPlaylist(String playlistId) async {
+    try {
+      final token = await _getAuthToken();
+      if (token == null) throw Exception('Token missing');
+
+      final response = await _dio.get(
+        '/$playlistId',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data['songs']; // ✅ This is now List<dynamic>
+        final List<SongData> songs = data.map<SongData>((json) => SongData.fromJson(json)).toList();
+
+        return songs;
+      } else {
+        throw Exception(response.data['message'] ?? 'Unknown error');
+      }
+    } catch (e) {
+      print('Fetch songs error: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> removeSongFromPlaylist(String playlistId, String songId) async {
+    try {
+      final token = await _getAuthToken();
+      if (token == null) throw Exception('Token missing');
+
+      final response = await _dio.post(
+        '/remove-song',
+        data: {'playlistId': playlistId, 'songId': songId},
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      print('Remove song error: $e');
+      return false;
+    }
+  }
 }

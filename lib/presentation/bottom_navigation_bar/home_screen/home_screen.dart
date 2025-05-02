@@ -1,15 +1,14 @@
-import 'package:audionyx/add_songs_screen.dart';
 import 'package:audionyx/core/constants/app_image.dart';
 import 'package:audionyx/core/constants/app_strings.dart';
 import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/core/constants/theme_color.dart';
-import 'package:audionyx/download_song_screen.dart';
+import 'package:audionyx/presentation/download_song_screen/download_song_screen.dart';
 import 'package:audionyx/presentation/playlist_management_screen/playlist_management_screen.dart';
 import 'package:audionyx/presentation/widget/common_song_card.dart';
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_state.dart';
-import 'package:audionyx/song_browser_screen.dart';
+import 'package:audionyx/presentation/bottom_navigation_bar/search_screen/song_browser_screen.dart';
 import 'package:audionyx/user_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -62,48 +61,56 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.search, color: ThemeColor.white),
-                        onPressed: () => context.push(
-                          context,
-                          target: const SongBrowserScreen(),
-                        ),
+                        onPressed:
+                            () => context.push(
+                              context,
+                              target: const SongBrowserScreen(),
+                            ),
                       ),
                       IconButton(
                         icon: const Icon(
                           Icons.library_music_rounded,
                           color: ThemeColor.white,
                         ),
-                        onPressed: () => context.push(
-                          context,
-                          target: const DownloadedSongsScreen(),
-                        ),
+                        onPressed:
+                            () => context.push(
+                              context,
+                              target: const DownloadedSongsScreen(),
+                            ),
                       ),
                       IconButton(
                         icon: const Icon(
                           Icons.queue_music,
                           color: ThemeColor.white,
                         ),
-                        onPressed: () => context.push(
-                          context,
-                          target: const PlaylistManagementScreen(),
-                        ),
+                        onPressed:
+                            () => context.push(
+                              context,
+                              target: const PlaylistManagementScreen(),
+                            ),
                       ),
                       BlocProvider(
                         create: (context) => LoginBlocCubit(),
                         child: Builder(
-                          builder: (context) => IconButton(
-                            icon: const Icon(
-                              Icons.person,
-                              color: ThemeColor.white,
-                              size: 30,
-                            ),
-                            onPressed: () {
-                              final userId = AppStrings.secureStorage.read(key: 'userId');
-                              context.push(
-                                context,
-                                target: UserProfileScreen(userId: userId.toString()),
-                              );
-                            },
-                          ),
+                          builder:
+                              (context) => IconButton(
+                                icon: const Icon(
+                                  Icons.person,
+                                  color: ThemeColor.white,
+                                  size: 30,
+                                ),
+                                onPressed: () {
+                                  final userId = AppStrings.secureStorage.read(
+                                    key: 'userId',
+                                  );
+                                  context.push(
+                                    context,
+                                    target: UserProfileScreen(
+                                      userId: userId.toString(),
+                                    ),
+                                  );
+                                },
+                              ),
                         ),
                       ),
                     ],
@@ -131,34 +138,36 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 10),
               SizedBox(
                 height: 200,
-                child: isLoadingPlaylists
-                    ? const Center(
-                  child: CircularProgressIndicator(
-                    color: ThemeColor.white,
-                  ),
-                )
-                    : playlistErrorMessage != null
-                    ? Center(
-                  child: Text(
-                    playlistErrorMessage!,
-                    style: const TextStyle(color: ThemeColor.white),
-                  ),
-                )
-                    : featuredPlaylists.isEmpty
-                    ? const Center(
-                  child: Text(
-                    'No playlists found',
-                    style: TextStyle(color: ThemeColor.white),
-                  ),
-                )
-                    : ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: featuredPlaylists.length,
-                  itemBuilder: (context, index) => CommonSongCard(
-                    song: featuredPlaylists,
-                    index: index,
-                  ),
-                ),
+                child:
+                    isLoadingPlaylists
+                        ? const Center(
+                          child: CircularProgressIndicator(
+                            color: ThemeColor.white,
+                          ),
+                        )
+                        : playlistErrorMessage != null
+                        ? Center(
+                          child: Text(
+                            playlistErrorMessage!,
+                            style: const TextStyle(color: ThemeColor.white),
+                          ),
+                        )
+                        : featuredPlaylists.isEmpty
+                        ? const Center(
+                          child: Text(
+                            'No playlists found',
+                            style: TextStyle(color: ThemeColor.white),
+                          ),
+                        )
+                        : ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: featuredPlaylists.length,
+                          itemBuilder:
+                              (context, index) => CommonSongCard(
+                                song: featuredPlaylists,
+                                index: index,
+                              ),
+                        ),
               ),
               const SizedBox(height: 20),
               const Text(
@@ -172,21 +181,23 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 10),
               SizedBox(
                 height: 250,
-                child: recentlyPlayed.isEmpty
-                    ? const Center(
-                  child: Text(
-                    'No recently played songs',
-                    style: TextStyle(color: ThemeColor.white),
-                  ),
-                )
-                    : ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: recentlyPlayed.length,
-                  itemBuilder: (context, index) => CommonSongCard(
-                    song: recentlyPlayed,
-                    index: index,
-                  ),
-                ),
+                child:
+                    recentlyPlayed.isEmpty
+                        ? const Center(
+                          child: Text(
+                            'No recently played songs',
+                            style: TextStyle(color: ThemeColor.white),
+                          ),
+                        )
+                        : ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: recentlyPlayed.length,
+                          itemBuilder:
+                              (context, index) => CommonSongCard(
+                                song: recentlyPlayed,
+                                index: index,
+                              ),
+                        ),
               ),
               const SizedBox(height: 20),
               const Text(

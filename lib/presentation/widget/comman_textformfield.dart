@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../core/constants/theme_color.dart';
 
 class CommonTextformfield extends StatelessWidget {
   final TextEditingController controller;

@@ -1,7 +1,5 @@
 import 'package:audionyx/core/constants/app_strings.dart';
-import 'package:audionyx/core/constants/extension.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 
 class RegistrationService {
   final Dio dio = Dio();
@@ -37,7 +35,7 @@ class RegistrationService {
       } else {
         throw Exception('Failed to register: ${response.data['msg'] ?? response.statusMessage}');
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       print('DioError: type=${e.type}, message=${e.message}, response=${e.response}');
       if (e.response != null) {
         throw Exception('Error: ${e.response?.data['msg'] ?? e.message}');
