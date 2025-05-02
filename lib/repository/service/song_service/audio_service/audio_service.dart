@@ -1,83 +1,57 @@
-import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:audionyx/domain/song_model/song_model.dart';
 
-class AudioService extends ChangeNotifier {
-  final List<dynamic> downloadedFiles;
-  late AudioPlayer _player;
-  late Duration _position;
-  late Duration _duration;
-  late bool _isPlaying;
-  late int _currentIndex;
+class AudioPlayerService {
+  final AudioPlayer _player = AudioPlayer();
+  int currentIndex = 0;
+  Duration position = Duration.zero;
+  Duration duration = Duration.zero;
+  bool isPlaying = false;
+  bool isShuffling = false;
+  LoopMode loopMode = LoopMode.off;
 
-  AudioService({
-    required this.downloadedFiles,
-    required int initialIndex,
-  }) {
-    _player = AudioPlayer();
-    _position = Duration.zero;
-    _duration = Duration.zero;
-    _isPlaying = false;
-    _currentIndex = initialIndex;
-    _init();
+  Stream<Duration> get positionStream => _player.positionStream;
+  Stream<PlayerState> get playerStateStream => _player.playerStateStream;
+
+  Future<void> initPlayer(SongData song) async {
+    await _player.setUrl(song.mp3Url);
+    duration = await _player.load() ?? Duration.zero;
+    play();
   }
 
-  Duration get position => _position;
-  Duration get duration => _duration;
-  bool get isPlaying => _isPlaying;
-  int get currentIndex => _currentIndex;
+  void play() => _player.play();
+  void pause() => _player.pause();
+  void togglePlayPause() => _player.playing ? pause() : play();
 
-  Future<void> _init() async {
-    try {
-      await _player.setFilePath(downloadedFiles[_currentIndex].path);
-      _duration = _player.duration ?? Duration.zero;
+  void seekTo(Duration position) => _player.seek(position);
 
-      _player.positionStream.listen((pos) {
-        _position = pos;
-        notifyListeners();
-      });
-
-      _player.playerStateStream.listen((state) {
-        _isPlaying = state.playing;
-        notifyListeners();
-      });
-    } catch (e) {
-      debugPrint('Error loading audio: $e');
+  void playNext(List<SongData> songList) {
+    if (currentIndex < songList.length - 1) {
+      currentIndex++;
+      initPlayer(songList[currentIndex]);
     }
   }
 
-  void playNext() {
-    if (_currentIndex + 1 < downloadedFiles.length) {
-      _currentIndex++;
-      _init();
-      notifyListeners();
+  void playPrevious(List<SongData> songList) {
+    if (currentIndex > 0) {
+      currentIndex--;
+      initPlayer(songList[currentIndex]);
     }
   }
 
-  void playPrevious() {
-    if (_currentIndex - 1 >= 0) {
-      _currentIndex--;
-      _init();
-      notifyListeners();
-    }
+  void toggleShuffle() {
+    isShuffling = !isShuffling;
+    _player.setShuffleModeEnabled(isShuffling);
   }
 
-  void togglePlayPause() {
-    if (_isPlaying) {
-      _player.pause();
+  void toggleRepeatMode() {
+    if (loopMode == LoopMode.off) {
+      loopMode = LoopMode.one;
     } else {
-      _player.play();
+      loopMode = LoopMode.off;
     }
-    notifyListeners();
+    _player.setLoopMode(loopMode);
   }
 
-  void seek(Duration position) {
-    _player.seek(position);
-    notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    _player.dispose();
-    super.dispose();
-  }
+  void dispose() => _player.dispose();
 }
