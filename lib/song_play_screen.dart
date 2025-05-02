@@ -1,7 +1,8 @@
 import 'dart:io';
-import 'package:audionyx/repository/service/song_service/song_play_service/play_back_service.dart';
+import 'package:audionyx/repository/service/song_service/audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
-import 'domain/song_model/song_model.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:audionyx/domain/song_model/song_model.dart';
 
 class SongPlayerScreen extends StatefulWidget {
   final List<SongData> songList;
@@ -19,6 +20,7 @@ class SongPlayerScreen extends StatefulWidget {
 
 class _SongPlayerScreenState extends State<SongPlayerScreen> {
   late AudioPlayerService _audioPlayerService;
+  bool isError = false;
 
   @override
   void initState() {
@@ -29,18 +31,23 @@ class _SongPlayerScreenState extends State<SongPlayerScreen> {
   }
 
   Future<void> _initializePlayer() async {
-    await _audioPlayerService.initPlayer(widget.songList[widget.initialIndex]);
-    _audioPlayerService.positionStream.listen((position) {
-      setState(() {
-        _audioPlayerService.position = position;
+    try {
+      await _audioPlayerService.initPlayer(widget.songList[_audioPlayerService.currentIndex]);
+      _audioPlayerService.positionStream.listen((pos) {
+        setState(() {
+          _audioPlayerService.position = pos;
+        });
       });
-    });
-
-    _audioPlayerService.playerStateStream.listen((state) {
-      setState(() {
-        _audioPlayerService.isPlaying = state.playing;
+      _audioPlayerService.playerStateStream.listen((state) {
+        setState(() {
+          _audioPlayerService.isPlaying = state.playing;
+        });
       });
-    });
+    } catch (e) {
+      setState(() {
+        isError = true;
+      });
+    }
   }
 
   @override
@@ -49,16 +56,30 @@ class _SongPlayerScreenState extends State<SongPlayerScreen> {
     super.dispose();
   }
 
-  String _formatDuration(Duration d) =>
-      d.toString().split('.').first.padLeft(8, "0");
+  String _formatDuration(Duration d) => d.toString().split('.').first.padLeft(8, "0");
 
   @override
   Widget build(BuildContext context) {
+    if (isError) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Error'), backgroundColor: Colors.black),
+        body: const Center(child: Text('Failed to load audio', style: TextStyle(color: Colors.white))),
+      );
+    }
+
     final currentSong = widget.songList[_audioPlayerService.currentIndex];
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Now Playing'),
+        backgroundColor: Colors.black,
+        actions: [
+          IconButton(icon: const Icon(Icons.download), onPressed: () => Navigator.pushNamed(context, '/downloadScreen')),
+          IconButton(icon: const Icon(Icons.home), onPressed: () => Navigator.pushNamed(context, '/homeScreen')),
+        ],
+      ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Color(0xFF1A2A44), Color(0xFF2E4066)],
             begin: Alignment.topCenter,
@@ -68,59 +89,21 @@ class _SongPlayerScreenState extends State<SongPlayerScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              // Top App Bar
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Icon(Icons.arrow_back_ios, color: Colors.white),
-                    Text(
-                      'Now Playing - Personal Room',
-                      style: TextStyle(color: Colors.white70),
-                    ),
-                    Icon(Icons.more_vert, color: Colors.white),
-                  ],
-                ),
-              ),
-              // Album Artwork with Overlay
+              // Thumbnail
               Expanded(
                 child: Center(
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Container(
-                        width: 250,
-                        height: 250,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          image: DecorationImage(
-                            image:
-                                currentSong.mp3Url.isEmpty
-                                    ? NetworkImage(currentSong.thumbnailUrl)
-                                    : FileImage(File(currentSong.thumbnailUrl))
-                                        as ImageProvider,
-                            fit: BoxFit.cover,
-                            onError:
-                                (_, __) =>
-                                    const Icon(Icons.music_note, size: 50),
-                          ),
-                        ),
+                  child: Container(
+                    width: 250,
+                    height: 250,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      image: DecorationImage(
+                        image: currentSong.thumbnailUrl.startsWith('http')
+                            ? NetworkImage(currentSong.thumbnailUrl)
+                            : FileImage(File(currentSong.thumbnailUrl)) as ImageProvider,
+                        fit: BoxFit.cover,
                       ),
-                      Container(
-                        width: 60,
-                        height: 60,
-                        color: Colors.teal.withOpacity(0.7),
-                        child: Center(
-                          child: Text(
-                            _formatDuration(
-                              _audioPlayerService.position,
-                            ).split(':').sublist(1).join(':'),
-                            style: TextStyle(color: Colors.white, fontSize: 20),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -129,98 +112,70 @@ class _SongPlayerScreenState extends State<SongPlayerScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Column(
                   children: [
-                    Text(
-                      currentSong.title,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      currentSong.artist ?? 'Unknown Artist',
-                      // Assuming SongData has an artist field
-                      style: TextStyle(color: Colors.white70, fontSize: 16),
-                    ),
+                    Text(currentSong.title, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 8),
+                    Text(currentSong.artist, style: const TextStyle(color: Colors.white70)),
                   ],
                 ),
               ),
-              // Progress Bar
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                child: Row(
-                  children: [
-                    Text(
-                      _formatDuration(_audioPlayerService.position),
-                      style: TextStyle(color: Colors.white70),
-                    ),
-                    Expanded(
-                      child: Slider(
-                        value:
-                            _audioPlayerService.position.inSeconds.toDouble(),
-                        max: _audioPlayerService.duration.inSeconds
-                            .toDouble()
-                            .clamp(1.0, double.infinity),
-                        activeColor: Colors.green,
-                        inactiveColor: Colors.white24,
-                        onChanged:
-                            (value) => _audioPlayerService.seekTo(
-                              Duration(seconds: value.toInt()),
-                            ),
-                      ),
-                    ),
-                    Text(
-                      _formatDuration(_audioPlayerService.duration),
-                      style: TextStyle(color: Colors.white70),
-                    ),
-                  ],
-                ),
-              ),
-              // Playback Controls
+              // Slider
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Icon(Icons.shuffle, color: Colors.white70),
+                    Text(_formatDuration(_audioPlayerService.position), style: const TextStyle(color: Colors.white70)),
+                    Expanded(
+                      child: Slider(
+                        value: _audioPlayerService.position.inSeconds.toDouble(),
+                        max: _audioPlayerService.duration.inSeconds.clamp(1, 100000).toDouble(),
+                        activeColor: Colors.green,
+                        inactiveColor: Colors.white24,
+                        onChanged: (value) {
+                          _audioPlayerService.seekTo(Duration(seconds: value.toInt()));
+                        },
+                      ),
+                    ),
+                    Text(_formatDuration(_audioPlayerService.duration), style: const TextStyle(color: Colors.white70)),
+                  ],
+                ),
+              ),
+              // Controls
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
                     IconButton(
-                      icon: Icon(Icons.skip_previous, color: Colors.white),
-                      onPressed:
-                          () =>
-                              _audioPlayerService.playPrevious(widget.songList),
+                      icon: Icon(_audioPlayerService.isShuffling ? Icons.shuffle_on : Icons.shuffle, color: Colors.white),
+                      onPressed: () {
+                        setState(() => _audioPlayerService.toggleShuffle());
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.skip_previous, color: Colors.white),
+                      onPressed: () => _audioPlayerService.playPrevious(widget.songList),
                     ),
                     IconButton(
                       icon: Icon(
-                        _audioPlayerService.isPlaying
-                            ? Icons.pause
-                            : Icons.play_arrow,
+                        _audioPlayerService.isPlaying ? Icons.pause_circle : Icons.play_circle,
                         color: Colors.green,
                         size: 60,
                       ),
                       onPressed: _audioPlayerService.togglePlayPause,
                     ),
                     IconButton(
-                      icon: Icon(Icons.skip_next, color: Colors.white),
-                      onPressed:
-                          () => _audioPlayerService.playNext(widget.songList),
+                      icon: const Icon(Icons.skip_next, color: Colors.white),
+                      onPressed: () => _audioPlayerService.playNext(widget.songList),
                     ),
-                    Icon(Icons.repeat, color: Colors.white70),
-                  ],
-                ),
-              ),
-              // Bottom Buttons
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Icon(Icons.queue_music, color: Colors.white70),
-                    Icon(Icons.favorite_border, color: Colors.white70),
-                    Icon(Icons.share, color: Colors.white70),
+                    IconButton(
+                      icon: Icon(
+                        _audioPlayerService.loopMode == LoopMode.one ? Icons.repeat_one : Icons.repeat,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        setState(() => _audioPlayerService.toggleRepeatMode());
+                      },
+                    ),
                   ],
                 ),
               ),

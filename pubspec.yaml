@@ -59,6 +59,7 @@ dependencies:
   shared_preferences:
   jwt_decoder:
   share_plus:
+  rxdart:
 
 
 dev_dependencies:
