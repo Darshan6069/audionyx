@@ -1,6 +1,6 @@
 import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/core/constants/theme_color.dart';
-import 'package:audionyx/download_song_screen.dart';
+import 'package:audionyx/presentation/download_song_screen/download_song_screen.dart';
 import 'package:audionyx/presentation/playlist_management_screen/playlist_management_screen.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/home_screen.dart';
 import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_bloc_cubit.dart';
@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-import '../../../domain/song_model/song_model.dart';
+import '../../../../../../domain/song_model/song_model.dart';
 
 class SongBrowserScreen extends StatefulWidget {
   const SongBrowserScreen({super.key});

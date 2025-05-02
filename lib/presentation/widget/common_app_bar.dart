@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../core/constants/app_strings.dart';
 import '../../core/constants/theme_color.dart';
 
 class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {

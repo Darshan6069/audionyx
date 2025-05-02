@@ -1,17 +1,12 @@
 import 'dart:io';
 
-import 'package:audionyx/check_internet_connection.dart';
-import 'package:audionyx/core/constants/app_strings.dart';
-import 'package:audionyx/presentation/bottom_navigation_bar/bottom_navigation_bar_screen.dart';
-import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/home_screen.dart';
-import 'package:audionyx/presentation/onboarding_screen/onboarding_screen.dart';
+import 'package:audionyx/repository/service/check_internet_connection/check_internet_connection.dart';
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/registration_bloc_cubit/registration_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/download_song_bloc_cubit/download_song_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_bloc_cubit.dart';
 import 'package:audionyx/repository/service/song_service/playlist_service/playlist_service.dart';
-import 'package:audionyx/song_list.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -8,7 +8,9 @@ class Song {
 
 class MiniPlayerWidget extends StatelessWidget {
   final Song? currentSong = Song(title: 'Sample Song', artist: 'Sample Artist'); // Placeholder
-  final bool isPlaying = false; // Placeholder
+  final bool isPlaying = false;
+
+  MiniPlayerWidget({super.key}); // Placeholder
 
   @override
   Widget build(BuildContext context) {

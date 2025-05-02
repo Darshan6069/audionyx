@@ -1,5 +1,5 @@
 import 'package:audionyx/core/constants/theme_color.dart';
-import 'package:audionyx/download_song_screen.dart';
+import 'package:audionyx/presentation/download_song_screen/download_song_screen.dart';
 import 'package:audionyx/presentation/playlist_management_screen/playlist_management_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -92,50 +92,6 @@ class _LibraryScreenState extends State<LibraryScreen>
                 const SizedBox(height: 8),
                 Text(
                   'Artist ${index + 1}',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontSize: isLargeScreen ? 16 : 14,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildPlaylistsTab(bool isLargeScreen) {
-    return GridView.builder(
-      padding: EdgeInsets.all(isLargeScreen ? 24 : 16),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: isLargeScreen ? 2 : 1,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: isLargeScreen ? 1.5 : 2,
-      ),
-      itemCount: 6, // Mock data
-      itemBuilder: (context, index) {
-        return Card(
-          color: Colors.white30,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Playlist ${index + 1}',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontSize: isLargeScreen ? 18 : 16,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '${(index + 1) * 5} songs',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontSize: isLargeScreen ? 16 : 14,
                   ),

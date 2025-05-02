@@ -7,8 +7,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:audionyx/download_song_screen.dart';
-import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/home_screen.dart';
+import 'package:audionyx/presentation/download_song_screen/download_song_screen.dart';
 import 'package:audionyx/presentation/onboarding_screen/onboarding_screen.dart';
 
 class CheckInternetConnection extends StatefulWidget {
@@ -84,9 +83,9 @@ class _CheckInternetConnectionState extends State<CheckInternetConnection> {
           'google.com',
         ).timeout(const Duration(seconds: 5));
         currentlyOffline = result.isEmpty || result[0].rawAddress.isEmpty;
-      } on SocketException catch (e) {
+      } on SocketException {
         currentlyOffline = true;
-      } on TimeoutException catch (e) {
+      } on TimeoutException {
         currentlyOffline = true;
       } catch (e) {
         currentlyOffline = true;

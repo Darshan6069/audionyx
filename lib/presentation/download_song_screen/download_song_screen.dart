@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:audionyx/song_play_screen.dart';
 import 'package:flutter/material.dart';
 
-import 'domain/song_model/song_model.dart';
+import '../../domain/song_model/song_model.dart';
 
 class DownloadedSongsScreen extends StatefulWidget {
   const DownloadedSongsScreen({super.key});

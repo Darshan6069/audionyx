@@ -1,8 +1,7 @@
-import 'package:audionyx/core/constants/app_strings.dart';
 import 'package:audionyx/repository/service/song_service/playlist_service/playlist_service.dart';
 import 'package:flutter/material.dart';
 
-import 'domain/song_model/song_model.dart';
+import '../../domain/song_model/song_model.dart';
 
 class AddSongToPlaylistScreen extends StatefulWidget {
   final SongData song;
@@ -87,11 +86,9 @@ class _AddSongToPlaylistScreenState extends State<AddSongToPlaylistScreen> {
                         );
                         return;
                       }
-                      final token = await AppStrings.secureStorage.read(key: 'jwt_token');
 
                       try {
-                        await PlaylistService.addSongsToPlaylist(
-                          token.toString(),
+                        await PlaylistService().addSongToPlaylist(
                           selectedPlaylistId!,
                           widget.song.id,
                         );

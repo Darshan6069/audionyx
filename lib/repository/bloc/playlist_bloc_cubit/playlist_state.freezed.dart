@@ -181,6 +181,78 @@ as List<dynamic>,
 /// @nodoc
 
 
+class PlaylistSongsFetched implements PlaylistState {
+  const PlaylistSongsFetched(final  List<SongData> songs): _songs = songs;
+  
+
+ final  List<SongData> _songs;
+ List<SongData> get songs {
+  if (_songs is EqualUnmodifiableListView) return _songs;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_songs);
+}
+
+
+/// Create a copy of PlaylistState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PlaylistSongsFetchedCopyWith<PlaylistSongsFetched> get copyWith => _$PlaylistSongsFetchedCopyWithImpl<PlaylistSongsFetched>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PlaylistSongsFetched&&const DeepCollectionEquality().equals(other._songs, _songs));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_songs));
+
+@override
+String toString() {
+  return 'PlaylistState.songsFetched(songs: $songs)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $PlaylistSongsFetchedCopyWith<$Res> implements $PlaylistStateCopyWith<$Res> {
+  factory $PlaylistSongsFetchedCopyWith(PlaylistSongsFetched value, $Res Function(PlaylistSongsFetched) _then) = _$PlaylistSongsFetchedCopyWithImpl;
+@useResult
+$Res call({
+ List<SongData> songs
+});
+
+
+
+
+}
+/// @nodoc
+class _$PlaylistSongsFetchedCopyWithImpl<$Res>
+    implements $PlaylistSongsFetchedCopyWith<$Res> {
+  _$PlaylistSongsFetchedCopyWithImpl(this._self, this._then);
+
+  final PlaylistSongsFetched _self;
+  final $Res Function(PlaylistSongsFetched) _then;
+
+/// Create a copy of PlaylistState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? songs = null,}) {
+  return _then(PlaylistSongsFetched(
+null == songs ? _self._songs : songs // ignore: cast_nullable_to_non_nullable
+as List<SongData>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
 class PlaylistFailure implements PlaylistState {
   const PlaylistFailure(this.error);
   

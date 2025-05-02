@@ -1,4 +1,5 @@
-import 'package:audionyx/add_song_into_playlist_screen.dart';
+import 'package:audionyx/core/constants/app_strings.dart';
+import 'package:audionyx/playlist_screen.dart';
 import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_state.dart';
 import 'package:audionyx/repository/service/song_service/playlist_service/playlist_service.dart';
@@ -6,12 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/core/constants/theme_color.dart';
-import 'package:audionyx/download_song_screen.dart';
-import 'package:audionyx/song_browser_screen.dart';
+import 'package:audionyx/presentation/download_song_screen/download_song_screen.dart';
+import 'package:audionyx/presentation/bottom_navigation_bar/search_screen/song_browser_screen.dart';
 import 'package:audionyx/presentation/auth_screen/email_auth/login_screen.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/home_screen.dart';
-
-import '../../playlist_screen.dart';
 
 class PlaylistManagementScreen extends StatefulWidget {
   const PlaylistManagementScreen({super.key});
@@ -184,7 +183,15 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
                       title,
                       style: const TextStyle(color: ThemeColor.white),
                     ),
-                    onTap: () {},
+                    onTap: () async {
+                      context.push(
+                        context,
+                        target: PlaylistSongsScreen(
+                          playlistId: playlistId,
+                          playlistName: title,
+                        ),
+                      );
+                    },
                   );
                 },
               );

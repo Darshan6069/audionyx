@@ -1,15 +1,12 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:audionyx/core/constants/extension.dart';
-import 'package:audionyx/download_song_screen.dart';
+import 'package:audionyx/presentation/download_song_screen/download_song_screen.dart';
 import 'package:audionyx/repository/service/song_service/download_song/download_song.dart';
 import 'package:audionyx/song_play_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 
 import 'domain/song_model/song_model.dart';
 
@@ -187,7 +184,7 @@ class _SongListScreenState extends State<SongListScreen> {
                   );
 
                   final safeFileName =
-                      title.replaceAll(RegExp(r'[^\w\s-]'), '_') + '.mp3';
+                      '${title.replaceAll(RegExp(r'[^\w\s-]'), '_')}.mp3';
 
                   DownloadSong().downloadSong(
                     mp3Url,
