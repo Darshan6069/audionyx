@@ -1,4 +1,5 @@
 import 'package:audionyx/core/constants/theme_color.dart';
+import 'package:audionyx/like_song_list.dart';
 import 'package:audionyx/presentation/download_song_screen/download_song_screen.dart';
 import 'package:audionyx/presentation/playlist_management_screen/playlist_management_screen.dart';
 import 'package:audionyx/repository/service/song_service/recently_play_song/recently_played_manager.dart';
@@ -56,8 +57,7 @@ class _LibraryScreenState extends State<LibraryScreen>
         controller: _tabController,
         children: [
           // Liked Songs Tab
-          _buildLikedSongsTab(isLargeScreen),
-          // Downloaded Songs Tab
+          LikedSongsScreen(), // Downloaded Songs Tab
           DownloadedSongsScreen(), // Playlists Tab
           PlaylistManagementScreen(), // Recently Played Tab
           _buildRecentlyPlayedTab(isLargeScreen),

@@ -1,4 +1,4 @@
-  import 'package:audionyx/core/constants/extension.dart';
+import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/repository/bloc/download_song_bloc_cubit/download_song_bloc_cubit.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +22,6 @@ class CommonSongCard extends StatefulWidget {
 
 class _CommonSongCardState extends State<CommonSongCard> {
   List<SongData> recentlyPlayed = [];
-
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +74,7 @@ class _CommonSongCardState extends State<CommonSongCard> {
             overflow: TextOverflow.ellipsis,
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               IconButton(
                 icon: const Icon(Icons.play_arrow, color: ThemeColor.white),
@@ -94,50 +94,15 @@ class _CommonSongCardState extends State<CommonSongCard> {
                   );
                 },
               ),
-              BlocProvider(
-                create: (context) => DownloadSongBlocCubit(),
-                child: BlocConsumer<DownloadSongBlocCubit, DownloadSongState>(
-                  listener: (context, state) {
-
-                    if (state is DownloadSongSuccess) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Song downloaded successfully!'),
-                        ),
-                      );
-                    } else if (state is DownloadSongFailure) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Download failed: ${state.error}'),
-                        ),
-                      );
-                    }
-                  },
-                  builder: (context, state) {
-                    if (state is DownloadSongDownloading) {
-                      return const CircularProgressIndicator(); // show loading
-                    }
-                    return IconButton(
-                      icon: const Icon(Icons.download, color: Colors.white),
-                      onPressed: () {
-                        final safeFileName = '${widget.song[widget.index].title.replaceAll(RegExp(r'[^\w\s-]'), '_')}.mp3';
-                        context.read<DownloadSongBlocCubit>().downloadSong(
-                          url: widget.song[widget.index].mp3Url,
-                          fileName: safeFileName,
-                          thumbnailUrl: widget.song[widget.index].thumbnailUrl,
-                          songData: widget.song[widget.index],
-                          context: context,
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-
               IconButton(
                 icon: const Icon(Icons.add_to_queue, color: ThemeColor.white),
                 onPressed: () {
-                  context.push(context, target: AddSongToPlaylistScreen( song: widget.song[widget.index]));
+                  context.push(
+                    context,
+                    target: AddSongToPlaylistScreen(
+                      song: widget.song[widget.index],
+                    ),
+                  );
                 },
               ),
             ],
