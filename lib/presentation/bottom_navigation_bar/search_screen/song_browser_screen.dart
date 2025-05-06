@@ -2,7 +2,6 @@ import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/core/constants/theme_color.dart';
 import 'package:audionyx/presentation/download_song_screen/download_song_screen.dart';
 import 'package:audionyx/presentation/playlist_management_screen/playlist_management_screen.dart';
-import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/home_screen.dart';
 import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_state.dart';
 import 'package:audionyx/repository/service/song_service/song_browser_service/song_browser_service.dart';
@@ -11,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../../../../domain/song_model/song_model.dart';
+import '../home_screen/home_screen.dart';
 
 class SongBrowserScreen extends StatefulWidget {
   const SongBrowserScreen({super.key});
@@ -87,10 +87,6 @@ class _SongBrowserScreenState extends State<SongBrowserScreen> with SingleTicker
           IconButton(
             icon: const Icon(Icons.library_music_rounded, color: ThemeColor.white),
             onPressed: () => context.push(context, target: const DownloadedSongsScreen()),
-          ),
-          IconButton(
-            icon: const Icon(Icons.home, color: ThemeColor.white),
-            onPressed: () => context.push(context, target: const HomeScreen()),
           ),
           IconButton(
             icon: const Icon(Icons.queue_music, color: ThemeColor.white),

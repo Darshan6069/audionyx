@@ -1,7 +1,6 @@
 import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/presentation/auth_screen/email_auth/login_screen.dart';
 import 'package:audionyx/presentation/auth_screen/email_auth/registration_screen.dart';
-import 'package:audionyx/repository/service/auth_service/google_auth_service.dart';
 import 'package:flutter/material.dart';
 import '../../core/constants/app_image.dart';
 import '../../core/constants/app_strings.dart';

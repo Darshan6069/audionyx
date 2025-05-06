@@ -1,4 +1,3 @@
-import 'package:audionyx/core/constants/app_strings.dart';
 import 'package:audionyx/playlist_screen.dart';
 import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_state.dart';
@@ -10,7 +9,6 @@ import 'package:audionyx/core/constants/theme_color.dart';
 import 'package:audionyx/presentation/download_song_screen/download_song_screen.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/search_screen/song_browser_screen.dart';
 import 'package:audionyx/presentation/auth_screen/email_auth/login_screen.dart';
-import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/home_screen.dart';
 
 class PlaylistManagementScreen extends StatefulWidget {
   const PlaylistManagementScreen({super.key});
@@ -93,11 +91,6 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
                     context,
                     target: const DownloadedSongsScreen(),
                   ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.home, color: ThemeColor.white),
-              onPressed:
-                  () => context.push(context, target: const HomeScreen()),
             ),
             IconButton(
               icon: const Icon(Icons.search, color: ThemeColor.white),
