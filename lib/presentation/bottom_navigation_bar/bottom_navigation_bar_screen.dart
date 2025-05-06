@@ -1,4 +1,3 @@
-
 import 'package:audionyx/core/constants/theme_color.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/favourite_songs_screen/favourite_songs_screen.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/library_screen/library_screen.dart';
@@ -13,7 +12,8 @@ class BottomNavigationBarScreen extends StatefulWidget {
   const BottomNavigationBarScreen({super.key});
 
   @override
-  State<BottomNavigationBarScreen> createState() => _BottomNavigationBarScreenState();
+  State<BottomNavigationBarScreen> createState() =>
+      _BottomNavigationBarScreenState();
 }
 
 class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
@@ -25,7 +25,7 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
     const SongBrowserScreen(),
     const LibraryScreen(),
     const FavouriteSongsScreen(),
-    const AddSongsScreen()
+    const AddSongsScreen(),
   ];
 
   @override
@@ -40,12 +40,9 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
           });
         },
         type: BottomNavigationBarType.fixed,
-        selectedItemColor:  ThemeColor.white,
+        selectedItemColor: ThemeColor.white,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.search),
             label: 'Search',

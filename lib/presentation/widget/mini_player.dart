@@ -1,83 +1,67 @@
+// mini_player.dart
 import 'package:flutter/material.dart';
-
-class Song {
-  final String title;
-  final String artist;
-  Song({required this.title, required this.artist});
-}
+import 'package:audionyx/domain/song_model/song_model.dart';
+import 'package:audionyx/repository/service/song_service/audio_service/audio_service.dart';
 
 class MiniPlayerWidget extends StatelessWidget {
-  final Song? currentSong = Song(title: 'Sample Song', artist: 'Sample Artist'); // Placeholder
-  final bool isPlaying = false;
+  final SongData currentSong;
+  final AudioPlayerService audioPlayerService;
+  final VoidCallback onTap;
+  final VoidCallback? onStateChanged; // Callback to trigger setState in parent
 
-  MiniPlayerWidget({super.key}); // Placeholder
+  const MiniPlayerWidget({
+    super.key,
+    required this.currentSong,
+    required this.audioPlayerService,
+    required this.onTap,
+    this.onStateChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isLargeScreen = screenWidth > 600;
-
-    return AnimatedContainer(
-      duration: Duration(milliseconds: 300),
-      height: currentSong != null ? (isLargeScreen ? 80 : 60) : 0,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 4,
-            offset: Offset(0, -2),
-          ),
-        ],
-      ),
-      child: currentSong != null
-          ? InkWell(
-        onTap: () {
-          Navigator.pushNamed(context, '/player'); // Assumes PlayerScreen route
-        },
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: isLargeScreen ? 24 : 16),
+    return Material(
+      color: Colors.black87,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          height: 70,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Row(
             children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  currentSong.thumbnailUrl ?? '',
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const Icon(Icons.music_note, size: 30),
+                ),
+              ),
+              const SizedBox(width: 12),
               Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      currentSong!.title,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        fontSize: isLargeScreen ? 16 : 14,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      currentSong!.artist,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        fontSize: isLargeScreen ? 14 : 12,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+                child: Text(
+                  currentSong.title,
+                  style: const TextStyle(color: Colors.white),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               IconButton(
                 icon: Icon(
-                  isPlaying ? Icons.pause : Icons.play_arrow,
-                  size: isLargeScreen ? 32 : 24,
-                  color: Colors.blue,
+                  audioPlayerService.isPlaying ? Icons.pause : Icons.play_arrow,
+                  color: Colors.white,
                 ),
-                onPressed: () {}, // Placeholder for play/pause action
+                onPressed: () async {
+                  audioPlayerService.isPlaying
+                      ? await audioPlayerService.pause
+                      : await audioPlayerService.play;
+                  onStateChanged?.call(); // Notify parent to refresh UI
+                },
               ),
             ],
           ),
         ),
-      )
-          : SizedBox.shrink(),
+      ),
     );
   }
 }

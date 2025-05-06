@@ -1,10 +1,10 @@
 import 'package:audionyx/domain/song_model/song_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'playlist_state.dart';
 import 'package:audionyx/repository/service/song_service/playlist_service/playlist_service.dart';
+import 'playlist_state.dart';
 
 class PlaylistBlocCubit extends Cubit<PlaylistState> {
-  final PlaylistService _playlistService ;
+  final PlaylistService _playlistService;
 
   PlaylistBlocCubit(this._playlistService) : super(const PlaylistState.initial());
 
@@ -23,7 +23,7 @@ class PlaylistBlocCubit extends Cubit<PlaylistState> {
     try {
       await _playlistService.createPlaylist(name);
       final playlists = await _playlistService.fetchUserPlaylists();
-      emit(PlaylistState.success(playlists));
+      emit(PlaylistState.success(playlists, isNewPlaylistCreated: true));
     } catch (e) {
       emit(PlaylistState.failure(e.toString()));
     }

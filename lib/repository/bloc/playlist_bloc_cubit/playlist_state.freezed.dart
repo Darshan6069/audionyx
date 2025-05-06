@@ -110,7 +110,7 @@ String toString() {
 
 
 class PlaylistSuccess implements PlaylistState {
-  const PlaylistSuccess(final  List<dynamic> playlists): _playlists = playlists;
+  const PlaylistSuccess(final  List<dynamic> playlists, {this.isNewPlaylistCreated = false}): _playlists = playlists;
   
 
  final  List<dynamic> _playlists;
@@ -120,6 +120,7 @@ class PlaylistSuccess implements PlaylistState {
   return EqualUnmodifiableListView(_playlists);
 }
 
+@JsonKey() final  bool isNewPlaylistCreated;
 
 /// Create a copy of PlaylistState
 /// with the given fields replaced by the non-null parameter values.
@@ -131,16 +132,16 @@ $PlaylistSuccessCopyWith<PlaylistSuccess> get copyWith => _$PlaylistSuccessCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PlaylistSuccess&&const DeepCollectionEquality().equals(other._playlists, _playlists));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PlaylistSuccess&&const DeepCollectionEquality().equals(other._playlists, _playlists)&&(identical(other.isNewPlaylistCreated, isNewPlaylistCreated) || other.isNewPlaylistCreated == isNewPlaylistCreated));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_playlists));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_playlists),isNewPlaylistCreated);
 
 @override
 String toString() {
-  return 'PlaylistState.success(playlists: $playlists)';
+  return 'PlaylistState.success(playlists: $playlists, isNewPlaylistCreated: $isNewPlaylistCreated)';
 }
 
 
@@ -151,7 +152,7 @@ abstract mixin class $PlaylistSuccessCopyWith<$Res> implements $PlaylistStateCop
   factory $PlaylistSuccessCopyWith(PlaylistSuccess value, $Res Function(PlaylistSuccess) _then) = _$PlaylistSuccessCopyWithImpl;
 @useResult
 $Res call({
- List<dynamic> playlists
+ List<dynamic> playlists, bool isNewPlaylistCreated
 });
 
 
@@ -168,10 +169,11 @@ class _$PlaylistSuccessCopyWithImpl<$Res>
 
 /// Create a copy of PlaylistState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? playlists = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? playlists = null,Object? isNewPlaylistCreated = null,}) {
   return _then(PlaylistSuccess(
 null == playlists ? _self._playlists : playlists // ignore: cast_nullable_to_non_nullable
-as List<dynamic>,
+as List<dynamic>,isNewPlaylistCreated: null == isNewPlaylistCreated ? _self.isNewPlaylistCreated : isNewPlaylistCreated // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
