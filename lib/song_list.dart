@@ -1,13 +1,12 @@
 import 'dart:convert';
 import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/presentation/download_song_screen/download_song_screen.dart';
+import 'package:audionyx/presentation/song_play_screen/song_play_screen.dart';
 import 'package:audionyx/repository/service/song_service/download_song/download_song.dart';
-import 'package:audionyx/song_play_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-
 import 'domain/song_model/song_model.dart';
 
 class SongListScreen extends StatefulWidget {

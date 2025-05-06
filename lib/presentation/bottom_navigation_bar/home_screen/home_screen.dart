@@ -191,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         )
                         : ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          itemCount: recentlyPlayed.length,
+                          itemCount: 4,
                           itemBuilder:
                               (context, index) => CommonSongCard(
                                 song: recentlyPlayed,

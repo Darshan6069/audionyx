@@ -1,7 +1,8 @@
 import 'package:audionyx/domain/song_model/song_model.dart';
 import 'package:audionyx/repository/service/song_service/recently_play_song/recently_played_manager.dart';
-import 'package:audionyx/song_play_screen.dart';
 import 'package:flutter/material.dart';
+
+import '../../../../presentation/song_play_screen/song_play_screen.dart';
 
 class SongBrowserService {
   List<String> getUniqueGenres(List<SongData> songs) {

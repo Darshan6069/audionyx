@@ -1,3 +1,4 @@
+import 'package:audionyx/presentation/song_play_screen/song_play_screen.dart';
 import 'package:audionyx/presentation/widget/mini_player.dart';
 import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_state.dart';
@@ -7,7 +8,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/constants/theme_color.dart';
 import '../../domain/song_model/song_model.dart';
-import '../song_play_screen.dart';
 
 class PlaylistSongsScreen extends StatefulWidget {
   final String playlistId;
