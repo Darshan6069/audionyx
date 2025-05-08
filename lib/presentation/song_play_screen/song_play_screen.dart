@@ -4,6 +4,7 @@ import 'package:audionyx/presentation/song_play_screen/widget/player_control_wid
 import 'package:audionyx/presentation/song_play_screen/widget/song_info_widget.dart';
 import 'package:audionyx/presentation/song_play_screen/widget/song_thumbnail.dart';
 import 'package:audionyx/repository/service/song_service/audio_service/audio_service.dart';
+import 'package:audionyx/repository/service/song_service/favorite_song_service/favorite_song_service.dart';
 import 'package:flutter/material.dart';
 
 class SongPlayerScreen extends StatefulWidget {
@@ -23,15 +24,18 @@ class SongPlayerScreen extends StatefulWidget {
 class _SongPlayerScreenState extends State<SongPlayerScreen>
     with SingleTickerProviderStateMixin {
   late AudioPlayerService audioPlayerService;
+  final FavoriteSongService _favoriteSongService = FavoriteSongService();
   bool isError = false;
   bool isLiked = false;
   late AnimationController animationController;
+  int currentSongIndex = 0;
 
   @override
   void initState() {
     super.initState();
     audioPlayerService = AudioPlayerService();
     audioPlayerService.currentIndex = widget.initialIndex;
+    currentSongIndex = widget.initialIndex;
 
     animationController = AnimationController(
       vsync: this,
@@ -41,11 +45,24 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
     _initializePlayer();
   }
 
+  Future<void> _checkFavoriteStatus() async {
+    final currentSong = widget.songList[currentSongIndex];
+    final isFavorite = await _favoriteSongService.isSongFavorite(currentSong);
+    if (mounted) {
+      setState(() {
+        isLiked = isFavorite;
+      });
+    }
+  }
+
   Future<void> _initializePlayer() async {
     try {
       await audioPlayerService.initPlayer(
         widget.songList[audioPlayerService.currentIndex],
       );
+
+      // First check the favorite status of the initial song
+      await _checkFavoriteStatus();
 
       // Listen to position updates
       audioPlayerService.positionStream.listen((pos) {
@@ -81,17 +98,31 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
     super.dispose();
   }
 
-  void _toggleLike() {
-    setState(() => isLiked = !isLiked);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          isLiked ? 'Added to favorites' : 'Removed from favorites',
+  Future<void> _toggleLike() async {
+    final currentSong = widget.songList[currentSongIndex];
+    final success = await _favoriteSongService.toggleFavorite(currentSong);
+
+    if (success && mounted) {
+      setState(() => isLiked = !isLiked);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isLiked ? 'Added to favorites' : 'Removed from favorites',
+          ),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: isLiked ? Colors.pinkAccent : Colors.blueGrey,
         ),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: isLiked ? Colors.pinkAccent : Colors.blueGrey,
-      ),
-    );
+      );
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to update favorites'),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    }
   }
 
   @override

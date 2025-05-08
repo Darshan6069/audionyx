@@ -1,90 +1,92 @@
 import 'dart:convert';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
-
-import '../../../../domain/song_model/song_model.dart';
+import 'package:audionyx/domain/song_model/song_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FavoriteSongService {
-  static const String baseUrl = 'http://192.168.0.58:4000/api'; // Replace with your backend URL
+  static const String _favoriteSongsKey = 'favorite_songs';
 
-  // Placeholder for retrieving auth token (e.g., from shared preferences or secure storage)
+  // Get all favorite songs
+  Future<List<SongData>> getFavoriteSongs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? favoriteList = prefs.getString(_favoriteSongsKey);
 
-  Future<String> _getAuthToken() async {
-    const storage = FlutterSecureStorage();
-    final token = await storage.read(key: 'jwt_token');
-    if (token == null) {
-      throw Exception('No auth token found');
+    if (favoriteList == null || favoriteList.isEmpty) {
+      return [];
     }
-    return token;
+
+    List<dynamic> decodedList = jsonDecode(favoriteList);
+    return decodedList.map((item) => SongData.fromJson(item)).toList();
   }
 
-  Future<void> likeSong(String songId) async {
-    final token = await _getAuthToken();
-    final response = await http.post(
-      Uri.parse('$baseUrl/songs/$songId/like'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
+  // Check if a song is in favorites
+  Future<bool> isSongFavorite(SongData song) async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? favoriteList = prefs.getString(_favoriteSongsKey);
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to like song: ${response.body}');
+    if (favoriteList == null || favoriteList.isEmpty) {
+      return false;
+    }
+
+    List<dynamic> decodedList = jsonDecode(favoriteList);
+    List<SongData> songs = decodedList.map((item) => SongData.fromJson(item)).toList();
+
+    // Check if song exists by its ID or unique identifier
+    return songs.any((favSong) => favSong.id == song.id);
+  }
+
+  // Add a song to favorites
+  Future<bool> addToFavorites(SongData song) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final List<SongData> currentFavorites = await getFavoriteSongs();
+
+      // Check if the song already exists in favorites
+      if (currentFavorites.any((favSong) => favSong.id == song.id)) {
+        return true; // Song is already in favorites
+      }
+
+      // Add the song and save
+      currentFavorites.add(song);
+
+      // Convert list to JSON and save
+      List<Map<String, dynamic>> jsonList = currentFavorites.map((song) => song.toMap()).toList();
+      await prefs.setString(_favoriteSongsKey, jsonEncode(jsonList));
+
+      return true;
+    } catch (e) {
+      print('Error adding song to favorites: $e');
+      return false;
     }
   }
 
-  Future<void> unlikeSong(String songId) async {
-    final token = await _getAuthToken();
-    final response = await http.post(
-      Uri.parse('$baseUrl/songs/$songId/unlike'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
+  // Remove a song from favorites
+  Future<bool> removeFromFavorites(SongData song) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final List<SongData> currentFavorites = await getFavoriteSongs();
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to unlike song: ${response.body}');
+      // Remove the song if it exists
+      currentFavorites.removeWhere((favSong) => favSong.id == song.id);
+
+      // Convert list to JSON and save
+      List<Map<String, dynamic>> jsonList = currentFavorites.map((song) => song.toMap()).toList();
+      await prefs.setString(_favoriteSongsKey, jsonEncode(jsonList));
+
+      return true;
+    } catch (e) {
+      print('Error removing song from favorites: $e');
+      return false;
     }
   }
 
-  Future<bool> getLikeStatus(String songId) async {
-    final token = await _getAuthToken();
-    final response = await http.get(
-      Uri.parse('$baseUrl/songs/$songId/like-status'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
+  // Toggle favorite status
+  Future<bool> toggleFavorite(SongData song) async {
+    final bool isFavorite = await isSongFavorite(song);
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['isLiked'] as bool;
+    if (isFavorite) {
+      return await removeFromFavorites(song);
     } else {
-      throw Exception('Failed to fetch like status: ${response.body}');
-    }
-  }
-
-
-  Future<List<SongData>> getLikedSongs() async {
-    final token = await _getAuthToken();
-    final response = await http.get(
-      Uri.parse('$baseUrl/songs/liked'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final songs = (data['songs'] as List)
-          .map((song) => SongData.fromJson(song))
-          .toList();
-      return songs;
-    } else {
-      throw Exception('Failed to fetch liked songs: ${response.body}');
+      return await addToFavorites(song);
     }
   }
 }

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../repository/service/song_service/favorite_song_service/favorite_song_service.dart';
+
 class PlayerControlsWidget extends StatefulWidget {
   final AudioPlayerService audioPlayerService;
   final List<SongData> songList;
@@ -26,6 +28,8 @@ class PlayerControlsWidget extends StatefulWidget {
 }
 
 class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
+  final FavoriteSongService _favoriteSongService = FavoriteSongService();
+
   void _shareSong(SongData song) {
     Share.share(
       'Check out this song: ${song.title} by ${song.artist} and song is${song.mp3Url}',

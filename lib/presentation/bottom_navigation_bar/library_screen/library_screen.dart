@@ -57,7 +57,7 @@ class _LibraryScreenState extends State<LibraryScreen>
         controller: _tabController,
         children: [
           // Liked Songs Tab
-          LikedSongsScreen(), // Downloaded Songs Tab
+          FavoritesScreen(), // Downloaded Songs Tab
           DownloadedSongsScreen(), // Playlists Tab
           PlaylistManagementScreen(), // Recently Played Tab
           _buildRecentlyPlayedTab(isLargeScreen),
