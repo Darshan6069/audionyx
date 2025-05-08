@@ -3,66 +3,106 @@ import 'package:audionyx/presentation/song_play_screen/song_play_screen.dart';
 import 'package:audionyx/repository/service/song_service/favorite_song_service/favorite_song_service.dart';
 import 'package:flutter/material.dart';
 
-class LikedSongsScreen extends StatefulWidget {
-  const LikedSongsScreen({super.key});
+class FavoritesScreen extends StatefulWidget {
+  const FavoritesScreen({super.key});
 
   @override
-  State<LikedSongsScreen> createState() => _LikedSongsScreenState();
+  State<FavoritesScreen> createState() => _FavoritesScreenState();
 }
 
-class _LikedSongsScreenState extends State<LikedSongsScreen> {
-  final FavoriteSongService _apiService = FavoriteSongService();
-  List<SongData> likedSongs = [];
-  bool isLoading = true;
-  bool hasError = false;
+class _FavoritesScreenState extends State<FavoritesScreen> {
+  final FavoriteSongService _favoriteService = FavoriteSongService();
+  List<SongData> _favoriteSongs = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _fetchLikedSongs();
+    _loadFavoriteSongs();
   }
 
-  Future<void> _fetchLikedSongs() async {
+  Future<void> _loadFavoriteSongs() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     try {
-      final songs = await _apiService.getLikedSongs();
+      final songs = await _favoriteService.getFavoriteSongs();
       if (mounted) {
         setState(() {
-          likedSongs = songs;
-          isLoading = false;
+          _favoriteSongs = songs;
+          _isLoading = false;
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          hasError = true;
-          isLoading = false;
+          _isLoading = false;
         });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to load favorite songs'),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.redAccent,
+          ),
+        );
       }
+    }
+  }
+
+  Future<void> _removeFavorite(SongData song) async {
+    final success = await _favoriteService.removeFromFavorites(song);
+
+    if (success && mounted) {
+      setState(() {
+        _favoriteSongs.removeWhere((s) => s.id == song.id);
+      });
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error fetching liked songs: $e'),
+        const SnackBar(
+          content: Text('Removed from favorites'),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.blueGrey,
+        ),
+      );
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to remove from favorites'),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.redAccent,
         ),
       );
     }
   }
 
-  void _navigateToSongPlayer(SongData selectedSong) {
+  void _playSong(int index) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => SongPlayerScreen(
-          songList: likedSongs,
-          initialIndex: likedSongs.indexOf(selectedSong),
+          songList: _favoriteSongs,
+          initialIndex: index,
         ),
       ),
-    );
+    ).then((_) {
+      // Refresh the list when coming back from player screen
+      _loadFavoriteSongs();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Your Favorites',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: const Color(0xFF1A2A44),
+        elevation: 0,
+      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -71,113 +111,118 @@ class _LikedSongsScreenState extends State<LikedSongsScreen> {
             end: Alignment.bottomCenter,
           ),
         ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              Expanded(child: _buildBody()),
-            ],
+        child: _isLoading
+            ? const Center(
+          child: CircularProgressIndicator(
+            color: Colors.greenAccent,
           ),
-        ),
+        )
+            : _favoriteSongs.isEmpty
+            ? _buildEmptyState()
+            : _buildSongList(),
       ),
     );
   }
 
-  Widget _buildBody() {
-    if (isLoading) {
-      return const Center(child: CircularProgressIndicator(color: Colors.white));
-    }
-
-    if (hasError) {
-      return _buildErrorWidget();
-    }
-
-    if (likedSongs.isEmpty) {
-      return const Center(
-        child: Text(
-          'No liked songs yet',
-          style: TextStyle(color: Colors.white70, fontSize: 18),
-        ),
-      );
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: likedSongs.length,
-      itemBuilder: (context, index) {
-        final song = likedSongs[index];
-        return _buildSongCard(song);
-      },
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.favorite_border,
+            size: 80,
+            color: Colors.white.withOpacity(0.5),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No favorite songs yet',
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.7),
+              fontSize: 18,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Like songs to see them here',
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.5),
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildSongCard(SongData song) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      color: Colors.white.withOpacity(0.1),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  Widget _buildSongList() {
+    return RefreshIndicator(
+      onRefresh: _loadFavoriteSongs,
+      color: Colors.greenAccent,
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        itemCount: _favoriteSongs.length,
+        itemBuilder: (context, index) {
+          final song = _favoriteSongs[index];
+          return _buildSongTile(song, index);
+        },
+      ),
+    );
+  }
+
+  Widget _buildSongTile(SongData song, int index) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: song.thumbnailUrl != null
+          child: song.thumbnailUrl.isNotEmpty
               ? Image.network(
-            song.thumbnailUrl!,
-            width: 50,
-            height: 50,
+            song.thumbnailUrl,
+            width: 56,
+            height: 56,
             fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) => _buildPlaceholderImage(),
+            errorBuilder: (_, __, ___) => Container(
+              width: 56,
+              height: 56,
+              color: Colors.grey[800],
+              child: const Icon(Icons.music_note, color: Colors.white),
+            ),
           )
-              : _buildPlaceholderImage(),
+              : Container(
+            width: 56,
+            height: 56,
+            color: Colors.grey[800],
+            child: const Icon(Icons.music_note, color: Colors.white),
+          ),
         ),
         title: Text(
           song.title,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         subtitle: Text(
           song.artist,
-          style: TextStyle(color: Colors.white.withOpacity(0.7)),
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.7),
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
-        trailing: const Icon(Icons.play_circle_outline, color: Colors.white, size: 32),
-        onTap: () => _navigateToSongPlayer(song),
-      ),
-    );
-  }
-
-  Widget _buildPlaceholderImage() {
-    return Container(
-      width: 50,
-      height: 50,
-      color: Colors.grey.withOpacity(0.3),
-      child: const Icon(Icons.music_note, color: Colors.white70),
-    );
-  }
-
-  Widget _buildErrorWidget() {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.error_outline, size: 60, color: Colors.white60),
-          const SizedBox(height: 16),
-          const Text(
-            'Failed to load liked songs',
-            style: TextStyle(color: Colors.white, fontSize: 18),
-          ),
-          const SizedBox(height: 24),
-          TextButton.icon(
-            onPressed: _fetchLikedSongs,
-            icon: const Icon(Icons.refresh, color: Colors.white),
-            label: const Text(
-              'Try Again',
-              style: TextStyle(color: Colors.white),
-            ),
-            style: TextButton.styleFrom(
-              backgroundColor: Colors.white.withOpacity(0.1),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            ),
-          ),
-        ],
+        trailing: IconButton(
+          icon: const Icon(Icons.favorite, color: Colors.pinkAccent),
+          onPressed: () => _removeFavorite(song),
+        ),
+        onTap: () => _playSong(index),
       ),
     );
   }
