@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:audionyx/repository/bloc/audio_player_bloc_cubit/audio_player_bloc_cubit.dart';
 import 'package:audionyx/repository/service/check_internet_connection/check_internet_connection.dart';
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/registration_bloc_cubit/registration_bloc_cubit.dart';
@@ -51,6 +52,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => FetchSongBlocCubit()),
         BlocProvider(create: (context) => DownloadSongBlocCubit()),
         BlocProvider(create: (context) => PlaylistBlocCubit(PlaylistService())),
+        BlocProvider(create: (context) => AudioPlayerBlocCubit()),
       ],
       child: MaterialApp(
         title: 'AudioNyx',

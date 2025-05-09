@@ -3,9 +3,11 @@ import 'package:audionyx/presentation/song_play_screen/widget/player_app_bar.dar
 import 'package:audionyx/presentation/song_play_screen/widget/player_control_widget.dart';
 import 'package:audionyx/presentation/song_play_screen/widget/song_info_widget.dart';
 import 'package:audionyx/presentation/song_play_screen/widget/song_thumbnail.dart';
-import 'package:audionyx/repository/service/song_service/audio_service/audio_service.dart';
 import 'package:audionyx/repository/service/song_service/favorite_song_service/favorite_song_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../repository/bloc/audio_player_bloc_cubit/audio_player_bloc_cubit.dart';
+import '../../repository/bloc/audio_player_bloc_cubit/audio_player_state.dart';
 
 class SongPlayerScreen extends StatefulWidget {
   final List<SongData> songList;
@@ -23,70 +25,65 @@ class SongPlayerScreen extends StatefulWidget {
 
 class _SongPlayerScreenState extends State<SongPlayerScreen>
     with SingleTickerProviderStateMixin {
-  late AudioPlayerService audioPlayerService;
   final FavoriteSongService _favoriteSongService = FavoriteSongService();
-  bool isError = false;
   bool isLiked = false;
   late AnimationController animationController;
-  int currentSongIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    audioPlayerService = AudioPlayerService();
-    audioPlayerService.currentIndex = widget.initialIndex;
-    currentSongIndex = widget.initialIndex;
-
     animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
 
-    _initializePlayer();
+    // Initialize player via cubit
+    context.read<AudioPlayerBlocCubit>().loadAndPlay(
+      widget.songList[widget.initialIndex],
+      widget.songList,
+      widget.initialIndex,
+    );
+
+    _checkFavoriteStatus();
   }
 
   Future<void> _checkFavoriteStatus() async {
-    final currentSong = widget.songList[currentSongIndex];
-    final isFavorite = await _favoriteSongService.isSongFavorite(currentSong);
-    if (mounted) {
-      setState(() {
-        isLiked = isFavorite;
-      });
+    final cubit = context.read<AudioPlayerBlocCubit>();
+    final currentSong = cubit.state.currentSong;
+    if (currentSong != null) {
+      final isFavorite = await _favoriteSongService.isSongFavorite(currentSong);
+      if (mounted) {
+        setState(() {
+          isLiked = isFavorite;
+        });
+      }
     }
   }
 
-  Future<void> _initializePlayer() async {
-    try {
-      await audioPlayerService.initPlayer(
-        widget.songList[audioPlayerService.currentIndex],
-      );
-
-      // First check the favorite status of the initial song
-      await _checkFavoriteStatus();
-
-      // Listen to position updates
-      audioPlayerService.positionStream.listen((pos) {
-        if (mounted) {
-          setState(() {
-            audioPlayerService.position = pos;
-            animationController.forward();
-          });
-        }
-      });
-
-      // Listen to player state changes
-      audioPlayerService.playerStateStream.listen((state) {
-        if (mounted) {
-          setState(() {
-            audioPlayerService.isPlaying = state.playing;
-          });
-        }
-      });
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          isError = true;
-        });
+  Future<void> _toggleLike() async {
+    final cubit = context.read<AudioPlayerBlocCubit>();
+    final currentSong = cubit.state.currentSong;
+    if (currentSong != null) {
+      final success = await _favoriteSongService.toggleFavorite(currentSong);
+      if (success && mounted) {
+        setState(() => isLiked = !isLiked);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isLiked ? 'Added to favorites' : 'Removed from favorites',
+            ),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: isLiked ? Colors.pinkAccent : Colors.blueGrey,
+          ),
+        );
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to update favorites'),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.redAccent,
+          ),
+        );
       }
     }
   }
@@ -94,71 +91,71 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
   @override
   void dispose() {
     animationController.dispose();
-    audioPlayerService.dispose();
+    // Do not dispose cubit here, as it's shared
     super.dispose();
-  }
-
-  Future<void> _toggleLike() async {
-    final currentSong = widget.songList[currentSongIndex];
-    final success = await _favoriteSongService.toggleFavorite(currentSong);
-
-    if (success && mounted) {
-      setState(() => isLiked = !isLiked);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            isLiked ? 'Added to favorites' : 'Removed from favorites',
-          ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: isLiked ? Colors.pinkAccent : Colors.blueGrey,
-        ),
-      );
-    } else if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to update favorites'),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.redAccent,
-        ),
-      );
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isError) {
-      return _buildErrorScreen();
-    }
-
-    final currentSong = widget.songList[audioPlayerService.currentIndex];
-
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.black.withOpacity(0.8), const Color(0xFF1A2A44)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              PlayerAppBar(currentSong: currentSong),
-              SongThumbnail(currentSong: currentSong),
-              SongInfoWidget(currentSong: currentSong),
-              PlayerControlsWidget(
-                audioPlayerService: audioPlayerService,
-                songList: widget.songList,
-                currentSong: currentSong,
-                isLiked: isLiked,
-                onLikePressed: _toggleLike,
+    return BlocConsumer<AudioPlayerBlocCubit, AudioPlayerState>(
+      listener: (context, state) {
+        // Update animation on position change
+        if (state.position != Duration.zero) {
+          animationController.forward();
+        }
+      },
+      builder: (context, state) {
+        if (state.isLoading) {
+          return Scaffold(
+            body: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.black.withOpacity(0.8), const Color(0xFF1A2A44)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
               ),
-            ],
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
+        }
+
+        if (state.hasError || state.currentSong == null) {
+          return _buildErrorScreen();
+        }
+
+        final currentSong = state.currentSong!;
+
+        return Scaffold(
+          body: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.black.withOpacity(0.8), const Color(0xFF1A2A44)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            child: SafeArea(
+              child: Column(
+                children: [
+                  PlayerAppBar(currentSong: currentSong),
+                  SongThumbnail(currentSong: currentSong),
+                  SongInfoWidget(currentSong: currentSong),
+                  PlayerControlsWidget(
+                    audioPlayerService: context.read<AudioPlayerBlocCubit>().service,
+                    songList: widget.songList,
+                    currentSong: currentSong,
+                    isLiked: isLiked,
+                    onLikePressed: _toggleLike,
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 

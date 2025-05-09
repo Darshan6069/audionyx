@@ -66,48 +66,6 @@ class _LibraryScreenState extends State<LibraryScreen>
     );
   }
 
-  Widget _buildLikedSongsTab(bool isLargeScreen) {
-    return GridView.builder(
-      padding: EdgeInsets.all(isLargeScreen ? 24 : 16),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: isLargeScreen ? 2 : 1,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: isLargeScreen ? 3 : 4,
-      ),
-      itemCount: 10, // Mock data
-      itemBuilder: (context, index) {
-        return Card(
-          color: Colors.white30,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Liked Song ${index + 1}',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontSize: isLargeScreen ? 18 : 16,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Artist ${index + 1}',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontSize: isLargeScreen ? 16 : 14,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
 
   Widget _buildRecentlyPlayedTab(bool isLargeScreen) {
     bool isLargeScreen = MediaQuery.of(context).size.width > 600;

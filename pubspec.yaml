@@ -60,7 +60,7 @@ dependencies:
   jwt_decoder:
   share_plus:
   rxdart:
-
+  miniplayer:
 
 dev_dependencies:
   flutter_test:

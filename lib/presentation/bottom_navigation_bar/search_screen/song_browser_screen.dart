@@ -76,7 +76,6 @@ class _SongBrowserScreenState extends State<SongBrowserScreen> with SingleTicker
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ThemeColor.darkBackground,
       appBar: AppBar(
         title: const Text('Browse Music', style: TextStyle(color: ThemeColor.white, fontWeight: FontWeight.bold)),
         backgroundColor: ThemeColor.darkBackground,
