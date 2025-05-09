@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:audionyx/presentation/song_play_screen/song_play_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,10 +30,14 @@ class MiniPlayerWidget extends StatelessWidget {
           backgroundColor: Colors.transparent,
           builder: (height, percentage) {
             return GestureDetector(
-              // Add GestureDetector to handle tap
               onTap: () {
-               context.push(context, target: SongPlayerScreen(initialIndex: state.currentIndex,
-                 songList: state.songList!,));
+                context.push(
+                  context,
+                  target: SongPlayerScreen(
+                    initialIndex: state.currentIndex,
+                    songList: state.songList!,
+                  ),
+                );
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -94,12 +99,6 @@ class MiniPlayerWidget extends StatelessWidget {
       margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        image: DecorationImage(
-          image: NetworkImage(
-            state.currentSong!.thumbnailUrl ?? 'https://via.placeholder.com/150',
-          ),
-          fit: BoxFit.cover,
-        ),
         boxShadow: const [
           BoxShadow(
             color: Colors.black45,
@@ -107,6 +106,35 @@ class MiniPlayerWidget extends StatelessWidget {
             offset: Offset(2, 2),
           ),
         ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: state.currentSong!.thumbnailUrl.contains('http')
+            ? Image.network(
+          state.currentSong!.thumbnailUrl,
+          width: height * 0.8,
+          height: height * 0.8,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => Container(
+            color: Colors.grey[300],
+            child: const Icon(Icons.music_note, size: 30, color: Colors.grey),
+          ),
+        )
+            : File(state.currentSong!.thumbnailUrl).existsSync()
+            ? Image.file(
+          File(state.currentSong!.thumbnailUrl),
+          width: height * 0.8,
+          height: height * 0.8,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => Container(
+            color: Colors.grey[300],
+            child: const Icon(Icons.music_note, size: 30, color: Colors.grey),
+          ),
+        )
+            : Container(
+          color: Colors.grey[300],
+          child: const Icon(Icons.music_note, size: 30, color: Colors.grey),
+        ),
       ),
     );
   }
@@ -132,7 +160,9 @@ class MiniPlayerWidget extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              state.currentSong!.artist,
+              state.currentSong!.artist.isNotEmpty
+                  ? state.currentSong!.artist
+                  : 'Unknown Artist',
               style: TextStyle(
                 color: Colors.grey.shade400,
                 fontSize: 14,
@@ -148,44 +178,34 @@ class MiniPlayerWidget extends StatelessWidget {
 
   /// Builds the control buttons (play/pause, next, and more options).
   Widget _buildControlButtons(
-      BuildContext context,
-      AudioPlayerState state,
-      double percentage,
-      ) {
-    return Row(
-      children: [
-        _AnimatedIconButton(
-          icon: Icon(
-            state.isPlaying ? Icons.pause : Icons.play_arrow,
-            color: Colors.white,
-            size: 28,
-          ),
-          onPressed: () {
-            context.read<AudioPlayerBlocCubit>().togglePlayPause();
-          },
-        ),
-        _AnimatedIconButton(
-          icon: const Icon(
-            Icons.skip_next,
-            color: Colors.white,
-            size: 28,
-          ),
-          onPressed: () {
-            context.read<AudioPlayerBlocCubit>().playNext(state.songList!);
-          },
-        ),
-        if (percentage > 0.5)
+      BuildContext context, AudioPlayerState state, double percentage) {
+    return Padding(
+      padding:  EdgeInsets.all(context.width(context) * 0.04),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
           _AnimatedIconButton(
-            icon: const Icon(
-              Icons.more_vert,
+            icon: Icon(
+              state.isPlaying ? Icons.pause : Icons.play_arrow,
               color: Colors.white,
-              size: 24,
+              size: 28,
             ),
             onPressed: () {
-              // TODO: Implement more options (e.g., playlist, favorites)
+              context.read<AudioPlayerBlocCubit>().togglePlayPause();
             },
           ),
-      ],
+          _AnimatedIconButton(
+            icon: const Icon(
+              Icons.skip_next,
+              color: Colors.white,
+              size: 28,
+            ),
+            onPressed: () {
+              context.read<AudioPlayerBlocCubit>().playNext(state.songList!);
+            },
+          ),
+        ],
+      ),
     );
   }
 }

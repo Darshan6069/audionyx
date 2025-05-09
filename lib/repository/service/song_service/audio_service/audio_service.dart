@@ -14,29 +14,90 @@ class AudioPlayerService {
   Stream<PlayerState> get playerStateStream => _player.playerStateStream;
 
   Future<void> initPlayer(SongData song) async {
-    await _player.setUrl(song.mp3Url);
-    duration = await _player.load() ?? Duration.zero;
-    play();
+    try {
+      await _player.setUrl(song.mp3Url);
+      duration = (await _player.load()) ?? Duration.zero;
+      isPlaying = false; // Reset playing state
+      play(); // Start playing after loading
+    } catch (e) {
+      // Handle errors (e.g., invalid URL, network issues)
+      print('Error initializing player: $e');
+      duration = Duration.zero;
+      isPlaying = false;
+    }
   }
 
-  void play() => _player.play();
-  void pause() => _player.pause();
-  void togglePlayPause() => _player.playing ? pause() : play();
+  void play() {
+    _player.play();
+    isPlaying = true;
+  }
+
+  void pause() {
+    _player.pause();
+    isPlaying = false;
+  }
+
+  void togglePlayPause() {
+    if (_player.playing) {
+      pause();
+    } else {
+      play();
+    }
+  }
 
   void seekTo(Duration position) => _player.seek(position);
 
   void playNext(List<SongData> songList) {
-    if (currentIndex < songList.length - 1) {
-      currentIndex++;
-      initPlayer(songList[currentIndex]);
+    if (songList.isEmpty) {
+      // Handle empty list
+      pause();
+      currentIndex = 0;
+      duration = Duration.zero;
+      isPlaying = false;
+      return;
     }
+
+    if (isShuffling) {
+      // Implement shuffle logic if needed
+      currentIndex = (currentIndex + 1) % songList.length;
+    } else if (currentIndex < songList.length - 1) {
+      currentIndex++;
+    } else {
+      // Loop to the first song or stop
+      currentIndex = 0; // Loop to start
+      if (loopMode != LoopMode.all) {
+        pause();
+        isPlaying = false;
+        return;
+      }
+    }
+
+    initPlayer(songList[currentIndex]);
   }
 
   void playPrevious(List<SongData> songList) {
+    if (songList.isEmpty) {
+      // Handle empty list
+      pause();
+      currentIndex = 0;
+      duration = Duration.zero;
+      isPlaying = false;
+      return;
+    }
+
     if (currentIndex > 0) {
       currentIndex--;
-      initPlayer(songList[currentIndex]);
+    } else {
+      // Loop to the last song or stop
+      currentIndex = songList.length - 1; // Loop to end
+      if (loopMode != LoopMode.all) {
+        pause();
+        isPlaying = false;
+        return;
+      }
     }
+
+    initPlayer(songList[currentIndex]);
   }
 
   void toggleShuffle() {
@@ -47,6 +108,8 @@ class AudioPlayerService {
   void toggleRepeatMode() {
     if (loopMode == LoopMode.off) {
       loopMode = LoopMode.one;
+    } else if (loopMode == LoopMode.one) {
+      loopMode = LoopMode.all;
     } else {
       loopMode = LoopMode.off;
     }

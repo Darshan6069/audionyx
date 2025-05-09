@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:audionyx/domain/song_model/song_model.dart';
 import 'package:audionyx/presentation/song_play_screen/widget/progress_slider_widget.dart';
 import 'package:audionyx/repository/service/song_service/audio_service/audio_service.dart';
@@ -29,11 +31,25 @@ class PlayerControlsWidget extends StatefulWidget {
 class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
   final FavoriteSongService _favoriteSongService = FavoriteSongService();
 
-  void _shareSong(SongData song) {
-    Share.share(
-      'Check out this song: ${song.title} by ${song.artist} and song is ${song.mp3Url}',
-    );
+  void _shareSong() {
+    final song = widget.currentSong;
+    final path = song.mp3Url;
+
+    if (path.startsWith('http')) {
+      // Online song (URL)
+      Share.share('Check out this song: ${song.title}\n$path');
+    } else if (File(path).existsSync()) {
+      // Offline song (local file)
+      Share.shareXFiles([XFile(path)], text: 'Check out this song: ${song.title}');
+    } else {
+      // Fallback
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Cannot share this song.')),
+      );
+    }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +178,7 @@ class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
             icon: Icons.share,
             label: 'Share',
             color: Colors.blueAccent,
-            onPressed: () => _shareSong(widget.currentSong),
+            onPressed: () => _shareSong(),
           ),
         ],
       ),
