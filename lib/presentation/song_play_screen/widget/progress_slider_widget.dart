@@ -1,7 +1,7 @@
 import 'package:audionyx/repository/service/song_service/audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 
-class ProgressSliderWidget extends StatelessWidget {
+class ProgressSliderWidget extends StatefulWidget {
   final AudioPlayerService audioPlayerService;
 
   const ProgressSliderWidget({
@@ -9,48 +9,80 @@ class ProgressSliderWidget extends StatelessWidget {
     required this.audioPlayerService,
   });
 
-  String _formatDuration(Duration d) =>
-      d.toString().split('.').first.padLeft(8, "0");
+  @override
+  State<ProgressSliderWidget> createState() => _ProgressSliderWidgetState();
+}
+
+class _ProgressSliderWidgetState extends State<ProgressSliderWidget> {
+  double _sliderValue = 0.0;
+  bool _isUserSeeking = false;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text(
-          _formatDuration(audioPlayerService.position),
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.7),
-            fontSize: 12,
-          ),
-        ),
-        Expanded(
-          child: SliderTheme(
-            data: SliderThemeData(
-              trackHeight: 4,
-              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-              overlayShape: const RoundSliderOverlayShape(overlayRadius: 12),
-              activeTrackColor: Colors.greenAccent,
-              inactiveTrackColor: Colors.white.withOpacity(0.2),
-              thumbColor: Colors.white,
-              overlayColor: Colors.greenAccent.withOpacity(0.2),
-            ),
-            child: Slider(
-              value: audioPlayerService.position.inSeconds.toDouble(),
-              max: audioPlayerService.duration.inSeconds.clamp(1, 100000).toDouble(),
+    return StreamBuilder<Duration>(
+      stream: widget.audioPlayerService.positionStream,
+      builder: (context, snapshot) {
+        // Get current position and duration
+        final position = snapshot.data ?? widget.audioPlayerService.position;
+        final duration = widget.audioPlayerService.duration;
+
+        // Calculate slider value (0.0 to 1.0)
+        final maxValue = duration.inMilliseconds.toDouble();
+        final currentValue = _isUserSeeking
+            ? _sliderValue
+            : position.inMilliseconds.toDouble().clamp(0.0, maxValue);
+
+        // Format duration and position for display
+        final positionText = _formatDuration(position);
+        final durationText = _formatDuration(duration);
+
+        return Column(
+          children: [
+            Slider(
+              value: currentValue,
+              min: 0.0,
+              max: maxValue > 0 ? maxValue : 1.0, // Avoid division by zero
+              activeColor: Colors.greenAccent,
+              inactiveColor: Colors.white.withOpacity(0.3),
               onChanged: (value) {
-                audioPlayerService.seekTo(Duration(seconds: value.toInt()));
+                setState(() {
+                  _isUserSeeking = true;
+                  _sliderValue = value;
+                });
+              },
+              onChangeEnd: (value) {
+                // Seek to the new position when the user releases the slider
+                widget.audioPlayerService.seekTo(Duration(milliseconds: value.toInt()));
+                setState(() {
+                  _isUserSeeking = false;
+                });
               },
             ),
-          ),
-        ),
-        Text(
-          _formatDuration(audioPlayerService.duration),
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.7),
-            fontSize: 12,
-          ),
-        ),
-      ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    positionText,
+                    style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12),
+                  ),
+                  Text(
+                    durationText,
+                    style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
+  }
+
+  String _formatDuration(Duration duration) {
+    final minutes = duration.inMinutes.toString().padLeft(2, '0');
+    final seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
+    return '$minutes:$seconds';
   }
 }

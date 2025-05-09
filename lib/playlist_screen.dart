@@ -1,5 +1,4 @@
 import 'package:audionyx/presentation/song_play_screen/song_play_screen.dart';
-import 'package:audionyx/presentation/widget/mini_player.dart';
 import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_state.dart';
 import 'package:audionyx/repository/service/song_service/playlist_service/playlist_service.dart';

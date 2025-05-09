@@ -4,7 +4,6 @@ import 'package:audionyx/repository/service/song_service/audio_service/audio_ser
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:share_plus/share_plus.dart';
-
 import '../../../repository/service/song_service/favorite_song_service/favorite_song_service.dart';
 
 class PlayerControlsWidget extends StatefulWidget {
@@ -32,7 +31,7 @@ class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
 
   void _shareSong(SongData song) {
     Share.share(
-      'Check out this song: ${song.title} by ${song.artist} and song is${song.mp3Url}',
+      'Check out this song: ${song.title} by ${song.artist} and song is ${song.mp3Url}',
     );
   }
 
@@ -64,41 +63,57 @@ class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
   }
 
   Widget _buildMediaControls() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        IconButton(
-          icon: Icon(
-            widget.audioPlayerService.isShuffling ? Icons.shuffle_on : Icons.shuffle,
-            color: widget.audioPlayerService.isShuffling ? Colors.greenAccent : Colors.white,
-          ),
-          onPressed: () => setState(() => widget.audioPlayerService.toggleShuffle()),
-          splashRadius: 24,
-        ),
-        IconButton(
-          icon: const Icon(Icons.skip_previous, color: Colors.white, size: 32),
-          onPressed: () => widget.audioPlayerService.playPrevious(widget.songList),
-          splashRadius: 24,
-        ),
-        _buildPlayPauseButton(),
-        IconButton(
-          icon: const Icon(Icons.skip_next, color: Colors.white, size: 32),
-          onPressed: () => widget.audioPlayerService.playNext(widget.songList),
-          splashRadius: 24,
-        ),
-        IconButton(
-          icon: Icon(
-            widget.audioPlayerService.loopMode == LoopMode.one ? Icons.repeat_one : Icons.repeat,
-            color: widget.audioPlayerService.loopMode != LoopMode.off ? Colors.greenAccent : Colors.white,
-          ),
-          onPressed: () => setState(() => widget.audioPlayerService.toggleRepeatMode()),
-          splashRadius: 24,
-        ),
-      ],
+    return StreamBuilder<PlayerState>(
+      stream: widget.audioPlayerService.playerStateStream,
+      builder: (context, snapshot) {
+        final playerState = snapshot.data;
+        final isPlaying = playerState?.playing ?? widget.audioPlayerService.isPlaying;
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            IconButton(
+              icon: Icon(
+                widget.audioPlayerService.isShuffling ? Icons.shuffle_on : Icons.shuffle,
+                color: widget.audioPlayerService.isShuffling ? Colors.greenAccent : Colors.white,
+              ),
+              onPressed: () {
+                setState(() {
+                  widget.audioPlayerService.toggleShuffle();
+                });
+              },
+              splashRadius: 24,
+            ),
+            IconButton(
+              icon: const Icon(Icons.skip_previous, color: Colors.white, size: 32),
+              onPressed: () => widget.audioPlayerService.playPrevious(widget.songList),
+              splashRadius: 24,
+            ),
+            _buildPlayPauseButton(isPlaying),
+            IconButton(
+              icon: const Icon(Icons.skip_next, color: Colors.white, size: 32),
+              onPressed: () => widget.audioPlayerService.playNext(widget.songList),
+              splashRadius: 24,
+            ),
+            IconButton(
+              icon: Icon(
+                widget.audioPlayerService.loopMode == LoopMode.one ? Icons.repeat_one : Icons.repeat,
+                color: widget.audioPlayerService.loopMode != LoopMode.off ? Colors.greenAccent : Colors.white,
+              ),
+              onPressed: () {
+                setState(() {
+                  widget.audioPlayerService.toggleRepeatMode();
+                });
+              },
+              splashRadius: 24,
+            ),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildPlayPauseButton() {
+  Widget _buildPlayPauseButton(bool isPlaying) {
     return Material(
       color: Colors.greenAccent,
       borderRadius: BorderRadius.circular(32),
@@ -109,7 +124,7 @@ class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
         child: Container(
           padding: const EdgeInsets.all(16),
           child: Icon(
-            widget.audioPlayerService.isPlaying ? Icons.pause : Icons.play_arrow,
+            isPlaying ? Icons.pause : Icons.play_arrow,
             color: Colors.black,
             size: 32,
           ),
