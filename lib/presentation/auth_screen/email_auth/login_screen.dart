@@ -1,5 +1,6 @@
 import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/presentation/auth_screen/email_auth/registration_screen.dart';
+import 'package:audionyx/presentation/bottom_navigation_bar/bottom_navigation_bar_screen.dart';
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_state.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Login successful: ${state.token}')),
                     );
-                    context.pushAndRemoveUntil(context, target: const HomeScreen());
+                    context.pushAndRemoveUntil(context, target:  BottomNavigationBarScreen());
                   } else if (state is LoginFailure) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(state.error)),

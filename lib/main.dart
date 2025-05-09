@@ -14,6 +14,9 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 
 import 'repository/bloc/upload_song_bloc_cubit/upload_song_bloc_cubit.dart';
 
+ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
@@ -28,12 +31,15 @@ void main() async {
   await Future.delayed(const Duration(seconds: 2));
   if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
     await FlutterDownloader.initialize();
-  }  HttpOverrides.global = MyHttpOverrides();
+  }
+  HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
+  // Create a navigator key for handling redirects from anywhere in the app
 
   @override
   Widget build(BuildContext context) {
@@ -47,10 +53,11 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => PlaylistBlocCubit(PlaylistService())),
       ],
       child: MaterialApp(
-        title: 'Flutter Demo',
+        title: 'AudioNyx',
         debugShowCheckedModeBanner: false,
         theme: ThemeData.dark(useMaterial3: true),
-        home: const CheckInternetConnection(),
+        navigatorKey: navigatorKey, // Add the navigator key
+        home: CheckInternetConnection(),
       ),
     );
   }

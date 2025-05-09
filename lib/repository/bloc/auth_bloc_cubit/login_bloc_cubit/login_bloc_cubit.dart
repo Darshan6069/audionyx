@@ -1,13 +1,17 @@
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_state.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/src/widgets/navigator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
+import '../../../../main.dart';
 import '../../../service/auth_service/login_service.dart';
 
 class   LoginBlocCubit extends Cubit<LoginState> {
-  final LoginService loginService = LoginService();
+  final LoginService loginService = LoginService(navigatorKey);
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
 
   LoginBlocCubit() : super(const LoginState.initial());
 

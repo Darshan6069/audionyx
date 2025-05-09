@@ -3,14 +3,14 @@ import 'package:audionyx/presentation/song_play_screen/song_play_screen.dart';
 import 'package:audionyx/repository/service/song_service/favorite_song_service/favorite_song_service.dart';
 import 'package:flutter/material.dart';
 
-class FavoritesScreen extends StatefulWidget {
-  const FavoritesScreen({super.key});
+class FavoriteSongScreen extends StatefulWidget {
+  const FavoriteSongScreen({super.key});
 
   @override
-  State<FavoritesScreen> createState() => _FavoritesScreenState();
+  State<FavoriteSongScreen> createState() => _FavoriteSongScreenState();
 }
 
-class _FavoritesScreenState extends State<FavoritesScreen> {
+class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
   final FavoriteSongService _favoriteService = FavoriteSongService();
   List<SongData> _favoriteSongs = [];
   bool _isLoading = true;

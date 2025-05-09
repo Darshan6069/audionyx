@@ -5,10 +5,12 @@ import 'package:audionyx/core/constants/app_strings.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/bottom_navigation_bar_screen.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:audionyx/presentation/download_song_screen/download_song_screen.dart';
 import 'package:audionyx/presentation/onboarding_screen/onboarding_screen.dart';
+
+import '../../../presentation/auth_screen/email_auth/login_screen.dart';
+import '../jwt_service/jwt_service.dart';
 
 class CheckInternetConnection extends StatefulWidget {
   const CheckInternetConnection({super.key});
@@ -46,13 +48,9 @@ class _CheckInternetConnectionState extends State<CheckInternetConnection> {
 
   Future<bool> _checkIfUserIsLoggedIn() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-
-      final String authToken =
-          AppStrings.secureStorage.read(key: 'jwt_token').toString();
-      bool loggedIn = authToken.isNotEmpty;
-
-      return loggedIn;
+      // Use JWT service to check if token exists and is valid
+      final jwtService = JwtService();
+      return await jwtService.isTokenValid();
     } catch (e) {
       return false;
     }
@@ -94,7 +92,7 @@ class _CheckInternetConnectionState extends State<CheckInternetConnection> {
 
     if (!currentlyOffline) {
       currentlyLoggedIn = await _checkIfUserIsLoggedIn();
-    } else {}
+    }
 
     if (mounted) {
       setState(() {
@@ -117,7 +115,7 @@ class _CheckInternetConnectionState extends State<CheckInternetConnection> {
       if (_isLoggedIn) {
         return const BottomNavigationBarScreen();
       } else {
-        return const OnboardingScreen();
+        return const LoginScreen(); // Changed from OnboardingScreen to LoginScreen based on requirements
       }
     }
   }
