@@ -1,5 +1,4 @@
 import 'package:audionyx/core/constants/theme_color.dart';
-import 'package:audionyx/presentation/bottom_navigation_bar/favourite_songs_screen/favourite_songs_screen.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/library_screen/library_screen.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/search_screen/song_browser_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,7 +23,6 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
     const HomeScreen(),
     const SongBrowserScreen(),
     const LibraryScreen(),
-    const FavouriteSongsScreen(),
     const AddSongsScreen(),
   ];
 
@@ -51,10 +49,7 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
             icon: Icon(Icons.library_music_rounded),
             label: 'Library',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.heart_fill),
-            label: 'Favourite',
-          ),
+
           BottomNavigationBarItem(
             icon: Icon(Icons.add_to_drive_sharp),
             label: 'Add Song',

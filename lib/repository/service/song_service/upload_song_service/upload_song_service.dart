@@ -1,8 +1,14 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:audionyx/core/constants/app_strings.dart';
+import 'package:audionyx/repository/service/api_service.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
+import 'package:dio/dio.dart';
+
+import '../../../../main.dart';
 
 class UploadSongService {
   Uint8List? songBytes;
@@ -11,6 +17,8 @@ class UploadSongService {
   String? thumbnailFileName;
   File? selectedSongFile;
   File? selectedThumbnailFile;
+
+  final ApiService _apiService = ApiService(navigatorKey);
 
   Future<void> pickSongFile() async {
     try {
@@ -71,42 +79,74 @@ class UploadSongService {
     }
 
     try {
-      final uri = Uri.parse('${AppStrings.baseUrl}songs/upload');
-      final request = http.MultipartRequest('POST', uri);
+      // Create FormData object for file uploads
+      FormData formData = FormData();
 
       // Add song file
-      if (songBytes != null) {
-        request.files.add(
-          http.MultipartFile.fromBytes('file', songBytes!,
-              filename: songFileName),
+      if (songBytes != null && songFileName != null) {
+        final songMimeType = lookupMimeType(songFileName!) ?? 'audio/mpeg';
+        formData.files.add(
+          MapEntry(
+            'file',
+            MultipartFile.fromBytes(
+              songBytes!,
+              filename: songFileName,
+              contentType: MediaType.parse(songMimeType),
+            ),
+          ),
         );
-      } else if (selectedSongFile != null) {
-        request.files.add(
-          await http.MultipartFile.fromPath('file', selectedSongFile!.path,
-              filename: songFileName),
+      } else if (selectedSongFile != null && songFileName != null) {
+        final songMimeType = lookupMimeType(songFileName!) ?? 'audio/mpeg';
+        formData.files.add(
+          MapEntry(
+            'file',
+            await MultipartFile.fromFile(
+              selectedSongFile!.path,
+              filename: songFileName,
+              contentType: MediaType.parse(songMimeType),
+            ),
+          ),
         );
       }
 
       // Add thumbnail file (optional)
-      if (thumbnailBytes != null) {
-        request.files.add(
-          http.MultipartFile.fromBytes('thumbnail', thumbnailBytes!,
-              filename: thumbnailFileName),
+      if (thumbnailBytes != null && thumbnailFileName != null) {
+        final imgMimeType = lookupMimeType(thumbnailFileName!) ?? 'image/jpeg';
+        formData.files.add(
+          MapEntry(
+            'thumbnail',
+            MultipartFile.fromBytes(
+              thumbnailBytes!,
+              filename: thumbnailFileName,
+              contentType: MediaType.parse(imgMimeType),
+            ),
+          ),
         );
-      } else if (selectedThumbnailFile != null) {
-        request.files.add(
-          await http.MultipartFile.fromPath(
-              'thumbnail', selectedThumbnailFile!.path,
-              filename: thumbnailFileName),
+      } else if (selectedThumbnailFile != null && thumbnailFileName != null) {
+        final imgMimeType = lookupMimeType(thumbnailFileName!) ?? 'image/jpeg';
+        formData.files.add(
+          MapEntry(
+            'thumbnail',
+            await MultipartFile.fromFile(
+              selectedThumbnailFile!.path,
+              filename: thumbnailFileName,
+              contentType: MediaType.parse(imgMimeType),
+            ),
+          ),
         );
       }
 
       // Add metadata
-      request.fields['title'] = title;
-      request.fields['artist'] = artist;
-      request.fields['album'] = album;
+      formData.fields.add(MapEntry('title', title));
+      formData.fields.add(MapEntry('artist', artist));
+      formData.fields.add(MapEntry('album', album));
 
-      final response = await request.send();
+      // Send the request using ApiService
+      final response = await _apiService.post(
+        'songs/upload',
+        data: formData,
+      );
+
       if (response.statusCode == 201) {
         // Clear file data
         songBytes = null;
