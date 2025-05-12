@@ -1,7 +1,6 @@
 // registration_service.dart
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:audionyx/core/constants/app_strings.dart';
 import 'package:audionyx/repository/service/api_service.dart';
 
 import '../../../main.dart'; // Adjust import path as needed

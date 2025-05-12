@@ -1,6 +1,4 @@
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_state.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/navigator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
