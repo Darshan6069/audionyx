@@ -1,11 +1,8 @@
 import 'package:audionyx/core/constants/extension.dart';
-import 'package:audionyx/repository/bloc/download_song_bloc_cubit/download_song_bloc_cubit.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/constants/theme_color.dart';
 import '../../domain/song_model/song_model.dart';
-import '../../repository/bloc/download_song_bloc_cubit/download_song_state.dart';
 import '../../repository/service/song_service/recently_play_song/recently_played_manager.dart';
 import '../add_song_to_playlist_screen/add_song_into_playlist_screen.dart';
 import '../song_play_screen/song_play_screen.dart';

@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/presentation/auth_screen/email_auth/login_screen.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:audionyx/core/constants/app_strings.dart';

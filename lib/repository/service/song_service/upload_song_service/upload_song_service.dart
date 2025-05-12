@@ -1,9 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:audionyx/core/constants/app_strings.dart';
 import 'package:audionyx/repository/service/api_service.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 import 'package:dio/dio.dart';
