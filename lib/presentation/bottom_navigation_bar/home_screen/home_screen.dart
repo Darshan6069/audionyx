@@ -5,6 +5,7 @@ import 'package:audionyx/core/constants/theme_color.dart';
 import 'package:audionyx/presentation/download_song_screen/download_song_screen.dart';
 import 'package:audionyx/presentation/playlist_management_screen/playlist_management_screen.dart';
 import 'package:audionyx/presentation/widget/common_song_card.dart';
+import 'package:audionyx/presentation/widget/playlist_card.dart';
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_state.dart';
@@ -13,6 +14,9 @@ import 'package:audionyx/user_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/song_model/song_model.dart';
+import '../../../playlist_screen.dart';
+import '../../../repository/bloc/playlist_bloc_cubit/playlist_bloc_cubit.dart';
+import '../../../repository/bloc/playlist_bloc_cubit/playlist_state.dart';
 import '../../../repository/service/song_service/recently_play_song/recently_played_manager.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,18 +27,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<SongData> featuredPlaylists = [];
+  List<dynamic> featuredPlaylists = [];
   List<SongData> recentlyPlayed = [];
-  bool isLoadingPlaylists = false;
-  String? playlistErrorMessage;
 
   @override
   void initState() {
     super.initState();
     context.read<FetchSongBlocCubit>().fetchSongs();
-    RecentlyPlayedManager.loadRecentlyPlayed().then((song) {
+    context.read<PlaylistBlocCubit>().fetchPlaylists();
+    RecentlyPlayedManager.loadRecentlyPlayed().then((songs) {
       setState(() {
-        recentlyPlayed = song;
+        recentlyPlayed = songs;
       });
     });
   }
@@ -44,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,36 +141,90 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 10),
               SizedBox(
                 height: 200,
-                child:
-                    isLoadingPlaylists
-                        ? const Center(
-                          child: CircularProgressIndicator(
-                            color: ThemeColor.white,
-                          ),
-                        )
-                        : playlistErrorMessage != null
-                        ? Center(
-                          child: Text(
-                            playlistErrorMessage!,
-                            style: const TextStyle(color: ThemeColor.white),
-                          ),
-                        )
-                        : featuredPlaylists.isEmpty
-                        ? const Center(
+                child: BlocBuilder<PlaylistBlocCubit, PlaylistState>(
+                  builder: (context, state) {
+                    // Debugging: Print the current state to verify transitions
+                    print('PlaylistBlocCubit State: $state');
+
+                    if (state is PlaylistInitial) {
+                      return const Center(
+                        child: Text(
+                          'Loading playlists...',
+                          style: TextStyle(color: ThemeColor.white),
+                        ),
+                      );
+                    } else if (state is PlaylistLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: ThemeColor.white,
+                        ),
+                      );
+                    } else if (state is PlaylistFailure) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              state.error,
+                              style: const TextStyle(color: ThemeColor.white),
+                            ),
+                            TextButton(
+                              onPressed:
+                                  () =>
+                                      context
+                                          .read<PlaylistBlocCubit>()
+                                          .fetchPlaylists(),
+                              child: const Text(
+                                'Retry',
+                                style: TextStyle(color: ThemeColor.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else if (state is PlaylistSuccess) {
+                      if (state.playlists.isEmpty) {
+                        return const Center(
                           child: Text(
                             'No playlists found',
                             style: TextStyle(color: ThemeColor.white),
                           ),
-                        )
-                        : ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: featuredPlaylists.length,
-                          itemBuilder:
-                              (context, index) => CommonSongCard(
-                                song: featuredPlaylists,
-                                index: index,
-                              ),
-                        ),
+                        );
+                      }
+                      return ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: state.playlists.length,
+                        itemBuilder: (context, index) {
+                          final playlist = state.playlists[index];
+                          return PlaylistCard(playlist: playlist);
+                        },
+                      );
+                    }
+                    // Fallback for unexpected states
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Unable to load playlists',
+                            style: TextStyle(color: ThemeColor.white),
+                          ),
+                          TextButton(
+                            onPressed:
+                                () =>
+                                    context
+                                        .read<PlaylistBlocCubit>()
+                                        .fetchPlaylists(),
+                            child: const Text(
+                              'Retry',
+                              style: TextStyle(color: ThemeColor.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
               const SizedBox(height: 20),
               const Text(
@@ -191,7 +248,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         )
                         : ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          itemCount: 4,
+                          itemCount: recentlyPlayed.length,
                           itemBuilder:
                               (context, index) => CommonSongCard(
                                 song: recentlyPlayed,
@@ -259,7 +316,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 },
               ),
-
             ],
           ),
         ),

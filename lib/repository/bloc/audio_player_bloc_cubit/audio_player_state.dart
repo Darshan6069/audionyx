@@ -13,8 +13,8 @@ class AudioPlayerState {
   final SongData? currentSong;
   final List<SongData>? songList;
   final int currentIndex;
-  final bool isLoading; // Added to track loading state
-  final bool hasError; // Added to track error state
+  final bool isLoading;
+  final bool hasError;
 
   AudioPlayerState({
     required this.position,
