@@ -51,25 +51,26 @@ class PlaylistBlocCubit extends Cubit<PlaylistState> {
     }
   }
 
-  Future<void> removeSongFromPlaylist(String playlistId, String songId) async {
-    emit(const PlaylistState.loading());
+  Future<void> fetchSongsFromPlaylist(String playlistId) async {
     try {
-      final success = await _playlistService.removeSongFromPlaylist(playlistId, songId);
-      if (!success) throw Exception('Failed to remove song');
-      final playlists = await _playlistService.fetchUserPlaylists();
-      emit(PlaylistState.success(playlists));
+      emit(PlaylistLoading());
+      final songs = await _playlistService.fetchSongsFromPlaylist(playlistId);
+      emit(PlaylistSongsFetched(songs));
     } catch (e) {
-      emit(PlaylistState.failure('Failed to remove song: ${e.toString()}'));
+      emit(PlaylistFailure('Failed to fetch songs: $e'));
     }
   }
 
-  Future<void> fetchSongsFromPlaylist(String playlistId) async {
-    emit(const PlaylistState.loading());
+  Future<void> removeSongFromPlaylist(String playlistId, String songId) async {
     try {
-      final List<SongData> songs = await _playlistService.fetchSongsFromPlaylist(playlistId);
-      emit(PlaylistState.songsFetched(songs));
+      // Call the service to remove the song
+      await _playlistService.removeSongFromPlaylist(playlistId, songId);
+
+      // Fetch the updated song list
+      final updatedSongs = await _playlistService.fetchSongsFromPlaylist(playlistId);
+      emit(PlaylistSongsFetched(updatedSongs));
     } catch (e) {
-      emit(PlaylistState.failure('Failed to fetch songs: ${e.toString()}'));
+      emit(PlaylistFailure('Failed to remove song: $e'));
     }
   }
 }

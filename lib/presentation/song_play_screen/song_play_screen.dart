@@ -28,6 +28,7 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
   final FavoriteSongService _favoriteSongService = FavoriteSongService();
   bool isLiked = false;
   late AnimationController animationController;
+  SongData? _lastCheckedSong;
 
   @override
   void initState() {
@@ -38,60 +39,73 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
     );
 
     // Initialize player via cubit
+    print('Initializing player with song index: ${widget.initialIndex}');
     context.read<AudioPlayerBlocCubit>().loadAndPlay(
       widget.songList[widget.initialIndex],
       widget.songList,
       widget.initialIndex,
     );
-
-    _checkFavoriteStatus();
   }
 
-  Future<void> _checkFavoriteStatus() async {
-    final cubit = context.read<AudioPlayerBlocCubit>();
-    final currentSong = cubit.state.currentSong;
-    if (currentSong != null) {
-      final isFavorite = await _favoriteSongService.isSongFavorite(currentSong);
-      if (mounted) {
-        setState(() {
-          isLiked = isFavorite;
-        });
-      }
+  Future<void> _checkFavoriteStatus(SongData? currentSong) async {
+    if (currentSong == null || !mounted) {
+      print('Skipping favorite check: song is null or widget unmounted');
+      return;
+    }
+
+    if (_lastCheckedSong == currentSong) {
+      print('Favorite status already checked for song: ${currentSong.id}');
+      return;
+    }
+
+    print('Checking favorite status for song: ${currentSong.id}');
+    final isFavorite = await _favoriteSongService.isSongFavorite(currentSong);
+    if (mounted) {
+      setState(() {
+        isLiked = isFavorite;
+        _lastCheckedSong = currentSong;
+      });
     }
   }
 
   Future<void> _toggleLike() async {
     final cubit = context.read<AudioPlayerBlocCubit>();
     final currentSong = cubit.state.currentSong;
-    if (currentSong != null) {
-      final success = await _favoriteSongService.toggleFavorite(currentSong);
-      if (success && mounted) {
-        setState(() => isLiked = !isLiked);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              isLiked ? 'Added to favorites' : 'Removed from favorites',
-            ),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: isLiked ? Colors.pinkAccent : Colors.blueGrey,
+    if (currentSong == null) {
+      print('Cannot toggle favorite: no current song');
+      return;
+    }
+
+    print('Toggling favorite for song: ${currentSong.id}');
+    final success = await _favoriteSongService.toggleFavorite(currentSong);
+    if (success && mounted) {
+      setState(() {
+        isLiked = !isLiked;
+        _lastCheckedSong = currentSong;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isLiked ? 'Added to favorites' : 'Removed from favorites',
           ),
-        );
-      } else if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to update favorites'),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.redAccent,
-          ),
-        );
-      }
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: isLiked ? Colors.pinkAccent : Colors.blueGrey,
+        ),
+      );
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to update favorites'),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.redAccent,
+        ),
+      );
     }
   }
 
   @override
   void dispose() {
     animationController.dispose();
-    // Do not dispose cubit here, as it's shared
     super.dispose();
   }
 
@@ -99,9 +113,16 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
   Widget build(BuildContext context) {
     return BlocConsumer<AudioPlayerBlocCubit, AudioPlayerState>(
       listener: (context, state) {
-        // Update animation on position change
-        if (state.position != Duration.zero) {
+        print(
+            'AudioPlayerState: isLoading=${state.isLoading}, currentSong=${state.currentSong?.id}, '
+                'hasError=${state.hasError}, isPlaying=${state.isPlaying}, position=${state.position}');
+        if (state.position != Duration.zero && state.isPlaying) {
           animationController.forward();
+        } else {
+          animationController.reverse();
+        }
+        if (state.currentSong != _lastCheckedSong) {
+          _checkFavoriteStatus(state.currentSong);
         }
       },
       builder: (context, state) {
@@ -110,7 +131,10 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
             body: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.black.withOpacity(0.8), const Color(0xFF1A2A44)],
+                  colors: [
+                    Colors.black.withOpacity(0.8),
+                    const Color(0xFF1A2A44),
+                  ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
@@ -123,7 +147,7 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
         }
 
         if (state.hasError || state.currentSong == null) {
-          return _buildErrorScreen();
+          return _buildErrorScreen(state);
         }
 
         final currentSong = state.currentSong!;
@@ -132,7 +156,10 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
           body: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.black.withOpacity(0.8), const Color(0xFF1A2A44)],
+                colors: [
+                  Colors.black.withOpacity(0.8),
+                  const Color(0xFF1A2A44),
+                ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
@@ -159,7 +186,10 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
     );
   }
 
-  Widget _buildErrorScreen() {
+  Widget _buildErrorScreen(AudioPlayerState state) {
+    final errorMessage = state.hasError
+        ? 'Failed to load audio. Please try again.'
+        : 'No song selected.';
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -173,15 +203,46 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline, size: 60, color: Colors.white60),
-              const SizedBox(height: 16),
-              const Text(
-                'Failed to load audio',
-                style: TextStyle(color: Colors.white, fontSize: 18),
+              const Icon(
+                Icons.error_outline,
+                size: 60,
+                color: Colors.white60,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+              Text(
+                errorMessage,
+                style: const TextStyle(color: Colors.white, fontSize: 18),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
               TextButton.icon(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () {
+                  print('Retrying playback for index: ${widget.initialIndex}');
+                  context.read<AudioPlayerBlocCubit>().loadAndPlay(
+                    widget.songList[widget.initialIndex],
+                    widget.songList,
+                    widget.initialIndex,
+                  );
+                },
+                icon: const Icon(Icons.refresh, color: Colors.white),
+                label: const Text(
+                  'Retry',
+                  style: TextStyle(color: Colors.white),
+                ),
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.white.withOpacity(0.1),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextButton.icon(
+                onPressed: () {
+                  print('Navigating back from error screen');
+                  Navigator.pop(context);
+                },
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
                 label: const Text(
                   'Go Back',
@@ -189,10 +250,7 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
                 ),
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.white.withOpacity(0.1),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),

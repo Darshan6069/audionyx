@@ -23,16 +23,6 @@ class PlaylistSongsScreen extends StatefulWidget {
 }
 
 class _PlaylistSongsScreenState extends State<PlaylistSongsScreen> {
-  List<SongData> songs = [];
-  bool isLoading = true;
-  String? errorMessage;
-
-  @override
-  void initState() {
-    super.initState();
-    PlaylistBlocCubit(PlaylistService()).fetchSongsFromPlaylist(widget.playlistId);
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -48,16 +38,40 @@ class _PlaylistSongsScreenState extends State<PlaylistSongsScreen> {
           listener: (context, state) {
             if (state is PlaylistFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.error)),
+                SnackBar(
+                  content: Text(state.error),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            } else if (state is PlaylistSongsFetched && state.songs.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Playlist is now empty.'),
+                  backgroundColor: ThemeColor.grey,
+                ),
               );
             }
           },
           builder: (context, state) {
             if (state is PlaylistLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator(color: ThemeColor.white));
             } else if (state is PlaylistFailure) {
-              return Center(child: Text(state.error, style: const TextStyle(color: Colors.red)));
+              return Center(
+                child: Text(
+                  state.error,
+                  style: const TextStyle(color: Colors.red, fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+              );
             } else if (state is PlaylistSongsFetched) {
+              if (state.songs.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'No songs found in this playlist.',
+                    style: TextStyle(color: ThemeColor.white, fontSize: 16),
+                  ),
+                );
+              }
               return ListView.builder(
                 itemCount: state.songs.length,
                 itemBuilder: (context, index) {
@@ -71,12 +85,20 @@ class _PlaylistSongsScreenState extends State<PlaylistSongsScreen> {
                       placeholder: (_, __) => Container(color: ThemeColor.grey),
                       errorWidget: (_, __, ___) => const Icon(Icons.music_note, color: ThemeColor.white),
                     ),
-                    title: Text(song.title, style: const TextStyle(color: ThemeColor.white)),
-                    subtitle: Text(song.artist ?? '', style: const TextStyle(color: ThemeColor.grey, fontSize: 12)),
+                    title: Text(
+                      song.title,
+                      style: const TextStyle(color: ThemeColor.white),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: Text(
+                      song.artist ?? 'Unknown Artist',
+                      style: const TextStyle(color: ThemeColor.grey, fontSize: 12),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     trailing: IconButton(
                       icon: const Icon(Icons.remove_circle, color: Colors.red),
                       onPressed: () {
-                        context.read<PlaylistBlocCubit>().removeSongFromPlaylist(widget.playlistId, song.id);
+                        _showRemoveSongDialog(context, song, widget.playlistId);
                       },
                     ),
                     onTap: () => Navigator.push(
@@ -94,8 +116,50 @@ class _PlaylistSongsScreenState extends State<PlaylistSongsScreen> {
             } else {
               return const Center(child: Text('No songs found.'));
             }
+            return const Center(
+              child: Text(
+                'No songs found.',
+                style: TextStyle(color: ThemeColor.white, fontSize: 16),
+              ),
+            );
           },
         ),
+      ),
+    );
+  }
+
+  void _showRemoveSongDialog(BuildContext context, SongData song, String playlistId) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: ThemeColor.darkBackground,
+        title: const Text(
+          'Remove Song',
+          style: TextStyle(color: ThemeColor.white),
+        ),
+        content: Text(
+          'Are you sure you want to remove "${song.title}" from "${widget.playlistName}"?',
+          style: const TextStyle(color: ThemeColor.grey),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: ThemeColor.white),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              context.read<PlaylistBlocCubit>().removeSongFromPlaylist(playlistId, song.id);
+              Navigator.pop(dialogContext);
+            },
+            child: const Text(
+              'Remove',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
       ),
     );
   }

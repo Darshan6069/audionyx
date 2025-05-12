@@ -64,6 +64,8 @@ dependencies:
   firebase_core:
   firebase_messaging:
   flutter_local_notifications:
+  shimmer:
+  animate_do:
 
 dev_dependencies:
   flutter_test:

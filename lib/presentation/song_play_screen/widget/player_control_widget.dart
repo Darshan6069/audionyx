@@ -1,6 +1,7 @@
 import 'dart:io';
-
+import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/domain/song_model/song_model.dart';
+import 'package:audionyx/presentation/add_song_to_playlist_screen/add_song_into_playlist_screen.dart';
 import 'package:audionyx/presentation/song_play_screen/widget/progress_slider_widget.dart';
 import 'package:audionyx/repository/service/song_service/audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
@@ -29,27 +30,21 @@ class PlayerControlsWidget extends StatefulWidget {
 }
 
 class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
-  final FavoriteSongService _favoriteSongService = FavoriteSongService();
 
   void _shareSong() {
     final song = widget.currentSong;
     final path = song.mp3Url;
 
     if (path.startsWith('http')) {
-      // Online song (URL)
       Share.share('Check out this song: ${song.title}\n$path');
     } else if (File(path).existsSync()) {
-      // Offline song (local file)
       Share.shareXFiles([XFile(path)], text: 'Check out this song: ${song.title}');
     } else {
-      // Fallback
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Cannot share this song.')),
       );
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +80,10 @@ class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
         final playerState = snapshot.data;
         final isPlaying = playerState?.playing ?? widget.audioPlayerService.isPlaying;
 
+        final currentIndex = widget.audioPlayerService.currentIndex ?? 0;
+        final canPlayPrevious = currentIndex > 0;
+        final canPlayNext = currentIndex < widget.songList.length - 1;
+
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -102,13 +101,23 @@ class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
             ),
             IconButton(
               icon: const Icon(Icons.skip_previous, color: Colors.white, size: 32),
-              onPressed: () => widget.audioPlayerService.playPrevious(widget.songList),
+              onPressed: canPlayPrevious
+                  ? () {
+                print('Playing previous song, currentIndex: $currentIndex');
+                widget.audioPlayerService.playPrevious(widget.songList);
+              }
+                  : null,
               splashRadius: 24,
             ),
             _buildPlayPauseButton(isPlaying),
             IconButton(
               icon: const Icon(Icons.skip_next, color: Colors.white, size: 32),
-              onPressed: () => widget.audioPlayerService.playNext(widget.songList),
+              onPressed: canPlayNext
+                  ? () {
+                print('Playing next song, currentIndex: $currentIndex');
+                widget.audioPlayerService.playNext(widget.songList);
+              }
+                  : null,
               splashRadius: 24,
             ),
             IconButton(
@@ -166,12 +175,7 @@ class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
             label: 'Add to Playlist',
             color: Colors.orangeAccent,
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Added to playlist'),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
+              context.push(context, target: AddSongToPlaylistScreen(song: widget.currentSong));
             },
           ),
           _buildActionButton(
