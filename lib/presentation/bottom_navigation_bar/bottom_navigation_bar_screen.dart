@@ -7,7 +7,6 @@ import 'package:audionyx/repository/bloc/audio_player_bloc_cubit/audio_player_st
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../upload_song_screen/add_songs_screen.dart';
 import 'home_screen/home_screen.dart';
 
 class BottomNavigationBarScreen extends StatefulWidget {
@@ -26,7 +25,6 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
     const HomeScreen(),
     const SongBrowserScreen(),
     const LibraryScreen(),
-    const AddSongsScreen(),
   ];
 
   @override
@@ -48,19 +46,8 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
         selectedItemColor: ThemeColor.white,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.library_music_rounded),
-            label: 'Library',
-          ),
-
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_to_drive_sharp),
-            label: 'Add Song',
-          ),
+          BottomNavigationBarItem(icon: Icon(CupertinoIcons.search), label: 'Search'),
+          BottomNavigationBarItem(icon: Icon(Icons.library_music_rounded), label: 'Library'),
         ],
       ),
     );

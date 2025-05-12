@@ -1,11 +1,12 @@
 import 'package:audionyx/core/constants/theme_color.dart';
-import 'package:audionyx/presentation/bottom_navigation_bar/library_screen/favourite_songs_screen.dart';
-import 'package:audionyx/presentation/download_song_screen/download_song_screen.dart';
-import 'package:audionyx/presentation/playlist_management_screen/playlist_management_screen.dart';
+import 'package:audionyx/presentation/bottom_navigation_bar/library_screen/tabs/favourite_songs_screen.dart';
+import 'package:audionyx/presentation/bottom_navigation_bar/library_screen/tabs/recenty_played_song.dart';
+import 'package:audionyx/presentation/bottom_navigation_bar/library_screen/tabs/download_song_screen.dart';
 import 'package:audionyx/repository/service/song_service/recently_play_song/recently_played_manager.dart';
 import 'package:flutter/material.dart';
 
 import '../../../domain/song_model/song_model.dart';
+import '../home_screen/playlist_management_screen/playlist_management_screen.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -60,76 +61,8 @@ class _LibraryScreenState extends State<LibraryScreen>
           FavoriteSongScreen(), // Downloaded Songs Tab
           DownloadedSongsScreen(), // Playlists Tab
           PlaylistManagementScreen(), // Recently Played Tab
-          _buildRecentlyPlayedTab(isLargeScreen),
-        ],
+          RecentlyPlayedScreen(),        ],
       ),
-    );
-  }
-
-
-  Widget _buildRecentlyPlayedTab(bool isLargeScreen) {
-    bool isLargeScreen = MediaQuery.of(context).size.width > 600;
-
-    return FutureBuilder<List<SongData>>(
-      future: RecentlyPlayedManager.loadRecentlyPlayed(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        }
-
-        if (snapshot.hasError) {
-          return Center(child: Text('Error loading recently played songs.'));
-        }
-
-        if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text('No recently played songs.'));
-        }
-
-        final recentlyPlayedSongs = snapshot.data!;
-
-        return ListView.builder(
-          padding: EdgeInsets.all(isLargeScreen ? 24 : 16),
-          itemCount: recentlyPlayedSongs.length,
-          itemBuilder: (context, index) {
-            final song = recentlyPlayedSongs[index];
-
-            return Card(
-              color: Colors.white30,
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                title: Text(
-                  song.title,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontSize: isLargeScreen ? 18 : 16,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                subtitle: Text(
-                  song.artist,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontSize: isLargeScreen ? 16 : 14,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                trailing: Icon(
-                  Icons.play_circle,
-                  size: isLargeScreen ? 32 : 24,
-                  color: Colors.blue,
-                ),
-                onTap: () {
-                  // Handle song play action here
-                },
-              ),
-            );
-          },
-        );
-      },
     );
   }
 }

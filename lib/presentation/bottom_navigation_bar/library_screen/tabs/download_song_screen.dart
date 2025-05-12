@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 
-import '../../domain/song_model/song_model.dart';
-import '../song_play_screen/song_play_screen.dart';
+import '../../../../domain/song_model/song_model.dart';
+import '../../../song_play_screen/song_play_screen.dart';
 
 class DownloadedSongsScreen extends StatefulWidget {
   const DownloadedSongsScreen({super.key});

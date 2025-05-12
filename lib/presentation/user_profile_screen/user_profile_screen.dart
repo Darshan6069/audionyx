@@ -1,11 +1,12 @@
 import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/presentation/auth_screen/email_auth/login_screen.dart';
-import 'package:audionyx/presentation/download_song_screen/download_song_screen.dart';
+import 'package:audionyx/presentation/bottom_navigation_bar/library_screen/tabs/download_song_screen.dart';
+import 'package:audionyx/presentation/user_profile_screen/upload_song_screen/add_songs_screen.dart';
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_bloc_cubit.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../core/constants/theme_color.dart';
+import '../../../../core/constants/theme_color.dart';
 
 class UserProfileScreen extends StatefulWidget {
   final String userId;
@@ -131,13 +132,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         label: 'Downloads',
                         color: ThemeColor.greenColor,
                         onPressed:
-                            () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (context) => const DownloadedSongsScreen(),
-                              ),
-                            ),
+                            () => context.push(context, target: DownloadedSongsScreen()),
                         fontScale: fontScale,
                       ),
                       const SizedBox(height: 16),
@@ -146,7 +141,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         label: 'Add Song',
                         color: ThemeColor.greenColor,
                         onPressed:
-                            () => Navigator.pushNamed(context, '/add_song'),
+                            () => context.push(context, target: AddSongsScreen()),
                         fontScale: fontScale,
                       ),
                       const SizedBox(height: 16),

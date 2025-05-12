@@ -4,8 +4,7 @@ import 'package:audionyx/presentation/bottom_navigation_bar/search_screen/widget
 import 'package:audionyx/presentation/bottom_navigation_bar/search_screen/widget/filter_dialog.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/search_screen/widget/search_bar.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/search_screen/widget/song_list.dart';
-import 'package:audionyx/presentation/download_song_screen/download_song_screen.dart';
-import 'package:audionyx/presentation/playlist_management_screen/playlist_management_screen.dart';
+import 'package:audionyx/presentation/bottom_navigation_bar/library_screen/tabs/download_song_screen.dart';
 import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_state.dart';
 import 'package:audionyx/repository/service/song_service/song_browser_service/song_browser_service.dart';
@@ -20,7 +19,8 @@ class SongBrowserScreen extends StatefulWidget {
   State<SongBrowserScreen> createState() => _SongBrowserScreenState();
 }
 
-class _SongBrowserScreenState extends State<SongBrowserScreen> with SingleTickerProviderStateMixin {
+class _SongBrowserScreenState extends State<SongBrowserScreen>
+    with SingleTickerProviderStateMixin {
   final SongBrowserService _service = SongBrowserService();
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
@@ -77,24 +77,32 @@ class _SongBrowserScreenState extends State<SongBrowserScreen> with SingleTicker
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Browse Music', style: TextStyle(color: ThemeColor.white, fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Browse Music',
+          style: TextStyle(
+            color: ThemeColor.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: ThemeColor.darkBackground,
         elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.download_rounded, color: ThemeColor.white),
-            onPressed: () => context.push(context, target: const DownloadedSongsScreen()),
-          ),
-          IconButton(
-            icon: const Icon(Icons.queue_music, color: ThemeColor.white),
-            onPressed: () => context.push(context, target: const PlaylistManagementScreen()),
+            onPressed:
+                () => context.push(
+                  context,
+                  target: const DownloadedSongsScreen(),
+                ),
           ),
         ],
       ),
       body: BlocBuilder<FetchSongBlocCubit, FetchSongState>(
         builder: (context, state) {
           if (state is FetchSongLoading) {
-            return const Center(child: CircularProgressIndicator(color: ThemeColor.greenAccent));
+            return const Center(
+              child: CircularProgressIndicator(color: ThemeColor.greenAccent),
+            );
           } else if (state is FetchSongFailure) {
             return _buildErrorView(state.error);
           } else if (state is FetchSongSuccess) {
@@ -134,7 +142,10 @@ class _SongBrowserScreenState extends State<SongBrowserScreen> with SingleTicker
                   child: SongListWidget(
                     filteredSongs: filteredSongs,
                     searchQuery: searchQuery,
-                    hasFilters: selectedGenre != null || selectedArtist != null || selectedAlbum != null,
+                    hasFilters:
+                        selectedGenre != null ||
+                        selectedArtist != null ||
+                        selectedAlbum != null,
                     service: _service,
                     onClearFilters: () {
                       setState(() {
@@ -150,7 +161,12 @@ class _SongBrowserScreenState extends State<SongBrowserScreen> with SingleTicker
               ],
             );
           }
-          return const Center(child: Text('No songs yet', style: TextStyle(color: ThemeColor.white)));
+          return const Center(
+            child: Text(
+              'No songs yet',
+              style: TextStyle(color: ThemeColor.white),
+            ),
+          );
         },
       ),
     );
@@ -176,27 +192,31 @@ class _SongBrowserScreenState extends State<SongBrowserScreen> with SingleTicker
         IconButton(
           icon: Icon(
             Icons.filter_list,
-            color: selectedGenre != null || selectedArtist != null || selectedAlbum != null
-                ? ThemeColor.greenAccent
-                : ThemeColor.white,
+            color:
+                selectedGenre != null ||
+                        selectedArtist != null ||
+                        selectedAlbum != null
+                    ? ThemeColor.greenAccent
+                    : ThemeColor.white,
           ),
           onPressed: () {
             showDialog(
               context: context,
-              builder: (context) => FilterDialog(
-                allSongs: allSongs,
-                selectedGenre: selectedGenre,
-                selectedArtist: selectedArtist,
-                selectedAlbum: selectedAlbum,
-                service: _service,
-                onApply: (genre, artist, album) {
-                  setState(() {
-                    selectedGenre = genre;
-                    selectedArtist = artist;
-                    selectedAlbum = album;
-                  });
-                },
-              ),
+              builder:
+                  (context) => FilterDialog(
+                    allSongs: allSongs,
+                    selectedGenre: selectedGenre,
+                    selectedArtist: selectedArtist,
+                    selectedAlbum: selectedAlbum,
+                    service: _service,
+                    onApply: (genre, artist, album) {
+                      setState(() {
+                        selectedGenre = genre;
+                        selectedArtist = artist;
+                        selectedAlbum = album;
+                      });
+                    },
+                  ),
             );
           },
         ),
@@ -224,7 +244,10 @@ class _SongBrowserScreenState extends State<SongBrowserScreen> with SingleTicker
               backgroundColor: ThemeColor.greenAccent,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
-            child: const Text('Retry', style: TextStyle(color: ThemeColor.white)),
+            child: const Text(
+              'Retry',
+              style: TextStyle(color: ThemeColor.white),
+            ),
           ),
         ],
       ),

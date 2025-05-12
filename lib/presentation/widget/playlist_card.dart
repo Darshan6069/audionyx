@@ -2,7 +2,7 @@ import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/core/constants/theme_color.dart';
 import 'package:flutter/material.dart';
 
-import '../../playlist_screen.dart';
+import '../bottom_navigation_bar/home_screen/playlist_management_screen/playlist_screen.dart';
 
 class PlaylistCard extends StatelessWidget {
   final Map<String, dynamic> playlist;
