@@ -1,6 +1,6 @@
-import 'package:audionyx/playlist_screen.dart';
-import 'package:audionyx/presentation/playlist_management_screen/widget/create_playlist_dialog_widget.dart';
-import 'package:audionyx/presentation/playlist_management_screen/widget/playlist_tile_widget.dart';
+import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/playlist_management_screen/playlist_screen.dart';
+import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/playlist_management_screen/widget/create_playlist_dialog_widget.dart';
+import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/playlist_management_screen/widget/playlist_tile_widget.dart';
 import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_state.dart';
 import 'package:audionyx/repository/service/song_service/playlist_service/playlist_service.dart';
@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/core/constants/theme_color.dart';
-import 'package:audionyx/presentation/download_song_screen/download_song_screen.dart';
+import 'package:audionyx/presentation/bottom_navigation_bar/library_screen/tabs/download_song_screen.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/search_screen/song_browser_screen.dart';
 import 'package:audionyx/presentation/auth_screen/email_auth/login_screen.dart';
 
@@ -74,16 +74,6 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
               icon: const Icon(Icons.add, size: 28),
               onPressed: _showCreatePlaylistDialog,
               tooltip: 'Create Playlist',
-            ),
-            IconButton(
-              icon: const Icon(Icons.library_music_rounded,  size: 28),
-              onPressed: () => context.push(context, target: const DownloadedSongsScreen()),
-              tooltip: 'Downloaded Songs',
-            ),
-            IconButton(
-              icon: const Icon(Icons.search,  size: 28),
-              onPressed: () => context.push(context, target: const SongBrowserScreen()),
-              tooltip: 'Search Songs',
             ),
           ],
         ),

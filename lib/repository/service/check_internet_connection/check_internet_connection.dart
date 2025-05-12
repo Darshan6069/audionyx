@@ -5,7 +5,7 @@ import 'package:audionyx/presentation/bottom_navigation_bar/bottom_navigation_ba
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 
-import 'package:audionyx/presentation/download_song_screen/download_song_screen.dart';
+import 'package:audionyx/presentation/bottom_navigation_bar/library_screen/tabs/download_song_screen.dart';
 
 import '../../../presentation/auth_screen/email_auth/login_screen.dart';
 import '../jwt_service/jwt_service.dart';

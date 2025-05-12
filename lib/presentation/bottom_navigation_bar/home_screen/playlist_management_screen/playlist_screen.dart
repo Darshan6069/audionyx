@@ -5,8 +5,8 @@ import 'package:audionyx/repository/service/song_service/playlist_service/playli
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../core/constants/theme_color.dart';
-import '../../domain/song_model/song_model.dart';
+import '../../../../../../core/constants/theme_color.dart';
+import '../../../../../../domain/song_model/song_model.dart';
 
 class PlaylistSongsScreen extends StatefulWidget {
   final String playlistId;

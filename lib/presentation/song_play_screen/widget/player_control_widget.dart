@@ -1,13 +1,11 @@
-import 'dart:io';
 import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/domain/song_model/song_model.dart';
-import 'package:audionyx/presentation/add_song_to_playlist_screen/add_song_into_playlist_screen.dart';
+import 'package:audionyx/presentation/widget/playlist_selection_popup.dart';
 import 'package:audionyx/presentation/song_play_screen/widget/progress_slider_widget.dart';
 import 'package:audionyx/repository/service/song_service/audio_service/audio_service.dart';
+import 'package:audionyx/repository/service/song_service/share_song_service/share_song_service.dart'; // Import the new service
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:share_plus/share_plus.dart';
-import '../../../repository/service/song_service/favorite_song_service/favorite_song_service.dart';
 
 class PlayerControlsWidget extends StatefulWidget {
   final AudioPlayerService audioPlayerService;
@@ -30,21 +28,8 @@ class PlayerControlsWidget extends StatefulWidget {
 }
 
 class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
-
-  void _shareSong() {
-    final song = widget.currentSong;
-    final path = song.mp3Url;
-
-    if (path.startsWith('http')) {
-      Share.share('Check out this song: ${song.title}\n$path');
-    } else if (File(path).existsSync()) {
-      Share.shareXFiles([XFile(path)], text: 'Check out this song: ${song.title}');
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cannot share this song.')),
-      );
-    }
-  }
+  // Create an instance of the share service
+  final ShareSongService _shareSongService = ShareSongService();
 
   @override
   Widget build(BuildContext context) {
@@ -175,14 +160,23 @@ class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
             label: 'Add to Playlist',
             color: Colors.orangeAccent,
             onPressed: () {
-              context.push(context, target: AddSongToPlaylistScreen(song: widget.currentSong));
-            },
+              showModalBottomSheet(
+                context: context,
+                builder: (context) => PlaylistSelectionPopup(song: widget.currentSong),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                backgroundColor: Colors.grey[900], // Match your app's theme
+              );            },
           ),
           _buildActionButton(
             icon: Icons.share,
             label: 'Share',
             color: Colors.blueAccent,
-            onPressed: () => _shareSong(),
+            onPressed: () {
+              // Use the share service instead of inline code
+              _shareSongService.shareSong(widget.currentSong, context: context);
+            },
           ),
         ],
       ),
