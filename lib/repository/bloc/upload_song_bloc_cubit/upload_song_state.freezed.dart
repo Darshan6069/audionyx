@@ -46,13 +46,15 @@ $UploadSongStateCopyWith(UploadSongState _, $Res Function(UploadSongState) __);
 
 
 class UploadSongInitial implements UploadSongState {
-  const UploadSongInitial({this.isSongPicked = false, this.isThumbnailPicked = false, this.songFileName = '', this.thumbnailFileName = ''});
+  const UploadSongInitial({this.isSongPicked = false, this.isThumbnailPicked = false, this.isLyricsPicked = false, this.songFileName = '', this.thumbnailFileName = '', this.lyricsFileName = ''});
   
 
 @JsonKey() final  bool isSongPicked;
 @JsonKey() final  bool isThumbnailPicked;
+@JsonKey() final  bool isLyricsPicked;
 @JsonKey() final  String songFileName;
 @JsonKey() final  String thumbnailFileName;
+@JsonKey() final  String lyricsFileName;
 
 /// Create a copy of UploadSongState
 /// with the given fields replaced by the non-null parameter values.
@@ -64,16 +66,16 @@ $UploadSongInitialCopyWith<UploadSongInitial> get copyWith => _$UploadSongInitia
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UploadSongInitial&&(identical(other.isSongPicked, isSongPicked) || other.isSongPicked == isSongPicked)&&(identical(other.isThumbnailPicked, isThumbnailPicked) || other.isThumbnailPicked == isThumbnailPicked)&&(identical(other.songFileName, songFileName) || other.songFileName == songFileName)&&(identical(other.thumbnailFileName, thumbnailFileName) || other.thumbnailFileName == thumbnailFileName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UploadSongInitial&&(identical(other.isSongPicked, isSongPicked) || other.isSongPicked == isSongPicked)&&(identical(other.isThumbnailPicked, isThumbnailPicked) || other.isThumbnailPicked == isThumbnailPicked)&&(identical(other.isLyricsPicked, isLyricsPicked) || other.isLyricsPicked == isLyricsPicked)&&(identical(other.songFileName, songFileName) || other.songFileName == songFileName)&&(identical(other.thumbnailFileName, thumbnailFileName) || other.thumbnailFileName == thumbnailFileName)&&(identical(other.lyricsFileName, lyricsFileName) || other.lyricsFileName == lyricsFileName));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isSongPicked,isThumbnailPicked,songFileName,thumbnailFileName);
+int get hashCode => Object.hash(runtimeType,isSongPicked,isThumbnailPicked,isLyricsPicked,songFileName,thumbnailFileName,lyricsFileName);
 
 @override
 String toString() {
-  return 'UploadSongState.initial(isSongPicked: $isSongPicked, isThumbnailPicked: $isThumbnailPicked, songFileName: $songFileName, thumbnailFileName: $thumbnailFileName)';
+  return 'UploadSongState.initial(isSongPicked: $isSongPicked, isThumbnailPicked: $isThumbnailPicked, isLyricsPicked: $isLyricsPicked, songFileName: $songFileName, thumbnailFileName: $thumbnailFileName, lyricsFileName: $lyricsFileName)';
 }
 
 
@@ -84,7 +86,7 @@ abstract mixin class $UploadSongInitialCopyWith<$Res> implements $UploadSongStat
   factory $UploadSongInitialCopyWith(UploadSongInitial value, $Res Function(UploadSongInitial) _then) = _$UploadSongInitialCopyWithImpl;
 @useResult
 $Res call({
- bool isSongPicked, bool isThumbnailPicked, String songFileName, String thumbnailFileName
+ bool isSongPicked, bool isThumbnailPicked, bool isLyricsPicked, String songFileName, String thumbnailFileName, String lyricsFileName
 });
 
 
@@ -101,12 +103,14 @@ class _$UploadSongInitialCopyWithImpl<$Res>
 
 /// Create a copy of UploadSongState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? isSongPicked = null,Object? isThumbnailPicked = null,Object? songFileName = null,Object? thumbnailFileName = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? isSongPicked = null,Object? isThumbnailPicked = null,Object? isLyricsPicked = null,Object? songFileName = null,Object? thumbnailFileName = null,Object? lyricsFileName = null,}) {
   return _then(UploadSongInitial(
 isSongPicked: null == isSongPicked ? _self.isSongPicked : isSongPicked // ignore: cast_nullable_to_non_nullable
 as bool,isThumbnailPicked: null == isThumbnailPicked ? _self.isThumbnailPicked : isThumbnailPicked // ignore: cast_nullable_to_non_nullable
+as bool,isLyricsPicked: null == isLyricsPicked ? _self.isLyricsPicked : isLyricsPicked // ignore: cast_nullable_to_non_nullable
 as bool,songFileName: null == songFileName ? _self.songFileName : songFileName // ignore: cast_nullable_to_non_nullable
 as String,thumbnailFileName: null == thumbnailFileName ? _self.thumbnailFileName : thumbnailFileName // ignore: cast_nullable_to_non_nullable
+as String,lyricsFileName: null == lyricsFileName ? _self.lyricsFileName : lyricsFileName // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

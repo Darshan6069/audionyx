@@ -76,10 +76,7 @@ class AuthInterceptor extends Interceptor {
 
     final context = navigatorKey.currentContext;
     if (context != null) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => LoginScreen()),
-            (route) => false, // Remove all previous routes
-      );
+      context.pushAndRemoveUntil(context, target: LoginScreen());
     } else {
       debugPrint('Navigator context is null, cannot redirect');
     }

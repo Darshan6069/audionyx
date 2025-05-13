@@ -11,10 +11,13 @@ import '../../../../main.dart';
 class UploadSongService {
   Uint8List? songBytes;
   Uint8List? thumbnailBytes;
+  Uint8List? lyricsBytes;
   String? songFileName;
   String? thumbnailFileName;
+  String? lyricsFileName;
   File? selectedSongFile;
   File? selectedThumbnailFile;
+  File? selectedLyricsFile;
 
   final ApiService _apiService = ApiService(navigatorKey);
 
@@ -61,6 +64,30 @@ class UploadSongService {
       }
     } catch (e) {
       throw Exception('Error picking thumbnail: $e');
+    }
+  }
+
+  Future<void> pickLyricsFile() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['txt', 'lrc'],
+        allowMultiple: false,
+      );
+
+      if (result != null && result.files.isNotEmpty) {
+        final platformFile = result.files.single;
+        lyricsFileName = platformFile.name;
+        if (platformFile.bytes != null) {
+          lyricsBytes = platformFile.bytes;
+          selectedLyricsFile = null;
+        } else if (platformFile.path != null) {
+          selectedLyricsFile = File(platformFile.path!);
+          lyricsBytes = null;
+        }
+      }
+    } catch (e) {
+      throw Exception('Error picking lyrics: $e');
     }
   }
 
@@ -118,7 +145,7 @@ class UploadSongService {
               filename: thumbnailFileName,
               contentType: MediaType.parse(imgMimeType),
             ),
-          ),
+          )
         );
       } else if (selectedThumbnailFile != null && thumbnailFileName != null) {
         final imgMimeType = lookupMimeType(thumbnailFileName!) ?? 'image/jpeg';
@@ -129,6 +156,33 @@ class UploadSongService {
               selectedThumbnailFile!.path,
               filename: thumbnailFileName,
               contentType: MediaType.parse(imgMimeType),
+            ),
+          ),
+        );
+      }
+
+      // Add lyrics file (optional)
+      if (lyricsBytes != null && lyricsFileName != null) {
+        final lyricsMimeType = lookupMimeType(lyricsFileName!) ?? 'text/plain';
+        formData.files.add(
+          MapEntry(
+            'subtitles',
+            MultipartFile.fromBytes(
+              lyricsBytes!,
+              filename: lyricsFileName,
+              contentType: MediaType.parse(lyricsMimeType),
+            ),
+          ),
+        );
+      } else if (selectedLyricsFile != null && lyricsFileName != null) {
+        final lyricsMimeType = lookupMimeType(lyricsFileName!) ?? 'text/plain';
+        formData.files.add(
+          MapEntry(
+            'subtitles',
+            await MultipartFile.fromFile(
+              selectedLyricsFile!.path,
+              filename: lyricsFileName,
+              contentType: MediaType.parse(lyricsMimeType),
             ),
           ),
         );
@@ -153,6 +207,9 @@ class UploadSongService {
         thumbnailBytes = null;
         thumbnailFileName = null;
         selectedThumbnailFile = null;
+        lyricsBytes = null;
+        lyricsFileName = null;
+        selectedLyricsFile = null;
         return 'Upload successful!';
       } else {
         throw Exception('Upload failed with status: ${response.statusCode}');
