@@ -1,3 +1,4 @@
+import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/domain/song_model/song_model.dart';
 import 'package:audionyx/presentation/song_play_screen/song_play_screen.dart';
 import 'package:audionyx/repository/service/song_service/favorite_song_service/favorite_song_service.dart';
@@ -41,10 +42,10 @@ class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to load favorite songs'),
+          SnackBar(
+            content: const Text('Failed to load favorite songs'),
             behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.redAccent,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -68,25 +69,20 @@ class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
       );
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to remove from favorites'),
+        SnackBar(
+          content: const Text('Failed to remove from favorites'),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.redAccent,
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
     }
   }
 
   void _playSong(int index) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SongPlayerScreen(
-          songList: _favoriteSongs,
-          initialIndex: index,
-        ),
-      ),
-    ).then((_) {
+    context.push(context, target: SongPlayerScreen(
+      songList: _favoriteSongs,
+      initialIndex: index,
+    ),).then((_) {
       // Refresh the list when coming back from player screen
       _loadFavoriteSongs();
     });
@@ -94,27 +90,27 @@ class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Your Favorites',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: const Color(0xFF1A2A44),
-        elevation: 0,
-      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.black.withOpacity(0.8), const Color(0xFF1A2A44)],
+            colors: [
+              theme.brightness == Brightness.dark
+                  ? theme.scaffoldBackgroundColor
+                  : Colors.white.withOpacity(0.9),
+              theme.brightness == Brightness.dark
+                  ? theme.scaffoldBackgroundColor
+                  : Colors.white
+            ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
         child: _isLoading
-            ? const Center(
+            ? Center(
           child: CircularProgressIndicator(
-            color: Colors.greenAccent,
+            color: theme.colorScheme.secondary,
           ),
         )
             : _favoriteSongs.isEmpty
@@ -125,6 +121,7 @@ class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
   }
 
   Widget _buildEmptyState() {
+    final ThemeData theme = Theme.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -132,22 +129,20 @@ class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
           Icon(
             Icons.favorite_border,
             size: 80,
-            color: Colors.white.withOpacity(0.5),
+            color: theme.iconTheme.color?.withOpacity(0.5),
           ),
           const SizedBox(height: 16),
           Text(
             'No favorite songs yet',
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
-              fontSize: 18,
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: theme.textTheme.bodyLarge?.color?.withOpacity(0.7),
             ),
           ),
           const SizedBox(height: 8),
           Text(
             'Like songs to see them here',
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.5),
-              fontSize: 14,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.textTheme.bodyLarge?.color?.withOpacity(0.5),
             ),
           ),
         ],
@@ -156,9 +151,10 @@ class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
   }
 
   Widget _buildSongList() {
+    final ThemeData theme = Theme.of(context);
     return RefreshIndicator(
       onRefresh: _loadFavoriteSongs,
-      color: Colors.greenAccent,
+      color: theme.colorScheme.secondary,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 8),
         itemCount: _favoriteSongs.length,
@@ -171,10 +167,13 @@ class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
   }
 
   Widget _buildSongTile(SongData song, int index) {
+    final ThemeData theme = Theme.of(context);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: theme.brightness == Brightness.dark
+            ? Colors.white.withOpacity(0.05)
+            : Colors.grey[100],
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
@@ -190,21 +189,21 @@ class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
             errorBuilder: (_, __, ___) => Container(
               width: 56,
               height: 56,
-              color: Colors.grey[800],
-              child: const Icon(Icons.music_note, color: Colors.white),
+              color: theme.colorScheme.surface,
+              child: Icon(Icons.music_note, color: theme.iconTheme.color),
             ),
           )
               : Container(
             width: 56,
             height: 56,
-            color: Colors.grey[800],
-            child: const Icon(Icons.music_note, color: Colors.white),
+            color: theme.colorScheme.surface,
+            child: Icon(Icons.music_note, color: theme.iconTheme.color),
           ),
         ),
         title: Text(
           song.title,
-          style: const TextStyle(
-            color: Colors.white,
+          style: theme.textTheme.titleMedium?.copyWith(
+            color: theme.textTheme.bodyLarge?.color,
             fontWeight: FontWeight.w500,
           ),
           maxLines: 1,
@@ -212,14 +211,19 @@ class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
         ),
         subtitle: Text(
           song.artist,
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.7),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.textTheme.bodyLarge?.color?.withOpacity(0.7),
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
         trailing: IconButton(
-          icon: const Icon(Icons.favorite, color: Colors.pinkAccent),
+          icon: Icon(
+              Icons.favorite,
+              color: theme.brightness == Brightness.dark
+                  ? Colors.pinkAccent
+                  : Colors.pink[600]
+          ),
           onPressed: () => _removeFavorite(song),
         ),
         onTap: () => _playSong(index),

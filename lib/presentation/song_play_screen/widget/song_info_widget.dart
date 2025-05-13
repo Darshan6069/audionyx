@@ -17,9 +17,8 @@ class SongInfoWidget extends StatelessWidget {
         children: [
           Text(
             currentSong.title,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 28,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              color: Theme.of(context).colorScheme.onBackground, // Use theme color
               fontWeight: FontWeight.bold,
               letterSpacing: 0.5,
             ),
@@ -27,12 +26,10 @@ class SongInfoWidget extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 8),
           Text(
             currentSong.artist,
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
-              fontSize: 16,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

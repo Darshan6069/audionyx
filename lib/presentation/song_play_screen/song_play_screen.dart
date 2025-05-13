@@ -1,3 +1,4 @@
+import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/domain/song_model/song_model.dart';
 import 'package:audionyx/presentation/song_play_screen/widget/player_app_bar.dart';
 import 'package:audionyx/presentation/song_play_screen/widget/player_control_widget.dart';
@@ -114,8 +115,9 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
     return BlocConsumer<AudioPlayerBlocCubit, AudioPlayerState>(
       listener: (context, state) {
         print(
-            'AudioPlayerState: isLoading=${state.isLoading}, currentSong=${state.currentSong?.id}, '
-                'hasError=${state.hasError}, isPlaying=${state.isPlaying}, position=${state.position}');
+          'AudioPlayerState: isLoading=${state.isLoading}, currentSong=${state.currentSong?.id}, '
+          'hasError=${state.hasError}, isPlaying=${state.isPlaying}, position=${state.position}',
+        );
         if (state.position != Duration.zero && state.isPlaying) {
           animationController.forward();
         } else {
@@ -139,9 +141,7 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
                   end: Alignment.bottomCenter,
                 ),
               ),
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
+              child: const Center(child: CircularProgressIndicator()),
             ),
           );
         }
@@ -153,12 +153,13 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
         final currentSong = state.currentSong!;
 
         return Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor, // Use theme background
           body: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Colors.black.withOpacity(0.8),
-                  const Color(0xFF1A2A44),
+                  Theme.of(context).colorScheme.primary.withOpacity(0.8), // Use primary color
+                  Theme.of(context).colorScheme.background, // Use background color
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -187,9 +188,10 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
   }
 
   Widget _buildErrorScreen(AudioPlayerState state) {
-    final errorMessage = state.hasError
-        ? 'Failed to load audio. Please try again.'
-        : 'No song selected.';
+    final errorMessage =
+        state.hasError
+            ? 'Failed to load audio. Please try again.'
+            : 'No song selected.';
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -203,11 +205,7 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
-                Icons.error_outline,
-                size: 60,
-                color: Colors.white60,
-              ),
+              const Icon(Icons.error_outline, size: 60, color: Colors.white60),
               const SizedBox(height: 16),
               Text(
                 errorMessage,
@@ -231,7 +229,10 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
                 ),
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.white.withOpacity(0.1),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -241,7 +242,7 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
               TextButton.icon(
                 onPressed: () {
                   print('Navigating back from error screen');
-                  Navigator.pop(context);
+                  context.pop(context);
                 },
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
                 label: const Text(
@@ -250,7 +251,10 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
                 ),
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.white.withOpacity(0.1),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),

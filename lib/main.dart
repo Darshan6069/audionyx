@@ -1,5 +1,8 @@
 import 'dart:io';
 import 'package:audionyx/repository/bloc/audio_player_bloc_cubit/audio_player_bloc_cubit.dart';
+import 'package:audionyx/repository/bloc/auth_bloc_cubit/google_auth_bloc_cubit/google_auth_bloc_cubit.dart';
+import 'package:audionyx/repository/bloc/theme_cubit/theme_cubit.dart';
+import 'package:audionyx/repository/service/auth_service/google_auth_service.dart';
 import 'package:audionyx/repository/service/check_internet_connection/check_internet_connection.dart';
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/registration_bloc_cubit/registration_bloc_cubit.dart';
@@ -14,18 +17,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'core/theme_data/apptheme.dart';
 import 'firebase_options.dart';
 import 'repository/bloc/upload_song_bloc_cubit/upload_song_bloc_cubit.dart';
 
- final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
   }
 }
 
@@ -48,8 +50,6 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // Create a navigator key for handling redirects from anywhere in the app
-
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -61,13 +61,21 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => DownloadSongBlocCubit()),
         BlocProvider(create: (context) => PlaylistBlocCubit(PlaylistService())),
         BlocProvider(create: (context) => AudioPlayerBlocCubit()),
+        BlocProvider(create: (context) => ThemeCubit()),
+        BlocProvider(create: (context) => GoogleLoginBlocCubit(GoogleAuthService())),
       ],
-      child: MaterialApp(
-        title: 'AudioNyx',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData.dark(useMaterial3: true),
-        navigatorKey: navigatorKey, // Add the navigator key
-        home: CheckInternetConnection(),
+      child: BlocBuilder<ThemeCubit, bool>(
+        builder: (context, isDarkMode) {
+          return MaterialApp(
+            title: 'AudioNyx',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            navigatorKey: navigatorKey,
+            home: const CheckInternetConnection(),
+          );
+        },
       ),
     );
   }

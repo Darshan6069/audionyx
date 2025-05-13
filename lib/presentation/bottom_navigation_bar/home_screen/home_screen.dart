@@ -1,6 +1,5 @@
 import 'package:audionyx/core/constants/app_strings.dart';
 import 'package:audionyx/core/constants/extension.dart';
-import 'package:audionyx/core/constants/theme_color.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/widget/header.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/widget/horizontal_list_view.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/widget/section_tile.dart';
@@ -17,7 +16,6 @@ import 'package:audionyx/presentation/user_profile_screen/user_profile_screen.da
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/song_model/song_model.dart';
-
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -44,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),

@@ -1,78 +1,78 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/constants/theme_color.dart';
-
-
 class CreatePlaylistDialogWidget extends StatelessWidget {
   final TextEditingController controller;
+  final Function(String) onCreate;
   final VoidCallback onCancel;
-  final ValueChanged<String> onCreate;
 
   const CreatePlaylistDialogWidget({
     super.key,
     required this.controller,
-    required this.onCancel,
     required this.onCreate,
+    required this.onCancel,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return AlertDialog(
-      backgroundColor: ThemeColor.darGreyColor,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: const Text(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      title: Text(
         'Create New Playlist',
-        style: TextStyle(
-          color: ThemeColor.white,
+        style: textTheme.titleMedium?.copyWith(
+          color: colorScheme.onBackground,
           fontWeight: FontWeight.bold,
         ),
       ),
       content: TextField(
         controller: controller,
-        style: const TextStyle(color: ThemeColor.white),
+        autofocus: true,
+        style: textTheme.bodyMedium?.copyWith(color: colorScheme.onBackground),
         decoration: InputDecoration(
           hintText: 'Enter playlist name',
-          hintStyle: const TextStyle(color: ThemeColor.grey),
+          hintStyle: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onBackground.withOpacity(0.6),
+          ),
           filled: true,
-          fillColor: ThemeColor.darkBackground,
+          fillColor: colorScheme.surface,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: colorScheme.primary, width: 2),
+          ),
         ),
+        onSubmitted: (value) {
+          if (value.trim().isNotEmpty) {
+            onCreate(value.trim());
+          }
+        },
       ),
       actions: [
         TextButton(
           onPressed: onCancel,
-          child: const Text(
+          child: Text(
             'Cancel',
-            style: TextStyle(color: ThemeColor.grey),
+            style: TextStyle(color: colorScheme.onBackground),
           ),
         ),
         ElevatedButton(
           onPressed: () {
             final playlistName = controller.text.trim();
-            if (playlistName.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Playlist name cannot be empty'),
-                  backgroundColor: ThemeColor.darGreyColor,
-                ),
-              );
-              return;
+            if (playlistName.isNotEmpty) {
+              onCreate(playlistName);
             }
-            onCreate(playlistName);
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: ThemeColor.greenAccent,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            backgroundColor: colorScheme.primary,
+            foregroundColor: colorScheme.onPrimary,
           ),
-          child: const Text(
-            'Create',
-            style: TextStyle(color: ThemeColor.white),
-          ),
+          child: const Text('Create'),
         ),
       ],
     );

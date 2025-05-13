@@ -1,16 +1,16 @@
-import 'package:audionyx/core/constants/theme_color.dart';
-import 'package:audionyx/domain/song_model/song_model.dart';
+import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/search_screen/widget/filter_chip.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/search_screen/widget/filter_dialog.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/search_screen/widget/search_bar.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/search_screen/widget/song_list.dart';
-import 'package:audionyx/presentation/bottom_navigation_bar/library_screen/tabs/download_song_screen.dart';
-import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_bloc_cubit.dart';
-import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_state.dart';
-import 'package:audionyx/repository/service/song_service/song_browser_service/song_browser_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:audionyx/core/constants/extension.dart';
+
+import '../../../domain/song_model/song_model.dart';
+import '../../../repository/bloc/fetch_song_bloc_cubit/fetch_song_bloc_cubit.dart';
+import '../../../repository/bloc/fetch_song_bloc_cubit/fetch_song_state.dart';
+import '../../../repository/service/song_service/song_browser_service/song_browser_service.dart';
+import '../library_screen/tabs/download_song_screen.dart';
 
 class SongBrowserScreen extends StatefulWidget {
   const SongBrowserScreen({super.key});
@@ -75,36 +75,33 @@ class _SongBrowserScreenState extends State<SongBrowserScreen>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Browse Music',
-          style: TextStyle(
-            color: ThemeColor.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: ThemeColor.darkBackground,
+        backgroundColor: theme.appBarTheme.backgroundColor,
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.download_rounded, color: ThemeColor.white),
-            onPressed:
-                () => context.push(
-                  context,
-                  target: const DownloadedSongsScreen(),
-                ),
+            icon: Icon(Icons.download_rounded, color: theme.iconTheme.color),
+            onPressed: () => context.push(
+              context,
+              target: const DownloadedSongsScreen(),
+            ),
           ),
         ],
       ),
       body: BlocBuilder<FetchSongBlocCubit, FetchSongState>(
         builder: (context, state) {
           if (state is FetchSongLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: ThemeColor.greenAccent),
+            return Center(
+              child: CircularProgressIndicator(color: theme.colorScheme.primary),
             );
           } else if (state is FetchSongFailure) {
-            return _buildErrorView(state.error);
+            return _buildErrorView(state.error, theme);
           } else if (state is FetchSongSuccess) {
             final allSongs = state.songs;
             final filteredSongs = _service.filterSongs(
@@ -128,7 +125,7 @@ class _SongBrowserScreenState extends State<SongBrowserScreen>
                     });
                   },
                 ),
-                _buildTabBar(allSongs),
+                _buildTabBar(allSongs, theme),
                 FilterChipsWidget(
                   selectedGenre: selectedGenre,
                   selectedArtist: selectedArtist,
@@ -143,7 +140,7 @@ class _SongBrowserScreenState extends State<SongBrowserScreen>
                     filteredSongs: filteredSongs,
                     searchQuery: searchQuery,
                     hasFilters:
-                        selectedGenre != null ||
+                    selectedGenre != null ||
                         selectedArtist != null ||
                         selectedAlbum != null,
                     service: _service,
@@ -161,10 +158,10 @@ class _SongBrowserScreenState extends State<SongBrowserScreen>
               ],
             );
           }
-          return const Center(
+          return Center(
             child: Text(
               'No songs yet',
-              style: TextStyle(color: ThemeColor.white),
+              style: theme.textTheme.bodyLarge,
             ),
           );
         },
@@ -172,15 +169,15 @@ class _SongBrowserScreenState extends State<SongBrowserScreen>
     );
   }
 
-  Widget _buildTabBar(List<SongData> allSongs) {
+  Widget _buildTabBar(List<SongData> allSongs, ThemeData theme) {
     return Row(
       children: [
         Expanded(
           child: TabBar(
             controller: _tabController,
-            labelColor: ThemeColor.white,
-            unselectedLabelColor: ThemeColor.grey,
-            indicatorColor: ThemeColor.greenAccent,
+            labelColor: theme.textTheme.bodyLarge?.color,
+            unselectedLabelColor: theme.textTheme.bodyMedium?.color,
+            indicatorColor: theme.colorScheme.primary,
             indicatorSize: TabBarIndicatorSize.label,
             tabs: const [
               Tab(text: 'All'),
@@ -192,31 +189,29 @@ class _SongBrowserScreenState extends State<SongBrowserScreen>
         IconButton(
           icon: Icon(
             Icons.filter_list,
-            color:
-                selectedGenre != null ||
-                        selectedArtist != null ||
-                        selectedAlbum != null
-                    ? ThemeColor.greenAccent
-                    : ThemeColor.white,
+            color: selectedGenre != null ||
+                selectedArtist != null ||
+                selectedAlbum != null
+                ? theme.colorScheme.primary
+                : theme.iconTheme.color,
           ),
           onPressed: () {
             showDialog(
               context: context,
-              builder:
-                  (context) => FilterDialog(
-                    allSongs: allSongs,
-                    selectedGenre: selectedGenre,
-                    selectedArtist: selectedArtist,
-                    selectedAlbum: selectedAlbum,
-                    service: _service,
-                    onApply: (genre, artist, album) {
-                      setState(() {
-                        selectedGenre = genre;
-                        selectedArtist = artist;
-                        selectedAlbum = album;
-                      });
-                    },
-                  ),
+              builder: (context) => FilterDialog(
+                allSongs: allSongs,
+                selectedGenre: selectedGenre,
+                selectedArtist: selectedArtist,
+                selectedAlbum: selectedAlbum,
+                service: _service,
+                onApply: (genre, artist, album) {
+                  setState(() {
+                    selectedGenre = genre;
+                    selectedArtist = artist;
+                    selectedAlbum = album;
+                  });
+                },
+              ),
             );
           },
         ),
@@ -225,28 +220,25 @@ class _SongBrowserScreenState extends State<SongBrowserScreen>
     );
   }
 
-  Widget _buildErrorView(String error) {
+  Widget _buildErrorView(String error, ThemeData theme) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline, color: ThemeColor.white, size: 48),
+          Icon(Icons.error_outline, color: theme.iconTheme.color, size: 48),
           const SizedBox(height: 16),
           Text(
             error,
-            style: const TextStyle(color: ThemeColor.white),
+            style: theme.textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: () => context.read<FetchSongBlocCubit>().fetchSongs(),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ThemeColor.greenAccent,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            ),
-            child: const Text(
+            style: theme.elevatedButtonTheme.style,
+            child: Text(
               'Retry',
-              style: TextStyle(color: ThemeColor.white),
+              style: TextStyle(color: theme.colorScheme.onPrimary),
             ),
           ),
         ],

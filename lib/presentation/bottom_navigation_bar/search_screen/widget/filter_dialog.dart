@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:audionyx/core/constants/theme_color.dart';
-import 'package:audionyx/domain/song_model/song_model.dart';
-import 'package:audionyx/repository/service/song_service/song_browser_service/song_browser_service.dart';
+
+import '../../../../domain/song_model/song_model.dart';
+import '../../../../repository/service/song_service/song_browser_service/song_browser_service.dart';
 
 class FilterDialog extends StatefulWidget {
   final List<SongData> allSongs;
@@ -40,18 +40,19 @@ class _FilterDialogState extends State<FilterDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     List<String> genres = widget.service.getUniqueGenres(widget.allSongs);
     List<String> artists = widget.service.getUniqueArtists(widget.allSongs);
     List<String> albums = widget.service.getUniqueAlbums(widget.allSongs);
 
     return AlertDialog(
-      backgroundColor: ThemeColor.darkBackground,
+      backgroundColor: theme.scaffoldBackgroundColor,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('Filter Songs', style: TextStyle(color: ThemeColor.white)),
+          Text('Filter Songs', style: theme.textTheme.titleLarge),
           IconButton(
-            icon: const Icon(Icons.close, color: ThemeColor.white),
+            icon: Icon(Icons.close, color: theme.iconTheme.color),
             onPressed: () => Navigator.pop(context),
           ),
         ],
@@ -92,7 +93,7 @@ class _FilterDialogState extends State<FilterDialog> {
       ),
       actions: [
         TextButton(
-          child: const Text('Reset', style: TextStyle(color: ThemeColor.greenAccent)),
+          child: Text('Reset', style: TextStyle(color: theme.colorScheme.primary)),
           onPressed: () {
             setState(() {
               tempGenre = null;
@@ -103,9 +104,9 @@ class _FilterDialogState extends State<FilterDialog> {
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: ThemeColor.greenAccent,
+            backgroundColor: theme.colorScheme.primary,
           ),
-          child: const Text('Apply', style: TextStyle(color: ThemeColor.white)),
+          child: Text('Apply', style: TextStyle(color: theme.colorScheme.onPrimary)),
           onPressed: () {
             widget.onApply(tempGenre, tempArtist, tempAlbum);
             Navigator.pop(context);
@@ -123,32 +124,33 @@ class _FilterDialogState extends State<FilterDialog> {
       String? value,
       Function(String?) onChanged,
       ) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(color: ThemeColor.greenAccent)),
+        Text(label, style: TextStyle(color: theme.colorScheme.primary)),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
-            color: ThemeColor.darGreyColor,
+            color: theme.inputDecorationTheme.fillColor,
             borderRadius: BorderRadius.circular(8),
           ),
           child: DropdownButton<String>(
-            hint: Text(hint, style: const TextStyle(color: ThemeColor.grey)),
+            hint: Text(hint, style: TextStyle(color: theme.textTheme.bodyMedium?.color)),
             value: value,
             isExpanded: true,
-            dropdownColor: ThemeColor.darGreyColor,
+            dropdownColor: theme.inputDecorationTheme.fillColor,
             underline: const SizedBox(),
             items: [
               DropdownMenuItem<String>(
                 value: null,
-                child: Text(anyLabel, style: const TextStyle(color: ThemeColor.grey)),
+                child: Text(anyLabel, style: TextStyle(color: theme.textTheme.bodyMedium?.color)),
               ),
               ...items.map((item) {
                 return DropdownMenuItem(
                   value: item,
-                  child: Text(item, style: const TextStyle(color: ThemeColor.white)),
+                  child: Text(item, style: TextStyle(color: theme.textTheme.bodyLarge?.color)),
                 );
               }),
             ],

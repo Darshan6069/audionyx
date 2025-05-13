@@ -1,4 +1,3 @@
-import 'package:audionyx/core/constants/theme_color.dart';
 import 'package:flutter/material.dart';
 
 class PlaylistTileWidget extends StatelessWidget {
@@ -17,53 +16,82 @@ class PlaylistTileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        color: ThemeColor.darGreyColor,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: ThemeColor.grey.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.queue_music,
-                    size: 30,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: const TextStyle(
-                      color: ThemeColor.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete, color: ThemeColor.grey),
-                  onPressed: onDelete,
-                  tooltip: 'Delete Playlist',
-                ),
-              ],
-            ),
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    return Card(
+      color: colorScheme.surface,
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        title: Text(
+          title,
+          style: textTheme.bodyLarge?.copyWith(
+            color: colorScheme.onBackground,
+            fontWeight: FontWeight.w600,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        leading: CircleAvatar(
+          backgroundColor: colorScheme.primary.withOpacity(0.2),
+          child: Icon(
+            Icons.queue_music,
+            color: colorScheme.primary,
           ),
         ),
+        trailing: IconButton(
+          icon: Icon(
+            Icons.delete_outline,
+            color: colorScheme.error,
+          ),
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (dialogContext) => AlertDialog(
+                backgroundColor: theme.scaffoldBackgroundColor,
+                title: Text(
+                  'Delete Playlist',
+                  style: textTheme.titleMedium?.copyWith(
+                    color: colorScheme.onBackground,
+                  ),
+                ),
+                content: Text(
+                  'Are you sure you want to delete the playlist "$title"?',
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onBackground.withOpacity(0.7),
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(color: colorScheme.onBackground),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(dialogContext);
+                      onDelete();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colorScheme.error,
+                      foregroundColor: colorScheme.onError,
+                    ),
+                    child: const Text('Delete'),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        onTap: onTap,
       ),
     );
   }

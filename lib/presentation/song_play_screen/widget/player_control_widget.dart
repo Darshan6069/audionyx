@@ -37,12 +37,12 @@ class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: Theme.of(context).colorScheme.surface.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.2)),
+        border: Border.all(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.2),
             blurRadius: 20,
             offset: const Offset(0, 5),
           ),

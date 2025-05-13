@@ -1,4 +1,3 @@
-import 'package:audionyx/core/constants/theme_color.dart';
 import 'package:flutter/material.dart';
 
 class SectionTitle extends StatelessWidget {
@@ -12,7 +11,7 @@ class SectionTitle extends StatelessWidget {
     return Text(
       title,
       style: TextStyle(
-        color: ThemeColor.white,
+        color: Theme.of(context).textTheme.bodyLarge!.color,
         fontSize: fontSize,
         fontWeight: FontWeight.bold,
       ),

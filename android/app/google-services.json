@@ -12,7 +12,20 @@
           "package_name": "com.example.audionyx"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "815538582382-rnu4pk7tufak94tf6bmu2ffl5055pm97.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.audionyx",
+            "certificate_hash": "a317835da9ce2aa2bad1146e52938c3c867b573a"
+          }
+        },
+        {
+          "client_id": "815538582382-4fkhe4kd3mk63k7oofs96pj75noaq2vt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCw13OifRwjG8b2Rk2B8zYrbLs4seRhDp8"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "815538582382-4fkhe4kd3mk63k7oofs96pj75noaq2vt.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "815538582382-veo4n5k0ssia9mv02l40oql592d7vkpn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.audionyx"
+              }
+            }
+          ]
         }
       }
     }
