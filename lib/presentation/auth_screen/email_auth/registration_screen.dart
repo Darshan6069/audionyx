@@ -111,7 +111,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                   child: Image.asset(
                                     AppImage.logo,
                                     height: 80,
-                                    color: theme.colorScheme.primary,
                                   ),
                                 ),
                               ),
@@ -169,11 +168,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               ),
                               const SizedBox(height: 16),
 
-                              // Password Field
+                              // Password Field with isPassword set to true
                               CommonTextformfield(
                                 controller: _passwordController,
                                 labelText: AppStrings.labelTextForPassword,
                                 errorText: AppStrings.errorTextForPassword,
+                                isPassword: true,  // Enable password masking
                                 validator: (value) {
                                   final passwordRegex = RegExp(AppStrings.passwordRegex);
                                   if (value == null || value.isEmpty) {
@@ -243,25 +243,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 ),
                               ),
                               const SizedBox(height: 20),
-
-                              // Login Link
-                              RichText(
-                                text: TextSpan(
-                                  text: "Already have an account? ",
-                                  style: textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onSurface.withOpacity(0.6),
-                                  ),
-                                  children: [
-                                    TextSpan(
-                                      text: "Log In",
-                                      style: TextStyle(
-                                        color: theme.colorScheme.primary,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
                               TextButton(
                                 onPressed: () {
                                   context.pushAndRemoveUntil(context, target: const LoginScreen());
@@ -270,7 +251,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                   AppStrings.haveAccount,
                                   style: TextStyle(
                                     color: theme.colorScheme.primary,
-                                    decoration: TextDecoration.underline,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
