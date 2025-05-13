@@ -95,7 +95,7 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
                       // Using theme-consistent dropdown
                       Container(
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+                          color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 12),

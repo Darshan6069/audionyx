@@ -18,7 +18,7 @@ class SongInfoWidget extends StatelessWidget {
           Text(
             currentSong.title,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: Theme.of(context).colorScheme.onBackground, // Use theme color
+              color: Theme.of(context).colorScheme.onSurface, // Use theme color
               fontWeight: FontWeight.bold,
               letterSpacing: 0.5,
             ),
@@ -29,7 +29,7 @@ class SongInfoWidget extends StatelessWidget {
           Text(
             currentSong.artist,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

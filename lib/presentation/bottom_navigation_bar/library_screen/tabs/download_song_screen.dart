@@ -133,7 +133,7 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
           'Downloaded Songs',
           style: textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: colorScheme.onBackground,
+            color: colorScheme.onSurface,
           ),
         ),
         centerTitle: true,
@@ -159,7 +159,7 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
             Text(
               'No downloaded songs found.',
               style: textTheme.titleMedium?.copyWith(
-                color: colorScheme.onBackground.withOpacity(0.7),
+                color: colorScheme.onSurface.withOpacity(0.7),
               ),
             ),
           ],

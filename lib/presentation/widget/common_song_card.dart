@@ -1,4 +1,3 @@
-import 'package:audionyx/core/constants/extension.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../domain/song_model/song_model.dart';
@@ -50,7 +49,7 @@ class _CommonSongCardState extends State<CommonSongCard> {
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
                   // Using surface variant color for the placeholder
-                  color: theme.colorScheme.surfaceVariant,
+                  color: theme.colorScheme.surfaceContainerHighest,
                   width: 150,
                   height: 150,
                   child: Center(
@@ -64,7 +63,7 @@ class _CommonSongCardState extends State<CommonSongCard> {
                   width: 150,
                   height: 150,
                   // Using surface variant for error background
-                  color: theme.colorScheme.surfaceVariant,
+                  color: theme.colorScheme.surfaceContainerHighest,
                   child: Icon(
                     Icons.music_note,
                     // Using on surface variant for the icon
@@ -78,7 +77,7 @@ class _CommonSongCardState extends State<CommonSongCard> {
               widget.song[widget.index].title,
               style: TextStyle(
                 // Using primary text color from theme
-                color: theme.colorScheme.onBackground,
+                color: theme.colorScheme.onSurface,
                 fontWeight: FontWeight.bold,
               ),
               maxLines: 1,

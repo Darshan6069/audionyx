@@ -6,7 +6,6 @@ import 'package:audionyx/repository/service/song_service/playlist_service/playli
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../../../core/constants/theme_color.dart';
 import '../../../../../../domain/song_model/song_model.dart';
 
 class PlaylistSongsScreen extends StatefulWidget {
@@ -38,9 +37,9 @@ class _PlaylistSongsScreenState extends State<PlaylistSongsScreen> {
           backgroundColor: theme.scaffoldBackgroundColor,
           title: Text(
               widget.playlistName,
-              style: textTheme.titleLarge?.copyWith(color: colorScheme.onBackground)
+              style: textTheme.titleLarge?.copyWith(color: colorScheme.onSurface)
           ),
-          iconTheme: IconThemeData(color: colorScheme.onBackground),
+          iconTheme: IconThemeData(color: colorScheme.onSurface),
         ),
         body: BlocConsumer<PlaylistBlocCubit, PlaylistState>(
           listener: (context, state) {
@@ -78,7 +77,7 @@ class _PlaylistSongsScreenState extends State<PlaylistSongsScreen> {
                 return Center(
                   child: Text(
                     'No songs found in this playlist.',
-                    style: textTheme.bodyLarge?.copyWith(color: colorScheme.onBackground),
+                    style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
                   ),
                 );
               }
@@ -93,16 +92,16 @@ class _PlaylistSongsScreenState extends State<PlaylistSongsScreen> {
                       height: 50,
                       fit: BoxFit.cover,
                       placeholder: (_, __) => Container(color: colorScheme.surface),
-                      errorWidget: (_, __, ___) => Icon(Icons.music_note, color: colorScheme.onBackground),
+                      errorWidget: (_, __, ___) => Icon(Icons.music_note, color: colorScheme.onSurface),
                     ),
                     title: Text(
                       song.title,
-                      style: textTheme.bodyLarge?.copyWith(color: colorScheme.onBackground),
+                      style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
                       overflow: TextOverflow.ellipsis,
                     ),
                     subtitle: Text(
                       song.artist ?? 'Unknown Artist',
-                      style: textTheme.bodySmall?.copyWith(color: colorScheme.onBackground.withOpacity(0.6)),
+                      style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface.withOpacity(0.6)),
                       overflow: TextOverflow.ellipsis,
                     ),
                     trailing: IconButton(
@@ -123,7 +122,7 @@ class _PlaylistSongsScreenState extends State<PlaylistSongsScreen> {
               return Center(
                 child: Text(
                   'No songs found.',
-                  style: textTheme.bodyLarge?.copyWith(color: colorScheme.onBackground),
+                  style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
                 ),
               );
             }
@@ -144,18 +143,18 @@ class _PlaylistSongsScreenState extends State<PlaylistSongsScreen> {
         backgroundColor: theme.scaffoldBackgroundColor,
         title: Text(
           'Remove Song',
-          style: textTheme.titleMedium?.copyWith(color: colorScheme.onBackground),
+          style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface),
         ),
         content: Text(
           'Are you sure you want to remove "${song.title}" from "${widget.playlistName}"?',
-          style: textTheme.bodyMedium?.copyWith(color: colorScheme.onBackground.withOpacity(0.7)),
+          style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface.withOpacity(0.7)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
             child: Text(
               'Cancel',
-              style: TextStyle(color: colorScheme.onBackground),
+              style: TextStyle(color: colorScheme.onSurface),
             ),
           ),
           TextButton(

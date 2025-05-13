@@ -23,18 +23,18 @@ class CreatePlaylistDialogWidget extends StatelessWidget {
       title: Text(
         'Create New Playlist',
         style: textTheme.titleMedium?.copyWith(
-          color: colorScheme.onBackground,
+          color: colorScheme.onSurface,
           fontWeight: FontWeight.bold,
         ),
       ),
       content: TextField(
         controller: controller,
         autofocus: true,
-        style: textTheme.bodyMedium?.copyWith(color: colorScheme.onBackground),
+        style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
         decoration: InputDecoration(
           hintText: 'Enter playlist name',
           hintStyle: textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onBackground.withOpacity(0.6),
+            color: colorScheme.onSurface.withOpacity(0.6),
           ),
           filled: true,
           fillColor: colorScheme.surface,
@@ -58,7 +58,7 @@ class CreatePlaylistDialogWidget extends StatelessWidget {
           onPressed: onCancel,
           child: Text(
             'Cancel',
-            style: TextStyle(color: colorScheme.onBackground),
+            style: TextStyle(color: colorScheme.onSurface),
           ),
         ),
         ElevatedButton(

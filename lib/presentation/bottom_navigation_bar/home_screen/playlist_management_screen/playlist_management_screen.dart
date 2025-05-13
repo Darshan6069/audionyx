@@ -3,13 +3,9 @@ import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/playlist
 import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/playlist_management_screen/widget/playlist_tile_widget.dart';
 import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_state.dart';
-import 'package:audionyx/repository/service/song_service/playlist_service/playlist_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:audionyx/core/constants/extension.dart';
-import 'package:audionyx/core/constants/theme_color.dart';
-import 'package:audionyx/presentation/bottom_navigation_bar/library_screen/tabs/download_song_screen.dart';
-import 'package:audionyx/presentation/bottom_navigation_bar/search_screen/song_browser_screen.dart';
 import 'package:audionyx/presentation/auth_screen/email_auth/login_screen.dart';
 
 class PlaylistManagementScreen extends StatefulWidget {
@@ -37,6 +33,7 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
       builder: (context) => CreatePlaylistDialogWidget(
         controller: _playlistNameController,
         onCreate: (playlistName) {
+          // When creating a playlist, we'll handle the UI update in the BlocConsumer
           context.read<PlaylistBlocCubit>().createPlaylist(playlistName);
           _playlistNameController.clear();
           Navigator.pop(context);
@@ -52,209 +49,220 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
 
-    return BlocProvider(
-      create: (context) => PlaylistBlocCubit(PlaylistService())..fetchPlaylists(),
-      child: Scaffold(
-        backgroundColor: theme.scaffoldBackgroundColor,
-        appBar: widget.showAppBar
-            ? AppBar(
-          title: Text(
-            'My Playlists',
-            style: textTheme.headlineSmall?.copyWith(
-              color: colorScheme.onBackground,
-              fontWeight: FontWeight.bold,
+    return BlocConsumer<PlaylistBlocCubit, PlaylistState>(
+      listener: (context, state) {
+        if (state is PlaylistFailure) {
+          if (state.error.contains('Authentication token is missing')) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.error),
+                backgroundColor: colorScheme.error,
+              ),
+            );
+          }
+        } else if (state is PlaylistSuccess && state.isNewPlaylistCreated) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Playlist created successfully',
+                style: TextStyle(color: colorScheme.onPrimary),
+              ),
+              backgroundColor: colorScheme.primary,
             ),
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  colorScheme.surface.withOpacity(0.8),
-                  theme.scaffoldBackgroundColor,
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+          );
+          // The playlist is already included in the state.playlists array
+          // We don't need to fetch again as the state is already updated
+        }
+      },
+      builder: (context, state) {
+        // Determine if we should show the FAB based on the state
+        bool showFAB = true;
+        if (state is PlaylistSuccess && state.playlists.isEmpty) {
+          showFAB = false;
+        }
+
+        return Scaffold(
+          backgroundColor: theme.scaffoldBackgroundColor,
+          appBar: widget.showAppBar
+              ? AppBar(
+            title: Text(
+              'My Playlists',
+              style: textTheme.headlineSmall?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
               ),
             ),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    colorScheme.surface.withOpacity(0.8),
+                    theme.scaffoldBackgroundColor,
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+            ),
+          )
+              : null,
+          floatingActionButton: showFAB
+              ? FloatingActionButton(
+            onPressed: _showCreatePlaylistDialog,
+            tooltip: 'Create Playlist',
+            backgroundColor: colorScheme.primary,
+            child: Icon(Icons.add, color: colorScheme.onPrimary),
+          )
+              : null,
+          body: _buildBody(context, state, colorScheme, textTheme),
+        );
+      },
+    );
+  }
+
+  Widget _buildBody(BuildContext context, PlaylistState state,
+      ColorScheme colorScheme, TextTheme textTheme) {
+    if (state is PlaylistInitial || state is PlaylistLoading) {
+      return Center(
+        child: CircularProgressIndicator(color: colorScheme.primary),
+      );
+    } else if (state is PlaylistSuccess) {
+      if (state.playlists.isEmpty) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.queue_music,
+                color: colorScheme.secondary,
+                size: 80,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'No playlists yet',
+                style: textTheme.headlineSmall?.copyWith(
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Create your first playlist!',
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurface.withOpacity(0.7),
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: _showCreatePlaylistDialog,
+                icon: Icon(Icons.add, color: colorScheme.onPrimary),
+                label: Text(
+                  'Create Playlist',
+                  style: TextStyle(color: colorScheme.onPrimary),
+                ),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                ),
+              ),
+            ],
           ),
-        )
-            : null,
-        floatingActionButton: FloatingActionButton(
-          onPressed: _showCreatePlaylistDialog,
-          tooltip: 'Create Playlist',
-          backgroundColor: colorScheme.primary,
-          child: Icon(Icons.add, color: colorScheme.onPrimary),
+        );
+      }
+      return ListView.builder(
+        padding: const EdgeInsets.symmetric(
+          vertical: 8,
+          horizontal: 16,
         ),
-        body: BlocConsumer<PlaylistBlocCubit, PlaylistState>(
-          listener: (context, state) {
-            if (state is PlaylistFailure) {
-              if (state.error.contains('Authentication token is missing')) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                );
-              } else {
+        itemCount: state.playlists.length,
+        itemBuilder: (context, index) {
+          final playlist = state.playlists[index];
+          final title =
+              playlist['name']?.toString() ?? 'Unknown Playlist';
+          final playlistId = playlist['_id']?.toString() ?? '';
+
+          return PlaylistTileWidget(
+            title: title,
+            playlistId: playlistId,
+            onTap: () => context.push(
+              context,
+              target: PlaylistSongsScreen(
+                playlistId: playlistId,
+                playlistName: title,
+              ),
+            ),
+            onDelete: () {
+              if (playlistId.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(state.error),
+                    content: Text(
+                      'Playlist ID is missing',
+                      style: TextStyle(color: colorScheme.onError),
+                    ),
                     backgroundColor: colorScheme.error,
                   ),
                 );
+                return;
               }
-            } else if (state is PlaylistSuccess && state.isNewPlaylistCreated) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Playlist created successfully',
-                    style: TextStyle(color: colorScheme.onPrimary),
-                  ),
-                  backgroundColor: colorScheme.primary,
-                ),
+              context.read<PlaylistBlocCubit>().deletePlaylist(
+                playlistId,
               );
-              context.read<PlaylistBlocCubit>().fetchPlaylists();
-            }
-          },
-          builder: (context, state) {
-            if (state is PlaylistInitial || state is PlaylistLoading) {
-              return Center(
-                child: CircularProgressIndicator(color: colorScheme.primary),
-              );
-            } else if (state is PlaylistSuccess) {
-              if (state.playlists.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.queue_music,
-                        color: colorScheme.secondary,
-                        size: 80,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'No playlists yet',
-                        style: textTheme.headlineSmall?.copyWith(
-                          color: colorScheme.onBackground,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Create your first playlist!',
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onBackground.withOpacity(0.7),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton.icon(
-                        onPressed: _showCreatePlaylistDialog,
-                        icon: Icon(Icons.add, color: colorScheme.onPrimary),
-                        label: Text(
-                          'Create Playlist',
-                          style: TextStyle(color: colorScheme.onPrimary),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }
-              return ListView.builder(
+            },
+          );
+        },
+      );
+    } else if (state is PlaylistFailure) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              color: colorScheme.error,
+              size: 80,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              state.error,
+              style: textTheme.bodyLarge?.copyWith(
+                color: colorScheme.onSurface,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => context.read<PlaylistBlocCubit>().fetchPlaylists(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colorScheme.primary,
                 padding: const EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal: 16,
+                  horizontal: 20,
+                  vertical: 12,
                 ),
-                itemCount: state.playlists.length,
-                itemBuilder: (context, index) {
-                  final playlist = state.playlists[index];
-                  final title =
-                      playlist['name']?.toString() ?? 'Unknown Playlist';
-                  final playlistId = playlist['_id']?.toString() ?? '';
-
-                  return PlaylistTileWidget(
-                    title: title,
-                    playlistId: playlistId,
-                    onTap: () => context.push(
-                      context,
-                      target: PlaylistSongsScreen(
-                        playlistId: playlistId,
-                        playlistName: title,
-                      ),
-                    ),
-                    onDelete: () {
-                      if (playlistId.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Playlist ID is missing',
-                              style: TextStyle(color: colorScheme.onError),
-                            ),
-                            backgroundColor: colorScheme.error,
-                          ),
-                        );
-                        return;
-                      }
-                      context.read<PlaylistBlocCubit>().deletePlaylist(
-                        playlistId,
-                      );
-                    },
-                  );
-                },
-              );
-            } else if (state is PlaylistFailure) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.error_outline,
-                      color: colorScheme.error,
-                      size: 80,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      state.error,
-                      style: textTheme.bodyLarge?.copyWith(
-                        color: colorScheme.onBackground,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () => context.read<PlaylistBlocCubit>().fetchPlaylists(),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colorScheme.primary,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                      ),
-                      child: Text(
-                        'Retry',
-                        style: TextStyle(color: colorScheme.onPrimary),
-                      ),
-                    ),
-                  ],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
                 ),
-              );
-            }
-            return const SizedBox.shrink();
-          },
+              ),
+              child: Text(
+                'Retry',
+                style: TextStyle(color: colorScheme.onPrimary),
+              ),
+            ),
+          ],
         ),
-      ),
-    );
+      );
+    }
+    return const SizedBox.shrink();
   }
 }

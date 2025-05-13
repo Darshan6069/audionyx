@@ -149,7 +149,7 @@ class RecentlyPlayedScreen extends StatelessWidget {
       borderRadius: BorderRadius.circular(8),
       child: song.thumbnailUrl != null
           ? Image.network(
-        song.thumbnailUrl!,
+        song.thumbnailUrl,
         width: isLargeScreen ? 60 : 50,
         height: isLargeScreen ? 60 : 50,
         fit: BoxFit.cover,

@@ -43,7 +43,7 @@ class PlaylistCard extends StatelessWidget {
                   width: 150,
                   height: 150,
                   // Using theme surface variant instead of hardcoded grey
-                  color: theme.colorScheme.surfaceVariant,
+                  color: theme.colorScheme.surfaceContainerHighest,
                   child: Icon(
                     Icons.music_note,
                     // Using theme on surface variant color instead of hardcoded white
@@ -55,7 +55,7 @@ class PlaylistCard extends StatelessWidget {
                 width: 150,
                 height: 150,
                 // Using theme surface variant color
-                color: theme.colorScheme.surfaceVariant,
+                color: theme.colorScheme.surfaceContainerHighest,
                 child: Icon(
                   Icons.queue_music,
                   // Using theme on surface variant color
@@ -68,7 +68,7 @@ class PlaylistCard extends StatelessWidget {
               name,
               style: TextStyle(
                 // Using theme on background color instead of hardcoded white
-                  color: theme.colorScheme.onBackground,
+                  color: theme.colorScheme.onSurface,
                   fontSize: 14
               ),
               maxLines: 2,

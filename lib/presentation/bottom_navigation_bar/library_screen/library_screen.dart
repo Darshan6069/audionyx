@@ -38,7 +38,7 @@ class _LibraryScreenState extends State<LibraryScreen>
         title: Text(
           'Library',
           style: textTheme.headlineSmall?.copyWith(
-            color: colorScheme.onBackground,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -46,7 +46,7 @@ class _LibraryScreenState extends State<LibraryScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: colorScheme.primary,
-          unselectedLabelColor: colorScheme.onBackground.withOpacity(0.6),
+          unselectedLabelColor: colorScheme.onSurface.withOpacity(0.6),
           indicatorColor: colorScheme.primary,
           tabs: const [
             Tab(text: 'Liked'),

@@ -1,4 +1,3 @@
-import 'package:audionyx/domain/song_model/song_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:audionyx/repository/service/song_service/playlist_service/playlist_service.dart';
 import 'playlist_state.dart';
