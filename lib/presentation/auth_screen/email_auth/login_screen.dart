@@ -31,7 +31,6 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -40,7 +39,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => LoginBlocCubit()),
-        BlocProvider(create: (context) => GoogleLoginBlocCubit(GoogleAuthService())),
+        BlocProvider(
+          create: (context) => GoogleLoginBlocCubit(GoogleAuthService()),
+        ),
       ],
       child: Scaffold(
         body: SafeArea(
@@ -54,15 +55,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       if (state is LoginSuccess) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Login successful', style: textTheme.bodyMedium),
+                            content: Text(
+                              'Login successful',
+                              style: textTheme.bodyMedium,
+                            ),
                             backgroundColor: theme.colorScheme.primary,
                           ),
                         );
-                        context.pushAndRemoveUntil(context, target: const BottomNavigationBarScreen());
+                        context.pushAndRemoveUntil(
+                          context,
+                          target: const BottomNavigationBarScreen(),
+                        );
                       } else if (state is LoginFailure) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(state.error, style: textTheme.bodyMedium),
+                            content: Text(
+                              state.error,
+                              style: textTheme.bodyMedium,
+                            ),
                             backgroundColor: theme.colorScheme.error,
                           ),
                         );
@@ -74,15 +84,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       if (state is LoginSuccess) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Google Sign-In successful', style: textTheme.bodyMedium),
+                            content: Text(
+                              'Google Sign-In successful',
+                              style: textTheme.bodyMedium,
+                            ),
                             backgroundColor: theme.colorScheme.primary,
                           ),
                         );
-                        context.pushAndRemoveUntil(context, target: const BottomNavigationBarScreen());
+                        context.pushAndRemoveUntil(
+                          context,
+                          target: const BottomNavigationBarScreen(),
+                        );
                       } else if (state is LoginFailure) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(state.error, style: textTheme.bodyMedium),
+                            content: Text(
+                              state.error,
+                              style: textTheme.bodyMedium,
+                            ),
                             backgroundColor: theme.colorScheme.error,
                           ),
                         );
@@ -104,12 +123,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 tag: 'app_logo',
                                 child: CircleAvatar(
                                   radius: 60,
-                                  backgroundColor: theme.colorScheme.primaryContainer,
-                                  child: Image.asset(
-                                    AppImage.logo,
-                                    height: 80,
-                                    color: theme.colorScheme.primary,
-                                  ),
+                                  backgroundColor:
+                                      theme.colorScheme.primaryContainer,
+                                  child: Image.asset(AppImage.logo, height: 80),
                                 ),
                               ),
                               const SizedBox(height: 40),
@@ -126,7 +142,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               Text(
                                 AppStrings.ifNeedSupport,
                                 style: textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                                  color: theme.colorScheme.onSurface
+                                      .withOpacity(0.6),
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -138,7 +155,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 labelText: AppStrings.labelTextForEmail,
                                 errorText: AppStrings.errorTextForEmail,
                                 validator: (value) {
-                                  final emailRegex = RegExp(AppStrings.emailRegex);
+                                  final emailRegex = RegExp(
+                                    AppStrings.emailRegex,
+                                  );
                                   if (value == null || value.isEmpty) {
                                     return 'Email is required';
                                   } else if (!emailRegex.hasMatch(value)) {
@@ -149,13 +168,17 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               const SizedBox(height: 16),
 
-                              // Password Field
+                              // Password Field with isPassword set to true
                               CommonTextformfield(
                                 controller: passwordController,
                                 labelText: AppStrings.labelTextForPassword,
                                 errorText: AppStrings.errorTextForPassword,
+                                isPassword: true,
+                                // Enable password masking
                                 validator: (value) {
-                                  final passwordRegex = RegExp(AppStrings.passwordRegex);
+                                  final passwordRegex = RegExp(
+                                    AppStrings.passwordRegex,
+                                  );
                                   if (value == null || value.isEmpty) {
                                     return 'Password is required';
                                   } else if (!passwordRegex.hasMatch(value)) {
@@ -187,19 +210,28 @@ class _LoginScreenState extends State<LoginScreen> {
                               const SizedBox(height: 24),
 
                               // Login Button or Loading Indicator
-                              loginState is LoginLoading || googleState is LoginLoading
-                                  ? CircularProgressIndicator(color: theme.colorScheme.primary)
+                              loginState is LoginLoading ||
+                                      googleState is LoginLoading
+                                  ? CircularProgressIndicator(
+                                    color: theme.colorScheme.primary,
+                                  )
                                   : AuthPrimaryButton(
-                                label: AppStrings.loginHere,
-                                onPressed: (){
-                                   if (_formKey.currentState?.validate() ?? false) {
-                                      context.read<LoginBlocCubit>().loginUser(
-                                         email: emailController.text.trim(),
-                                         password: passwordController.text.trim(),
-                                      );
-                                   }
-                                  },
-                              ),
+                                    label: AppStrings.loginHere,
+                                    onPressed: () {
+                                      if (_formKey.currentState?.validate() ??
+                                          false) {
+                                        context
+                                            .read<LoginBlocCubit>()
+                                            .loginUser(
+                                              email:
+                                                  emailController.text.trim(),
+                                              password:
+                                                  passwordController.text
+                                                      .trim(),
+                                            );
+                                      }
+                                    },
+                                  ),
 
                               const SizedBox(height: 20),
 
@@ -208,21 +240,26 @@ class _LoginScreenState extends State<LoginScreen> {
                                 children: [
                                   Expanded(
                                     child: Divider(
-                                      color: theme.colorScheme.onSurface.withOpacity(0.3),
+                                      color: theme.colorScheme.onSurface
+                                          .withOpacity(0.3),
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
                                     child: Text(
                                       AppStrings.or,
                                       style: textTheme.bodyMedium?.copyWith(
-                                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                                        color: theme.colorScheme.onSurface
+                                            .withOpacity(0.6),
                                       ),
                                     ),
                                   ),
                                   Expanded(
                                     child: Divider(
-                                      color: theme.colorScheme.onSurface.withOpacity(0.3),
+                                      color: theme.colorScheme.onSurface
+                                          .withOpacity(0.3),
                                     ),
                                   ),
                                 ],
@@ -232,7 +269,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               // Google Sign-In
                               IconButton(
                                 onPressed: () {
-                                  context.read<GoogleLoginBlocCubit>().signInWithGoogle();
+                                  context
+                                      .read<GoogleLoginBlocCubit>()
+                                      .signInWithGoogle();
                                 },
                                 icon: Image.asset(
                                   AppImage.iconGoogle,
@@ -241,34 +280,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                               const SizedBox(height: 20),
-
-                              // Sign Up Link
-                              RichText(
-                                text: TextSpan(
-                                  text: "Don't have an account? ",
-                                  style: textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onSurface.withOpacity(0.6),
-                                  ),
-                                  children: [
-                                    TextSpan(
-                                      text: "Sign Up",
-                                      style: TextStyle(
-                                        color: theme.colorScheme.primary,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
                               TextButton(
                                 onPressed: () {
-                                  context.pushAndRemoveUntil(context, target: const RegistrationScreen());
+                                  context.pushAndRemoveUntil(
+                                    context,
+                                    target: const RegistrationScreen(),
+                                  );
                                 },
                                 child: Text(
                                   AppStrings.notMember,
                                   style: TextStyle(
                                     color: theme.colorScheme.primary,
-                                    decoration: TextDecoration.underline,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),

@@ -14,27 +14,41 @@ class AuthInterceptor extends Interceptor {
   @override
   Future<void> onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
-    // Add JWT token to request if available
-    final token = await AppStrings.secureStorage.read(key: 'jwt_token');
+    try {
+      debugPrint('Reading JWT token...');
+      final token = await AppStrings.secureStorage.read(key: 'jwt_token');
+      debugPrint('Token: $token');
 
-    if (token != null && token.isNotEmpty) {
-      // Check if token is expired before making the request
-      if (JwtDecoder.isExpired(token)) {
-        // Token is expired, redirect to login
-        _redirectToLogin();
+      if (token != null && token.isNotEmpty) {
+        // Check if token is expired before making the request
+        if (JwtDecoder.isExpired(token)) {
+          debugPrint('JWT token expired, redirecting to login');
+          _redirectToLogin();
+          return handler.reject(
+            DioException(
+              requestOptions: options,
+              error: 'JWT token expired',
+              type: DioExceptionType.unknown,
+            ),
+          );
+        }
 
-        // Complete the interceptor with an error
-        return handler.reject(
-          DioException(
-            requestOptions: options,
-            error: 'JWT token expired',
-            type: DioExceptionType.unknown,
-          ),
-        );
+        // Token is valid, add it to headers
+        debugPrint('Adding Bearer token to headers');
+        options.headers['Authorization'] = 'Bearer $token';
+      } else {
+        debugPrint('No JWT token found');
       }
-
-      // Token is valid, add it to headers
-      options.headers['Authorization'] = 'Bearer $token';
+    } catch (e) {
+      debugPrint('Error reading JWT token: $e');
+      _redirectToLogin();
+      return handler.reject(
+        DioException(
+          requestOptions: options,
+          error: 'Failed to read JWT token: $e',
+          type: DioExceptionType.unknown,
+        ),
+      );
     }
 
     return handler.next(options);
@@ -42,8 +56,10 @@ class AuthInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
+    debugPrint('Dio error: ${err.message}, Status: ${err.response?.statusCode}');
     // Check for 401 Unauthorized response (token expired or invalid)
     if (err.response?.statusCode == 401) {
+      debugPrint('Received 401, redirecting to login');
       _redirectToLogin();
     }
 
@@ -51,14 +67,21 @@ class AuthInterceptor extends Interceptor {
   }
 
   void _redirectToLogin() async {
-    // Clear token
-    await AppStrings.secureStorage.delete(key: 'jwt_token');
+    debugPrint('Clearing JWT token and redirecting to LoginScreen');
+    try {
+      await AppStrings.secureStorage.delete(key: 'jwt_token');
+    } catch (e) {
+      debugPrint('Error deleting JWT token: $e');
+    }
 
-    // Use the navigator key to navigate to login screen from anywhere
-    if (navigatorKey.currentContext != null) {
-      // Import here to avoid circular dependency
-      // Using named route to avoid import issues
-       navigatorKey.currentContext?.pushAndRemoveUntil(navigatorKey.currentContext!, target: LoginScreen());
+    final context = navigatorKey.currentContext;
+    if (context != null) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+            (route) => false, // Remove all previous routes
+      );
+    } else {
+      debugPrint('Navigator context is null, cannot redirect');
     }
   }
 }
