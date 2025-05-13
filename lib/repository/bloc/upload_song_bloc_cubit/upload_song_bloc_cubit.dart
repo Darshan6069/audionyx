@@ -5,7 +5,7 @@ import 'upload_song_state.dart';
 class UploadSongBlocCubit extends Cubit<UploadSongState> {
   final UploadSongService uploadSongService = UploadSongService();
 
-  UploadSongBlocCubit(  )
+  UploadSongBlocCubit()
       : super(const UploadSongState.initial());
 
   Future<void> pickSongFile() async {
@@ -14,8 +14,10 @@ class UploadSongBlocCubit extends Cubit<UploadSongState> {
       emit(UploadSongState.initial(
         isSongPicked: uploadSongService.songFileName != null,
         isThumbnailPicked: uploadSongService.thumbnailFileName != null,
+        isLyricsPicked: uploadSongService.lyricsFileName != null,
         songFileName: uploadSongService.songFileName ?? '',
         thumbnailFileName: uploadSongService.thumbnailFileName ?? '',
+        lyricsFileName: uploadSongService.lyricsFileName ?? '',
       ));
     } catch (e) {
       emit(UploadSongState.failure(e.toString()));
@@ -28,6 +30,23 @@ class UploadSongBlocCubit extends Cubit<UploadSongState> {
       emit(UploadSongState.initial(
         isSongPicked: uploadSongService.songFileName != null,
         isThumbnailPicked: uploadSongService.thumbnailFileName != null,
+        isLyricsPicked: uploadSongService.lyricsFileName != null,
+        songFileName: uploadSongService.songFileName ?? '',
+        thumbnailFileName: uploadSongService.thumbnailFileName ?? '',
+        lyricsFileName: uploadSongService.lyricsFileName ?? '',
+      ));
+    } catch (e) {
+      emit(UploadSongState.failure(e.toString()));
+    }
+  }
+
+  Future<void> pickLyricsFile() async {
+    try {
+      await uploadSongService.pickLyricsFile();
+      emit(UploadSongState.initial(
+        isSongPicked: uploadSongService.songFileName != null,
+        isThumbnailPicked: uploadSongService.thumbnailFileName != null,
+        isLyricsPicked: uploadSongService.lyricsFileName != null,
         songFileName: uploadSongService.songFileName ?? '',
         thumbnailFileName: uploadSongService.thumbnailFileName ?? '',
       ));
@@ -49,10 +68,10 @@ class UploadSongBlocCubit extends Cubit<UploadSongState> {
         album: album,
       );
       emit(UploadSongState.success(message));
-    // Reset to initial state with cleared file names
-    emit(const UploadSongState.initial());
+      // Reset to initial state with cleared file names
+      emit(const UploadSongState.initial());
     } catch (e) {
-    emit(UploadSongState.failure(e.toString()));
+      emit(UploadSongState.failure(e.toString()));
     }
   }
 }

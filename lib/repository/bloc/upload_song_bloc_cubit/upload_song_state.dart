@@ -7,8 +7,10 @@ class UploadSongState with _$UploadSongState {
   const factory UploadSongState.initial({
     @Default(false) bool isSongPicked,
     @Default(false) bool isThumbnailPicked,
+    @Default(false) bool isLyricsPicked,
     @Default('') String songFileName,
     @Default('') String thumbnailFileName,
+    @Default('') String lyricsFileName,
   }) = UploadSongInitial;
 
   const factory UploadSongState.loading() = UploadSongLoading;
