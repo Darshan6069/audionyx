@@ -1,6 +1,5 @@
 import 'package:audionyx/presentation/bottom_navigation_bar/search_screen/widget/song_tile.dart';
 import 'package:flutter/material.dart';
-import 'package:audionyx/core/constants/theme_color.dart';
 import 'package:audionyx/domain/song_model/song_model.dart';
 import 'package:audionyx/repository/service/song_service/song_browser_service/song_browser_service.dart';
 
@@ -22,16 +21,20 @@ class SongListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
     if (filteredSongs.isEmpty) {
-      return _buildEmptyView();
+      return _buildEmptyView(context);
     }
 
     return ListView.separated(
       padding: const EdgeInsets.only(bottom: 16),
       itemCount: filteredSongs.length,
-      separatorBuilder: (context, index) => const Divider(
+      separatorBuilder: (context, index) => Divider(
         height: 1,
-        color: ThemeColor.darGreyColor,
+        color: theme.brightness == Brightness.dark
+            ? Colors.white10
+            : Colors.grey[300],
         indent: 76,
         endIndent: 16,
       ),
@@ -44,18 +47,30 @@ class SongListWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyView() {
+  Widget _buildEmptyView(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.music_off, color: ThemeColor.grey, size: 64),
+          Icon(
+              Icons.music_off,
+              color: theme.brightness == Brightness.dark
+                  ? Colors.white38
+                  : Colors.black45,
+              size: 64
+          ),
           const SizedBox(height: 16),
           Text(
             searchQuery.isNotEmpty
                 ? 'No songs matched "$searchQuery"'
                 : 'No songs found with selected filters',
-            style: const TextStyle(color: ThemeColor.grey),
+            style: TextStyle(
+                color: theme.brightness == Brightness.dark
+                    ? Colors.white38
+                    : Colors.black45
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
@@ -63,10 +78,17 @@ class SongListWidget extends StatelessWidget {
             ElevatedButton(
               onPressed: onClearFilters,
               style: ElevatedButton.styleFrom(
-                backgroundColor: ThemeColor.greenAccent,
+                backgroundColor: theme.colorScheme.secondary,
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
-              child: const Text('Clear Filters', style: TextStyle(color: ThemeColor.white)),
+              child: Text(
+                  'Clear Filters',
+                  style: TextStyle(
+                      color: theme.brightness == Brightness.dark
+                          ? Colors.black
+                          : Colors.white
+                  )
+              ),
             ),
         ],
       ),

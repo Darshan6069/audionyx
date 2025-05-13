@@ -1,6 +1,4 @@
-import 'package:audionyx/core/constants/theme_color.dart';
 import 'package:flutter/material.dart';
-
 
 class AuthPrimaryButton extends StatelessWidget {
   final String label;
@@ -14,18 +12,26 @@ class AuthPrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         minimumSize: Size(MediaQuery.of(context).size.width, 49),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(25)),
         ),
-        backgroundColor: ThemeColor.greenColor,
+        // Using primary color from theme instead of hardcoded green
+        backgroundColor: theme.colorScheme.primary,
       ),
       onPressed: onPressed,
       child: Text(
         label,
-        style: const TextStyle(fontFamily: "AB", fontSize: 16, color: ThemeColor.blackColor),
+        style: TextStyle(
+          fontFamily: "AB",
+          fontSize: 16,
+          // Using onPrimary color which will contrast with the primary background
+          color: theme.colorScheme.onPrimary,
+        ),
       ),
     );
   }
@@ -45,13 +51,19 @@ class AuthOutlinedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
         minimumSize: Size(MediaQuery.of(context).size.width, 49),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(25)),
         ),
-        side: const BorderSide(width: 1, color: ThemeColor.lightGrey),
+        side: BorderSide(
+          width: 1,
+          // Using outline color from theme
+          color: theme.colorScheme.outline,
+        ),
       ),
       onPressed: onPressed,
       child: Row(
@@ -60,7 +72,12 @@ class AuthOutlinedButton extends StatelessWidget {
           Image.asset(iconPath),
           Text(
             label,
-            style: const TextStyle(fontFamily: "AB", fontSize: 16, color: ThemeColor.whiteColor),
+            style: TextStyle(
+              fontFamily: "AB",
+              fontSize: 16,
+              // Using proper text color from theme
+              color: theme.colorScheme.onSurface,
+            ),
           ),
           const SizedBox(height: 18, width: 18),
         ],

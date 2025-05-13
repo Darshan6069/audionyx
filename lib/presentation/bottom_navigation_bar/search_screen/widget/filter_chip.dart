@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:audionyx/core/constants/theme_color.dart';
 
 class FilterChipsWidget extends StatelessWidget {
   final String? selectedGenre;
@@ -21,17 +20,22 @@ class FilterChipsWidget extends StatelessWidget {
     required this.onClearAll,
   });
 
-  Widget _buildChip(String label, VoidCallback onDelete) {
+  Widget _buildChip(BuildContext context, String label, VoidCallback onDelete) {
+    final ThemeData theme = Theme.of(context);
     return Chip(
       label: Text(
         label,
-        style: const TextStyle(
-          color: ThemeColor.white,
+        style: TextStyle(
+          color: theme.brightness == Brightness.dark ? Colors.white : Colors.black87,
           fontSize: 12,
         ),
       ),
-      backgroundColor: ThemeColor.darGreyColor,
-      deleteIconColor: ThemeColor.white,
+      backgroundColor: theme.brightness == Brightness.dark
+          ? Colors.white10
+          : Colors.grey[300],
+      deleteIconColor: theme.brightness == Brightness.dark
+          ? Colors.white
+          : Colors.black87,
       onDeleted: onDelete,
     );
   }
@@ -42,6 +46,7 @@ class FilterChipsWidget extends StatelessWidget {
 
     if (selectedGenre != null) {
       chips.add(_buildChip(
+        context,
         "Genre: $selectedGenre",
         onGenreDeleted,
       ));
@@ -49,6 +54,7 @@ class FilterChipsWidget extends StatelessWidget {
 
     if (selectedArtist != null) {
       chips.add(_buildChip(
+        context,
         "Artist: $selectedArtist",
         onArtistDeleted,
       ));
@@ -56,10 +62,13 @@ class FilterChipsWidget extends StatelessWidget {
 
     if (selectedAlbum != null) {
       chips.add(_buildChip(
+        context,
         "Album: $selectedAlbum",
         onAlbumDeleted,
       ));
     }
+
+    final ThemeData theme = Theme.of(context);
 
     return chips.isEmpty
         ? const SizedBox.shrink()
@@ -72,8 +81,14 @@ class FilterChipsWidget extends StatelessWidget {
           ...chips,
           if (chips.length > 1)
             TextButton.icon(
-              icon: const Icon(Icons.clear_all, color: ThemeColor.greenAccent),
-              label: const Text('Clear All', style: TextStyle(color: ThemeColor.greenAccent)),
+              icon: Icon(
+                  Icons.clear_all,
+                  color: theme.colorScheme.secondary
+              ),
+              label: Text(
+                  'Clear All',
+                  style: TextStyle(color: theme.colorScheme.secondary)
+              ),
               onPressed: onClearAll,
             ),
         ],

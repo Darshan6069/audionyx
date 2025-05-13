@@ -1,7 +1,6 @@
 import 'package:audionyx/core/constants/extension.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import '../../core/constants/theme_color.dart';
 import '../../domain/song_model/song_model.dart';
 import '../../repository/service/song_service/recently_play_song/recently_played_manager.dart';
 import '../song_play_screen/song_play_screen.dart';
@@ -19,6 +18,8 @@ class CommonSongCard extends StatefulWidget {
 class _CommonSongCardState extends State<CommonSongCard> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return GestureDetector(
       onTap: () async {
         await RecentlyPlayedManager.addSongToRecentlyPlayed(
@@ -48,18 +49,26 @@ class _CommonSongCardState extends State<CommonSongCard> {
                 height: 150,
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
-                  color: ThemeColor.grey,
+                  // Using surface variant color for the placeholder
+                  color: theme.colorScheme.surfaceVariant,
                   width: 150,
                   height: 150,
-                  child: const Center(child: CircularProgressIndicator()),
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      // Using primary color for the loader
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
                 ),
                 errorWidget: (context, url, error) => Container(
                   width: 150,
                   height: 150,
-                  color: ThemeColor.grey,
-                  child: const Icon(
+                  // Using surface variant for error background
+                  color: theme.colorScheme.surfaceVariant,
+                  child: Icon(
                     Icons.music_note,
-                    color: ThemeColor.white,
+                    // Using on surface variant for the icon
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
               ),
@@ -67,8 +76,9 @@ class _CommonSongCardState extends State<CommonSongCard> {
             const SizedBox(height: 8),
             Text(
               widget.song[widget.index].title,
-              style: const TextStyle(
-                color: ThemeColor.white,
+              style: TextStyle(
+                // Using primary text color from theme
+                color: theme.colorScheme.onBackground,
                 fontWeight: FontWeight.bold,
               ),
               maxLines: 1,
@@ -76,7 +86,11 @@ class _CommonSongCardState extends State<CommonSongCard> {
             ),
             Text(
               widget.song[widget.index].artist,
-              style: const TextStyle(color: ThemeColor.grey, fontSize: 12),
+              style: TextStyle(
+                // Using secondary text color from theme
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontSize: 12
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

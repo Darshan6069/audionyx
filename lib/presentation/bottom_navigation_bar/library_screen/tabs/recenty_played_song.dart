@@ -1,38 +1,47 @@
 import 'package:audionyx/core/constants/extension.dart';
-import 'package:audionyx/core/constants/theme_color.dart';
 import 'package:audionyx/presentation/song_play_screen/song_play_screen.dart';
-import 'package:audionyx/repository/service/song_service/recently_play_song/recently_played_manager.dart';
 import 'package:audionyx/domain/song_model/song_model.dart';
 import 'package:flutter/material.dart';
+
+import '../../../../repository/service/song_service/recently_play_song/recently_played_manager.dart';
 
 class RecentlyPlayedScreen extends StatelessWidget {
   const RecentlyPlayedScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     final isLargeScreen = MediaQuery.of(context).size.width > 600;
 
     return FutureBuilder<List<SongData>>(
       future: RecentlyPlayedManager.loadRecentlyPlayed(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(
+            child: CircularProgressIndicator(
+              color: theme.colorScheme.secondary,
+            ),
+          );
         }
 
         if (snapshot.hasError) {
-          return const Center(
+          return Center(
             child: Text(
               'Error loading recently played songs.',
-              style: TextStyle(color: ThemeColor.white),
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: theme.textTheme.bodyLarge?.color,
+              ),
             ),
           );
         }
 
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(
+          return Center(
             child: Text(
               'No recently played songs.',
-              style: TextStyle(color: ThemeColor.white),
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: theme.textTheme.bodyLarge?.color,
+              ),
             ),
           );
         }
@@ -45,7 +54,13 @@ class RecentlyPlayedScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             final song = recentlyPlayedSongs[index];
 
-            return _buildSongCard(context, song, isLargeScreen, recentlyPlayedSongs, index);
+            return _buildSongCard(
+                context,
+                song,
+                isLargeScreen,
+                recentlyPlayedSongs,
+                index
+            );
           },
         );
       },
@@ -59,20 +74,29 @@ class RecentlyPlayedScreen extends StatelessWidget {
       List<SongData> songList,
       int index,
       ) {
+    final ThemeData theme = Theme.of(context);
     return Card(
-      color: ThemeColor.darGreyColor,
-      elevation: 2,
+      color: theme.brightness == Brightness.dark
+          ? theme.colorScheme.surface
+          : Colors.white,
+      elevation: 1,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: theme.brightness == Brightness.dark
+              ? Colors.white10
+              : Colors.grey[200]!,
+          width: 1,
+        ),
       ),
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
       child: ListTile(
         contentPadding: const EdgeInsets.all(12),
-        leading: _buildSongThumbnail(song, isLargeScreen),
+        leading: _buildSongThumbnail(song, isLargeScreen,context),
         title: Text(
           song.title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            color: ThemeColor.white,
+          style: theme.textTheme.titleMedium?.copyWith(
+            color: theme.textTheme.bodyLarge?.color,
             fontSize: isLargeScreen ? 18 : 16,
             fontWeight: FontWeight.w600,
           ),
@@ -81,8 +105,8 @@ class RecentlyPlayedScreen extends StatelessWidget {
         ),
         subtitle: Text(
           song.artist,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: ThemeColor.white.withOpacity(0.7),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.textTheme.bodyMedium?.color,
             fontSize: isLargeScreen ? 14 : 12,
           ),
           maxLines: 1,
@@ -91,7 +115,7 @@ class RecentlyPlayedScreen extends StatelessWidget {
         trailing: IconButton(
           icon: Icon(
             Icons.play_circle_filled,
-            color: ThemeColor.greenAccent,
+            color: theme.colorScheme.secondary,
             size: isLargeScreen ? 32 : 28,
           ),
           onPressed: () {
@@ -119,7 +143,8 @@ class RecentlyPlayedScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSongThumbnail(SongData song, bool isLargeScreen) {
+  Widget _buildSongThumbnail(SongData song, bool isLargeScreen,BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: song.thumbnailUrl != null
@@ -128,20 +153,22 @@ class RecentlyPlayedScreen extends StatelessWidget {
         width: isLargeScreen ? 60 : 50,
         height: isLargeScreen ? 60 : 50,
         fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => _buildPlaceholderThumbnail(isLargeScreen),
+        errorBuilder: (context, error, stackTrace) =>
+            _buildPlaceholderThumbnail(isLargeScreen,context),
       )
-          : _buildPlaceholderThumbnail(isLargeScreen),
+          : _buildPlaceholderThumbnail(isLargeScreen,context),
     );
   }
 
-  Widget _buildPlaceholderThumbnail(bool isLargeScreen) {
+  Widget _buildPlaceholderThumbnail(bool isLargeScreen,BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     return Container(
       width: isLargeScreen ? 60 : 50,
       height: isLargeScreen ? 60 : 50,
-      color: ThemeColor.white.withOpacity(0.2),
-      child: const Icon(
+      color: theme.colorScheme.surface,
+      child: Icon(
         Icons.music_note,
-        color: ThemeColor.white,
+        color: theme.iconTheme.color,
         size: 24,
       ),
     );

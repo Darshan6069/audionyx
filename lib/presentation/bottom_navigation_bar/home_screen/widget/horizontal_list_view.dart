@@ -1,4 +1,3 @@
-import 'package:audionyx/core/constants/theme_color.dart';
 import 'package:flutter/material.dart';
 
 class HorizontalListView<T> extends StatelessWidget {
@@ -24,8 +23,9 @@ class HorizontalListView<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: ThemeColor.white),
+      return Center(
+        child: CircularProgressIndicator(
+            color: Theme.of(context).colorScheme.primary),
       );
     } else if (isFailed) {
       return Center(
@@ -34,14 +34,14 @@ class HorizontalListView<T> extends StatelessWidget {
           children: [
             Text(
               errorMessage ?? 'Unable to load items',
-              style: const TextStyle(color: ThemeColor.white),
+              style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color),
             ),
             if (onRetry != null)
               TextButton(
                 onPressed: onRetry,
-                child: const Text(
+                child: Text(
                   'Retry',
-                  style: TextStyle(color: ThemeColor.white),
+                  style: TextStyle(color: Theme.of(context).colorScheme.primary),
                 ),
               ),
           ],
@@ -51,7 +51,7 @@ class HorizontalListView<T> extends StatelessWidget {
       return Center(
         child: Text(
           emptyMessage,
-          style: const TextStyle(color: ThemeColor.white),
+          style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color),
         ),
       );
     }

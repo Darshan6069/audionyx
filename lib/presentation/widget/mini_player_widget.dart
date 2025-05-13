@@ -13,6 +13,8 @@ class MiniPlayerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return BlocBuilder<AudioPlayerBlocCubit, AudioPlayerState>(
       builder: (context, state) {
         if (state.currentSong == null) {
@@ -41,19 +43,23 @@ class MiniPlayerWidget extends StatelessWidget {
               },
               child: Container(
                 decoration: BoxDecoration(
+                  // Using theme colors for gradient
                   gradient: LinearGradient(
-                    colors: [Colors.black87, Colors.grey.shade900],
+                    colors: [
+                      theme.colorScheme.surface.withOpacity(0.95),
+                      theme.colorScheme.surfaceVariant.withOpacity(0.95),
+                    ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(16),
                   ),
-                  boxShadow: const [
+                  boxShadow: [
                     BoxShadow(
-                      color: Colors.black26,
+                      color: theme.shadowColor.withOpacity(0.3),
                       blurRadius: 12,
-                      offset: Offset(0, -4),
+                      offset: const Offset(0, -4),
                     ),
                   ],
                 ),
@@ -66,18 +72,20 @@ class MiniPlayerWidget extends StatelessWidget {
                         borderRadius: BorderRadius.circular(2),
                         child: LinearProgressIndicator(
                           value: progress,
-                          backgroundColor: Colors.grey.shade700,
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                              Colors.blueAccent),
+                          // Using theme colors for progress indicator
+                          backgroundColor: theme.colorScheme.surfaceVariant,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            theme.colorScheme.primary,
+                          ),
                         ),
                       ),
                     ),
                     Expanded(
                       child: Row(
                         children: [
-                          _buildAlbumArt(state, height),
-                          _buildTrackInfo(state),
-                          _buildControlButtons(context, state, percentage),
+                          _buildAlbumArt(state, height, theme),
+                          _buildTrackInfo(state, theme),
+                          _buildControlButtons(context, state, percentage, theme),
                         ],
                       ),
                     ),
@@ -92,18 +100,18 @@ class MiniPlayerWidget extends StatelessWidget {
   }
 
   /// Builds the album art container with a shadow and rounded corners.
-  Widget _buildAlbumArt(AudioPlayerState state, double height) {
+  Widget _buildAlbumArt(AudioPlayerState state, double height, ThemeData theme) {
     return Container(
       width: height * 0.8,
       height: height * 0.8,
       margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Colors.black45,
+            color: theme.shadowColor.withOpacity(0.5),
             blurRadius: 6,
-            offset: Offset(2, 2),
+            offset: const Offset(2, 2),
           ),
         ],
       ),
@@ -116,8 +124,12 @@ class MiniPlayerWidget extends StatelessWidget {
           height: height * 0.8,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) => Container(
-            color: Colors.grey[300],
-            child: const Icon(Icons.music_note, size: 30, color: Colors.grey),
+            color: theme.colorScheme.surfaceVariant,
+            child: Icon(
+                Icons.music_note,
+                size: 30,
+                color: theme.colorScheme.onSurfaceVariant
+            ),
           ),
         )
             : File(state.currentSong!.thumbnailUrl).existsSync()
@@ -127,20 +139,28 @@ class MiniPlayerWidget extends StatelessWidget {
           height: height * 0.8,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) => Container(
-            color: Colors.grey[300],
-            child: const Icon(Icons.music_note, size: 30, color: Colors.grey),
+            color: theme.colorScheme.surfaceVariant,
+            child: Icon(
+                Icons.music_note,
+                size: 30,
+                color: theme.colorScheme.onSurfaceVariant
+            ),
           ),
         )
             : Container(
-          color: Colors.grey[300],
-          child: const Icon(Icons.music_note, size: 30, color: Colors.grey),
+          color: theme.colorScheme.surfaceVariant,
+          child: Icon(
+              Icons.music_note,
+              size: 30,
+              color: theme.colorScheme.onSurfaceVariant
+          ),
         ),
       ),
     );
   }
 
   /// Builds the track title and artist information.
-  Widget _buildTrackInfo(AudioPlayerState state) {
+  Widget _buildTrackInfo(AudioPlayerState state, ThemeData theme) {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -150,8 +170,8 @@ class MiniPlayerWidget extends StatelessWidget {
           children: [
             Text(
               state.currentSong!.title,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: theme.colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
               ),
@@ -164,7 +184,7 @@ class MiniPlayerWidget extends StatelessWidget {
                   ? state.currentSong!.artist
                   : 'Unknown Artist',
               style: TextStyle(
-                color: Colors.grey.shade400,
+                color: theme.colorScheme.onSurfaceVariant,
                 fontSize: 14,
               ),
               maxLines: 1,
@@ -178,16 +198,16 @@ class MiniPlayerWidget extends StatelessWidget {
 
   /// Builds the control buttons (play/pause, next, and more options).
   Widget _buildControlButtons(
-      BuildContext context, AudioPlayerState state, double percentage) {
+      BuildContext context, AudioPlayerState state, double percentage, ThemeData theme) {
     return Padding(
-      padding:  EdgeInsets.all(context.width(context) * 0.04),
+      padding: EdgeInsets.all(context.width(context) * 0.04),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _AnimatedIconButton(
             icon: Icon(
               state.isPlaying ? Icons.pause : Icons.play_arrow,
-              color: Colors.white,
+              color: theme.colorScheme.onSurface,
               size: 28,
             ),
             onPressed: () {
@@ -195,9 +215,9 @@ class MiniPlayerWidget extends StatelessWidget {
             },
           ),
           _AnimatedIconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.skip_next,
-              color: Colors.white,
+              color: theme.colorScheme.onSurface,
               size: 28,
             ),
             onPressed: () {

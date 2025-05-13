@@ -1,4 +1,3 @@
-import 'package:audionyx/core/constants/theme_color.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/library_screen/library_screen.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/search_screen/song_browser_screen.dart';
 import 'package:audionyx/presentation/widget/mini_player_widget.dart';
@@ -29,6 +28,8 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
     return Scaffold(
       body: BlocBuilder<AudioPlayerBlocCubit, AudioPlayerState>(
         builder: (context, state) {
@@ -43,11 +44,27 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
           });
         },
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: ThemeColor.white,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(CupertinoIcons.search), label: 'Search'),
-          BottomNavigationBarItem(icon: Icon(Icons.library_music_rounded), label: 'Library'),
+        backgroundColor: theme.brightness == Brightness.dark
+            ? theme.scaffoldBackgroundColor
+            : Colors.white,
+        selectedItemColor: theme.colorScheme.primary,
+        unselectedItemColor: theme.iconTheme.color?.withOpacity(0.6),
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home, color: theme.iconTheme.color?.withOpacity(0.6)),
+            activeIcon: Icon(Icons.home, color: theme.colorScheme.primary),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.search, color: theme.iconTheme.color?.withOpacity(0.6)),
+            activeIcon: Icon(CupertinoIcons.search, color: theme.colorScheme.primary),
+            label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.library_music_rounded, color: theme.iconTheme.color?.withOpacity(0.6)),
+            activeIcon: Icon(Icons.library_music_rounded, color: theme.colorScheme.primary),
+            label: 'Library',
+          ),
         ],
       ),
     );

@@ -1,9 +1,8 @@
 import 'package:audionyx/repository/bloc/upload_song_bloc_cubit/upload_song_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../repository/bloc/upload_song_bloc_cubit/upload_song_bloc_cubit.dart';
-
+import '../../../core/constants/theme_color.dart';
 
 class AddSongsScreen extends StatefulWidget {
   const AddSongsScreen({super.key});
@@ -27,18 +26,27 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final fontScale = screenWidth < 360 ? 0.9 : 1.0;
+
     return BlocConsumer<UploadSongBlocCubit, UploadSongState>(
       listener: (context, state) {
         if (state is UploadSongSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: ThemeColor.greenColor,
+            ),
           );
           titleController.clear();
           artistController.clear();
           albumController.clear();
         } else if (state is UploadSongFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.error)),
+            SnackBar(
+              content: Text(state.error),
+              backgroundColor: ThemeColor.errorColor,
+            ),
           );
         }
       },
@@ -49,40 +57,67 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
         final thumbnailFileName = state is UploadSongInitial ? state.thumbnailFileName : '';
 
         return Scaffold(
-          appBar: AppBar(title: const Text('Add a Song')),
+          backgroundColor: ThemeColor.getBackgroundColor(context),
+          appBar: AppBar(
+            backgroundColor: ThemeColor.getBackgroundColor(context),
+            elevation: 0,
+            title: Text(
+              'Add a Song',
+              style: TextStyle(
+                color: ThemeColor.getTextColor(context),
+                fontSize: 20 * fontScale,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            iconTheme: IconThemeData(color: ThemeColor.getTextColor(context)),
+          ),
           body: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             child: ListView(
               children: [
-                TextField(
+                // Title TextField
+                _buildTextField(
                   controller: titleController,
-                  decoration: const InputDecoration(labelText: 'Title'),
-                  enabled: !isLoading,
+                  label: 'Title',
+                  isEnabled: !isLoading,
+                  fontScale: fontScale,
                 ),
-                TextField(
+                const SizedBox(height: 16),
+                // Artist TextField
+                _buildTextField(
                   controller: artistController,
-                  decoration: const InputDecoration(labelText: 'Artist'),
-                  enabled: !isLoading,
+                  label: 'Artist',
+                  isEnabled: !isLoading,
+                  fontScale: fontScale,
                 ),
-                TextField(
+                const SizedBox(height: 16),
+                // Album TextField
+                _buildTextField(
                   controller: albumController,
-                  decoration: const InputDecoration(labelText: 'Album'),
-                  enabled: !isLoading,
+                  label: 'Album',
+                  isEnabled: !isLoading,
+                  fontScale: fontScale,
                 ),
-                const SizedBox(height: 20),
-                OutlinedButton.icon(
-                  icon: const Icon(Icons.attach_file),
-                  label: Text(songFileName.isEmpty ? 'Pick MP3 File' : songFileName),
+                const SizedBox(height: 24),
+                // Pick MP3 File Button
+                _buildActionButton(
+                  icon: Icons.attach_file,
+                  label: songFileName.isEmpty ? 'Pick MP3 File' : songFileName,
                   onPressed: isLoading ? null : () => cubit.pickSongFile(),
+                  fontScale: fontScale,
                 ),
-                const SizedBox(height: 20),
-                OutlinedButton.icon(
-                  icon: const Icon(Icons.image),
-                  label: Text(thumbnailFileName.isEmpty ? 'Pick Thumbnail Image' : thumbnailFileName),
+                const SizedBox(height: 16),
+                // Pick Thumbnail Button
+                _buildActionButton(
+                  icon: Icons.image,
+                  label: thumbnailFileName.isEmpty ? 'Pick Thumbnail Image' : thumbnailFileName,
                   onPressed: isLoading ? null : () => cubit.pickThumbnailFile(),
+                  fontScale: fontScale,
                 ),
-                const SizedBox(height: 20),
-                ElevatedButton(
+                const SizedBox(height: 24),
+                // Upload Button
+                _buildUploadButton(
+                  isLoading: isLoading,
                   onPressed: isLoading
                       ? null
                       : () => cubit.uploadSong(
@@ -90,15 +125,147 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
                     artist: artistController.text,
                     album: albumController.text,
                   ),
-                  child: isLoading
-                      ? const CircularProgressIndicator()
-                      : const Text('Upload'),
+                  fontScale: fontScale,
                 ),
               ],
             ),
           ),
         );
       },
+    );
+  }
+
+  /// Builds a styled TextField with modern design.
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required bool isEnabled,
+    required double fontScale,
+  }) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return TextField(
+      controller: controller,
+      enabled: isEnabled,
+      style: TextStyle(
+        color: ThemeColor.getTextColor(context),
+        fontSize: 16 * fontScale,
+      ),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(
+          color: ThemeColor.getSecondaryTextColor(context),
+          fontSize: 16 * fontScale,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: isDarkMode ? ThemeColor.grey.withOpacity(0.3) : ThemeColor.grey.withOpacity(0.5),
+            width: 1,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: ThemeColor.getPrimaryColor(context),
+            width: 2,
+          ),
+        ),
+        filled: true,
+        fillColor: isDarkMode ? Colors.white10 : ThemeColor.grey.withOpacity(0.1),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      ),
+    );
+  }
+
+  /// Builds an action button for picking files with tap animation.
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback? onPressed,
+    required double fontScale,
+  }) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return TweenAnimationBuilder(
+      tween: Tween<double>(begin: 1.0, end: 1.0),
+      duration: const Duration(milliseconds: 200),
+      builder: (context, scale, child) {
+        return GestureDetector(
+          onTap: onPressed,
+          child: Transform.scale(
+            scale: scale,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              decoration: BoxDecoration(
+                color: isDarkMode ? Colors.white10 : ThemeColor.grey.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isDarkMode ? ThemeColor.grey.withOpacity(0.3) : ThemeColor.grey.withOpacity(0.5),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    icon,
+                    color: ThemeColor.getTextColor(context),
+                    size: 24 * fontScale,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        color: ThemeColor.getTextColor(context),
+                        fontSize: 16 * fontScale,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  /// Builds the upload button with loading indicator.
+  Widget _buildUploadButton({
+    required bool isLoading,
+    required VoidCallback? onPressed,
+    required double fontScale,
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: ThemeColor.greenColor,
+        foregroundColor: ThemeColor.white,
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        elevation: 2,
+      ),
+      child: isLoading
+          ? SizedBox(
+        width: 24 * fontScale,
+        height: 24 * fontScale,
+        child: const CircularProgressIndicator(
+          color: ThemeColor.white,
+          strokeWidth: 2,
+        ),
+      )
+          : Text(
+        'Upload',
+        style: TextStyle(
+          fontSize: 16 * fontScale,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 }

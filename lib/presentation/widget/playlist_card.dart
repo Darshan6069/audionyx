@@ -1,5 +1,4 @@
 import 'package:audionyx/core/constants/extension.dart';
-import 'package:audionyx/core/constants/theme_color.dart';
 import 'package:flutter/material.dart';
 
 import '../bottom_navigation_bar/home_screen/playlist_management_screen/playlist_screen.dart';
@@ -11,6 +10,7 @@ class PlaylistCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final name = playlist['name'] ?? 'Unnamed Playlist';
     final thumbnailUrl = playlist['thumbnailUrl'] ?? '';
     final id = playlist['_id'] ?? playlist['id'] ?? '';
@@ -42,21 +42,35 @@ class PlaylistCard extends StatelessWidget {
                 errorBuilder: (context, error, stackTrace) => Container(
                   width: 150,
                   height: 150,
-                  color: ThemeColor.grey,
-                  child: const Icon(Icons.music_note, color: ThemeColor.white),
+                  // Using theme surface variant instead of hardcoded grey
+                  color: theme.colorScheme.surfaceVariant,
+                  child: Icon(
+                    Icons.music_note,
+                    // Using theme on surface variant color instead of hardcoded white
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
               )
                   : Container(
                 width: 150,
                 height: 150,
-                color: ThemeColor.grey,
-                child: const Icon(Icons.queue_music, color: ThemeColor.white),
+                // Using theme surface variant color
+                color: theme.colorScheme.surfaceVariant,
+                child: Icon(
+                  Icons.queue_music,
+                  // Using theme on surface variant color
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
             const SizedBox(height: 8),
             Text(
               name,
-              style: const TextStyle(color: ThemeColor.white, fontSize: 14),
+              style: TextStyle(
+                // Using theme on background color instead of hardcoded white
+                  color: theme.colorScheme.onBackground,
+                  fontSize: 14
+              ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),

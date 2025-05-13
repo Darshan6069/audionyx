@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:audionyx/core/constants/theme_color.dart';
 
 class SearchBarWidget extends StatelessWidget {
   final TextEditingController controller;
@@ -19,24 +18,26 @@ class SearchBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       height: 48,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: ThemeColor.darGreyColor,
+        color: theme.inputDecorationTheme.fillColor,
         borderRadius: BorderRadius.circular(24),
       ),
       child: TextField(
         controller: controller,
         focusNode: focusNode,
-        style: const TextStyle(color: ThemeColor.white),
+        style: theme.textTheme.bodyLarge,
         decoration: InputDecoration(
           hintText: 'Search songs, artists, albums...',
-          hintStyle: const TextStyle(color: ThemeColor.grey),
-          prefixIcon: const Icon(Icons.search, color: ThemeColor.grey),
+          hintStyle: theme.textTheme.bodyMedium,
+          prefixIcon: Icon(Icons.search, color: theme.iconTheme.color),
           suffixIcon: searchQuery.isNotEmpty
               ? IconButton(
-            icon: const Icon(Icons.clear, color: ThemeColor.grey),
+            icon: Icon(Icons.clear, color: theme.iconTheme.color),
             onPressed: onClear,
           )
               : null,

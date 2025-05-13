@@ -65,11 +65,15 @@ class _ProgressSliderWidgetState extends State<ProgressSliderWidget> {
                 children: [
                   Text(
                     positionText,
-                    style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
+                    ),
                   ),
                   Text(
                     durationText,
-                    style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onBackground.withOpacity(0.7),
+                    ),
                   ),
                 ],
               ),

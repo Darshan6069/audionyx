@@ -1,3 +1,4 @@
+import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/presentation/song_play_screen/song_play_screen.dart';
 import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_state.dart';
@@ -25,14 +26,21 @@ class PlaylistSongsScreen extends StatefulWidget {
 class _PlaylistSongsScreenState extends State<PlaylistSongsScreen> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return BlocProvider(
       create: (_) => PlaylistBlocCubit(PlaylistService())..fetchSongsFromPlaylist(widget.playlistId),
       child: Scaffold(
-        backgroundColor: ThemeColor.darkBackground,
+        backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: ThemeColor.darkBackground,
-          title: Text(widget.playlistName, style: const TextStyle(color: ThemeColor.white)),
-          iconTheme: const IconThemeData(color: ThemeColor.white),
+          backgroundColor: theme.scaffoldBackgroundColor,
+          title: Text(
+              widget.playlistName,
+              style: textTheme.titleLarge?.copyWith(color: colorScheme.onBackground)
+          ),
+          iconTheme: IconThemeData(color: colorScheme.onBackground),
         ),
         body: BlocConsumer<PlaylistBlocCubit, PlaylistState>(
           listener: (context, state) {
@@ -40,35 +48,37 @@ class _PlaylistSongsScreenState extends State<PlaylistSongsScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.error),
-                  backgroundColor: Colors.red,
+                  backgroundColor: theme.colorScheme.error,
                 ),
               );
             } else if (state is PlaylistSongsFetched && state.songs.isEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Playlist is now empty.'),
-                  backgroundColor: ThemeColor.grey,
+                SnackBar(
+                  content: const Text('Playlist is now empty.'),
+                  backgroundColor: colorScheme.secondary,
                 ),
               );
             }
           },
           builder: (context, state) {
             if (state is PlaylistLoading) {
-              return const Center(child: CircularProgressIndicator(color: ThemeColor.white));
+              return Center(
+                  child: CircularProgressIndicator(color: colorScheme.primary)
+              );
             } else if (state is PlaylistFailure) {
               return Center(
                 child: Text(
                   state.error,
-                  style: const TextStyle(color: Colors.red, fontSize: 16),
+                  style: textTheme.bodyLarge?.copyWith(color: colorScheme.error),
                   textAlign: TextAlign.center,
                 ),
               );
             } else if (state is PlaylistSongsFetched) {
               if (state.songs.isEmpty) {
-                return const Center(
+                return Center(
                   child: Text(
                     'No songs found in this playlist.',
-                    style: TextStyle(color: ThemeColor.white, fontSize: 16),
+                    style: textTheme.bodyLarge?.copyWith(color: colorScheme.onBackground),
                   ),
                 );
               }
@@ -82,46 +92,41 @@ class _PlaylistSongsScreenState extends State<PlaylistSongsScreen> {
                       width: 50,
                       height: 50,
                       fit: BoxFit.cover,
-                      placeholder: (_, __) => Container(color: ThemeColor.grey),
-                      errorWidget: (_, __, ___) => const Icon(Icons.music_note, color: ThemeColor.white),
+                      placeholder: (_, __) => Container(color: colorScheme.surface),
+                      errorWidget: (_, __, ___) => Icon(Icons.music_note, color: colorScheme.onBackground),
                     ),
                     title: Text(
                       song.title,
-                      style: const TextStyle(color: ThemeColor.white),
+                      style: textTheme.bodyLarge?.copyWith(color: colorScheme.onBackground),
                       overflow: TextOverflow.ellipsis,
                     ),
                     subtitle: Text(
                       song.artist ?? 'Unknown Artist',
-                      style: const TextStyle(color: ThemeColor.grey, fontSize: 12),
+                      style: textTheme.bodySmall?.copyWith(color: colorScheme.onBackground.withOpacity(0.6)),
                       overflow: TextOverflow.ellipsis,
                     ),
                     trailing: IconButton(
-                      icon: const Icon(Icons.remove_circle, color: Colors.red),
+                      icon: Icon(Icons.remove_circle, color: colorScheme.error),
                       onPressed: () {
                         _showRemoveSongDialog(context, song, widget.playlistId);
                       },
                     ),
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => SongPlayerScreen(
-                          songList: state.songs,
-                          initialIndex: index,
-                        ),
-                      ),
+                    onTap: () => context.push(context, target: SongPlayerScreen(
+                      songList: state.songs,
+                      initialIndex: index,
                     ),
+                    )
                   );
                 },
               );
             } else {
-              return const Center(child: Text('No songs found.'));
+              return Center(
+                child: Text(
+                  'No songs found.',
+                  style: textTheme.bodyLarge?.copyWith(color: colorScheme.onBackground),
+                ),
+              );
             }
-            return const Center(
-              child: Text(
-                'No songs found.',
-                style: TextStyle(color: ThemeColor.white, fontSize: 16),
-              ),
-            );
           },
         ),
       ),
@@ -129,24 +134,28 @@ class _PlaylistSongsScreenState extends State<PlaylistSongsScreen> {
   }
 
   void _showRemoveSongDialog(BuildContext context, SongData song, String playlistId) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        backgroundColor: ThemeColor.darkBackground,
-        title: const Text(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        title: Text(
           'Remove Song',
-          style: TextStyle(color: ThemeColor.white),
+          style: textTheme.titleMedium?.copyWith(color: colorScheme.onBackground),
         ),
         content: Text(
           'Are you sure you want to remove "${song.title}" from "${widget.playlistName}"?',
-          style: const TextStyle(color: ThemeColor.grey),
+          style: textTheme.bodyMedium?.copyWith(color: colorScheme.onBackground.withOpacity(0.7)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(
+            child: Text(
               'Cancel',
-              style: TextStyle(color: ThemeColor.white),
+              style: TextStyle(color: colorScheme.onBackground),
             ),
           ),
           TextButton(
@@ -154,9 +163,9 @@ class _PlaylistSongsScreenState extends State<PlaylistSongsScreen> {
               context.read<PlaylistBlocCubit>().removeSongFromPlaylist(playlistId, song.id);
               Navigator.pop(dialogContext);
             },
-            child: const Text(
+            child: Text(
               'Remove',
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(color: colorScheme.error),
             ),
           ),
         ],
