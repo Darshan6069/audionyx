@@ -1,8 +1,6 @@
 import 'package:audionyx/core/constants/app_image.dart';
 import 'package:audionyx/core/constants/app_strings.dart';
 import 'package:audionyx/core/constants/extension.dart';
-import 'package:audionyx/presentation/bottom_navigation_bar/search_screen/song_browser_screen.dart';
-import 'package:audionyx/presentation/bottom_navigation_bar/library_screen/tabs/download_song_screen.dart';
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_bloc_cubit.dart';
 import 'package:audionyx/presentation/user_profile_screen/user_profile_screen.dart';
 import 'package:flutter/material.dart';

@@ -1,10 +1,7 @@
 import 'package:audionyx/core/constants/app_strings.dart';
-import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/widget/header.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/widget/horizontal_list_view.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/widget/section_tile.dart';
-import 'package:audionyx/presentation/bottom_navigation_bar/search_screen/song_browser_screen.dart';
-import 'package:audionyx/presentation/bottom_navigation_bar/library_screen/tabs/download_song_screen.dart';
 import 'package:audionyx/presentation/widget/common_song_card.dart';
 import 'package:audionyx/presentation/widget/playlist_card.dart';
 import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_bloc_cubit.dart';
@@ -12,7 +9,6 @@ import 'package:audionyx/repository/bloc/fetch_song_bloc_cubit/fetch_song_state.
 import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_bloc_cubit.dart';
 import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_state.dart';
 import 'package:audionyx/repository/service/song_service/recently_play_song/recently_played_manager.dart';
-import 'package:audionyx/presentation/user_profile_screen/user_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/song_model/song_model.dart';

@@ -32,7 +32,7 @@ class PlaylistTileWidget extends StatelessWidget {
         title: Text(
           title,
           style: textTheme.bodyLarge?.copyWith(
-            color: colorScheme.onBackground,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.w600,
           ),
           maxLines: 1,
@@ -58,13 +58,13 @@ class PlaylistTileWidget extends StatelessWidget {
                 title: Text(
                   'Delete Playlist',
                   style: textTheme.titleMedium?.copyWith(
-                    color: colorScheme.onBackground,
+                    color: colorScheme.onSurface,
                   ),
                 ),
                 content: Text(
                   'Are you sure you want to delete the playlist "$title"?',
                   style: textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onBackground.withOpacity(0.7),
+                    color: colorScheme.onSurface.withOpacity(0.7),
                   ),
                 ),
                 actions: [
@@ -72,7 +72,7 @@ class PlaylistTileWidget extends StatelessWidget {
                     onPressed: () => Navigator.pop(dialogContext),
                     child: Text(
                       'Cancel',
-                      style: TextStyle(color: colorScheme.onBackground),
+                      style: TextStyle(color: colorScheme.onSurface),
                     ),
                   ),
                   ElevatedButton(

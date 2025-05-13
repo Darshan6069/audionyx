@@ -1,4 +1,3 @@
-import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/domain/song_model/song_model.dart';
 import 'package:audionyx/presentation/widget/playlist_selection_popup.dart';
 import 'package:audionyx/presentation/song_play_screen/widget/progress_slider_widget.dart';

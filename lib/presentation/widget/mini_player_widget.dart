@@ -47,7 +47,7 @@ class MiniPlayerWidget extends StatelessWidget {
                   gradient: LinearGradient(
                     colors: [
                       theme.colorScheme.surface.withOpacity(0.95),
-                      theme.colorScheme.surfaceVariant.withOpacity(0.95),
+                      theme.colorScheme.surfaceContainerHighest.withOpacity(0.95),
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -73,7 +73,7 @@ class MiniPlayerWidget extends StatelessWidget {
                         child: LinearProgressIndicator(
                           value: progress,
                           // Using theme colors for progress indicator
-                          backgroundColor: theme.colorScheme.surfaceVariant,
+                          backgroundColor: theme.colorScheme.surfaceContainerHighest,
                           valueColor: AlwaysStoppedAnimation<Color>(
                             theme.colorScheme.primary,
                           ),
@@ -124,7 +124,7 @@ class MiniPlayerWidget extends StatelessWidget {
           height: height * 0.8,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) => Container(
-            color: theme.colorScheme.surfaceVariant,
+            color: theme.colorScheme.surfaceContainerHighest,
             child: Icon(
                 Icons.music_note,
                 size: 30,
@@ -139,7 +139,7 @@ class MiniPlayerWidget extends StatelessWidget {
           height: height * 0.8,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) => Container(
-            color: theme.colorScheme.surfaceVariant,
+            color: theme.colorScheme.surfaceContainerHighest,
             child: Icon(
                 Icons.music_note,
                 size: 30,
@@ -148,7 +148,7 @@ class MiniPlayerWidget extends StatelessWidget {
           ),
         )
             : Container(
-          color: theme.colorScheme.surfaceVariant,
+          color: theme.colorScheme.surfaceContainerHighest,
           child: Icon(
               Icons.music_note,
               size: 30,

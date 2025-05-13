@@ -6,7 +6,6 @@ import 'package:audionyx/presentation/user_profile_screen/upload_song_screen/add
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_bloc_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/constants/theme_color.dart';
 import '../../repository/bloc/theme_cubit/theme_cubit.dart'; // Import ThemeCubit
 
 class UserProfileScreen extends StatefulWidget {
@@ -144,7 +143,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.2),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(

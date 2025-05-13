@@ -159,7 +159,7 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
               gradient: LinearGradient(
                 colors: [
                   Theme.of(context).colorScheme.primary.withOpacity(0.8), // Use primary color
-                  Theme.of(context).colorScheme.background, // Use background color
+                  Theme.of(context).colorScheme.surface, // Use background color
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,

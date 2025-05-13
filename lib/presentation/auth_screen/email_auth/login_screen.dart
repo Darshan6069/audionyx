@@ -119,14 +119,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                 AppStrings.signIn,
                                 style: textTheme.headlineMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: theme.colorScheme.onBackground,
+                                  color: theme.colorScheme.onSurface,
                                 ),
                               ),
                               const SizedBox(height: 10),
                               Text(
                                 AppStrings.ifNeedSupport,
                                 style: textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.onBackground.withOpacity(0.6),
+                                  color: theme.colorScheme.onSurface.withOpacity(0.6),
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -208,7 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 children: [
                                   Expanded(
                                     child: Divider(
-                                      color: theme.colorScheme.onBackground.withOpacity(0.3),
+                                      color: theme.colorScheme.onSurface.withOpacity(0.3),
                                     ),
                                   ),
                                   Padding(
@@ -216,13 +216,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                     child: Text(
                                       AppStrings.or,
                                       style: textTheme.bodyMedium?.copyWith(
-                                        color: theme.colorScheme.onBackground.withOpacity(0.6),
+                                        color: theme.colorScheme.onSurface.withOpacity(0.6),
                                       ),
                                     ),
                                   ),
                                   Expanded(
                                     child: Divider(
-                                      color: theme.colorScheme.onBackground.withOpacity(0.3),
+                                      color: theme.colorScheme.onSurface.withOpacity(0.3),
                                     ),
                                   ),
                                 ],
@@ -247,7 +247,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 text: TextSpan(
                                   text: "Don't have an account? ",
                                   style: textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onBackground.withOpacity(0.6),
+                                    color: theme.colorScheme.onSurface.withOpacity(0.6),
                                   ),
                                   children: [
                                     TextSpan(
