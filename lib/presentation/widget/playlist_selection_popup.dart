@@ -148,7 +148,7 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
                             try {
                               await PlaylistService().addSongToPlaylist(
                                 selectedPlaylistId!,
-                                widget.song.id,
+                                widget.song.id as List<String>,
                               );
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
