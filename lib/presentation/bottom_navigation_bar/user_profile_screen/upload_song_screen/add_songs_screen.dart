@@ -2,8 +2,10 @@ import 'package:audionyx/presentation/widget/comman_textformfield.dart';
 import 'package:audionyx/repository/bloc/upload_song_bloc_cubit/upload_song_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../repository/bloc/upload_song_bloc_cubit/upload_song_bloc_cubit.dart';
-import '../../../core/constants/theme_color.dart';
+
+import '../../../../core/constants/theme_color.dart';
+import '../../../../repository/bloc/upload_song_bloc_cubit/upload_song_bloc_cubit.dart';
+
 
 class AddSongsScreen extends StatefulWidget {
   const AddSongsScreen({super.key});
