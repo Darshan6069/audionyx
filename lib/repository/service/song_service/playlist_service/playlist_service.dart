@@ -13,6 +13,7 @@ class PlaylistService {
     final userId = await _storage.read(key: 'userId');
     return userId;
   }
+  
 
   Future<List<dynamic>> fetchUserPlaylists() async {
     try {
@@ -72,10 +73,7 @@ class PlaylistService {
     }
   }
 
-  Future<Map<String, dynamic>> addSongToPlaylist(
-      String playlistId,
-      String songId,
-      ) async {
+  Future<Map<String, dynamic>> addSongToPlaylist(String playlistId, String songId) async {
     try {
       final response = await _apiService.post(
         'playlists/add-song',
