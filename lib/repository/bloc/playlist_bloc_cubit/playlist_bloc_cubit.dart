@@ -5,71 +5,92 @@ import 'playlist_state.dart';
 class PlaylistBlocCubit extends Cubit<PlaylistState> {
   final PlaylistService _playlistService;
 
-  PlaylistBlocCubit(this._playlistService) : super(const PlaylistState.initial());
+  PlaylistBlocCubit(this._playlistService) : super(const PlaylistState.initial()) {
+    print('PlaylistBlocCubit initialized: ${hashCode}');
+  }
 
   Future<void> fetchPlaylists() async {
+    print('Fetching playlists');
     emit(const PlaylistState.loading());
     try {
       final playlists = await _playlistService.fetchUserPlaylists();
+      print('Playlists fetched: ${playlists.length}');
       emit(PlaylistState.success(playlists));
     } catch (e) {
+      print('Fetch playlists error: $e');
       emit(PlaylistState.failure(e.toString()));
     }
   }
 
   Future<void> createPlaylist(String name) async {
+    print('Creating playlist: $name');
     emit(const PlaylistState.loading());
     try {
       await _playlistService.createPlaylist(name);
       final playlists = await _playlistService.fetchUserPlaylists();
+      print('Playlist created, fetched ${playlists.length} playlists');
       emit(PlaylistState.success(playlists, isNewPlaylistCreated: true));
     } catch (e) {
+      print('Create playlist error: $e');
       emit(PlaylistState.failure(e.toString()));
     }
   }
 
   Future<void> deletePlaylist(String playlistId) async {
+    print('Deleting playlist: $playlistId');
     emit(const PlaylistState.loading());
     try {
       await _playlistService.deletePlaylist(playlistId);
       final playlists = await _playlistService.fetchUserPlaylists();
+      print('Playlist deleted, fetched ${playlists.length} playlists');
       emit(PlaylistState.success(playlists));
     } catch (e) {
+      print('Delete playlist error: $e');
       emit(PlaylistState.failure(e.toString()));
     }
   }
 
-  Future<void> addSongToPlaylist(String playlistId, String songId) async {
+  Future<void> addSongToPlaylist(String playlistId, List<String> songIds) async {
+    print('Adding songs to playlist $playlistId: $songIds');
     emit(const PlaylistState.loading());
     try {
-      await _playlistService.addSongToPlaylist(playlistId, songId);
+      await _playlistService.addSongToPlaylist(playlistId, songIds);
+      final songs = await _playlistService.fetchSongsFromPlaylist(playlistId);
       final playlists = await _playlistService.fetchUserPlaylists();
+      print('Songs added, fetched ${songs.length} songs and ${playlists.length} playlists');
+      emit(PlaylistState.songsFetched(songs));
       emit(PlaylistState.success(playlists));
     } catch (e) {
-      emit(PlaylistState.failure('Failed to add song: ${e.toString()}'));
+      print('Add songs error: $e');
+      emit(PlaylistState.failure('Failed to add songs: ${e.toString()}'));
     }
   }
 
   Future<void> fetchSongsFromPlaylist(String playlistId) async {
+    print('Fetching songs for playlist: $playlistId');
     try {
-      emit(PlaylistLoading());
+      emit(const PlaylistState.loading());
       final songs = await _playlistService.fetchSongsFromPlaylist(playlistId);
-      emit(PlaylistSongsFetched(songs));
+      print('Songs fetched: ${songs.length}');
+      emit(PlaylistState.songsFetched(songs));
     } catch (e) {
-      emit(PlaylistFailure('Failed to fetch songs: $e'));
+      print('Fetch songs error: $e');
+      emit(PlaylistState.failure('Failed to fetch songs: $e'));
     }
   }
 
   Future<void> removeSongFromPlaylist(String playlistId, String songId) async {
+    print('Removing song $songId from playlist $playlistId');
     try {
-      // Call the service to remove the song
       await _playlistService.removeSongFromPlaylist(playlistId, songId);
-
-      // Fetch the updated song list
       final updatedSongs = await _playlistService.fetchSongsFromPlaylist(playlistId);
-      emit(PlaylistSongsFetched(updatedSongs));
+      final playlists = await _playlistService.fetchUserPlaylists();
+      print('Song removed, fetched ${updatedSongs.length} songs and ${playlists.length} playlists');
+      emit(PlaylistState.songsFetched(updatedSongs));
+      emit(PlaylistState.success(playlists));
     } catch (e) {
-      emit(PlaylistFailure('Failed to remove song: $e'));
+      print('Remove song error: $e');
+      emit(PlaylistState.failure('Failed to remove song: $e'));
     }
   }
 }

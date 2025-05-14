@@ -73,11 +73,11 @@ class PlaylistService {
     }
   }
 
-  Future<Map<String, dynamic>> addSongToPlaylist(String playlistId, String songId) async {
+  Future<Map<String, dynamic>> addSongToPlaylist(String playlistId, List<String> songIds) async {
     try {
       final response = await _apiService.post(
         'playlists/add-song',
-        data: {'playlistId': playlistId, 'songId': songId},
+        data: {'playlistId': playlistId, 'songIds': songIds},
       );
 
       if (response.statusCode == 200) {
@@ -86,7 +86,7 @@ class PlaylistService {
         throw Exception(response.data['message'] ?? 'Unknown error');
       }
     } catch (e) {
-      print('Add song error: $e');
+      print('Add songs error: $e');
       rethrow;
     }
   }
