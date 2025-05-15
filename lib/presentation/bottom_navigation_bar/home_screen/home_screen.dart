@@ -99,7 +99,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                     },
                   ),
                 ),
-                const SizedBox(height: 20),
                 const SectionTitle('Recently Played'),
                 const SizedBox(height: 10),
                 SizedBox(
@@ -115,7 +114,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
                 const SectionTitle('Trending Tracks'),
                 const SizedBox(height: 10),
                 SizedBox(

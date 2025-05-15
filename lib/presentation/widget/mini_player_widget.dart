@@ -1,12 +1,14 @@
 import 'dart:io';
-import 'package:audionyx/presentation/song_play_screen/song_play_screen.dart';
+
+import 'package:audionyx/core/constants/extension.dart';
+import 'package:audionyx/presentation/widget/animated_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:miniplayer/miniplayer.dart';
 
-import '../../core/constants/extension.dart';
 import '../../repository/bloc/audio_player_bloc_cubit/audio_player_bloc_cubit.dart';
 import '../../repository/bloc/audio_player_bloc_cubit/audio_player_state.dart';
+import '../song_play_screen/song_play_screen.dart';
 
 class MiniPlayerWidget extends StatelessWidget {
   const MiniPlayerWidget({super.key});
@@ -21,77 +23,98 @@ class MiniPlayerWidget extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        final progress = state.duration.inMilliseconds > 0
-            ? state.position.inMilliseconds / state.duration.inMilliseconds
-            : 0.0;
+        final progress =
+            state.duration.inMilliseconds > 0
+                ? state.position.inMilliseconds / state.duration.inMilliseconds
+                : 0.0;
 
-        return Miniplayer(
-          minHeight: context.height(context) * 0.08,
-          maxHeight: context.height(context) * 0.6,
-          elevation: 8,
-          backgroundColor: Colors.transparent,
-          builder: (height, percentage) {
-            return GestureDetector(
-              onTap: () {
-                context.push(
-                  context,
-                  target: SongPlayerScreen(
-                    initialIndex: state.currentIndex,
-                    songList: state.songList!,
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final minHeight =
+                constraints.maxHeight * 0.08 > 60
+                    ? 60.0
+                    : constraints.maxHeight * 0.08;
+            final maxHeight =
+                constraints.maxHeight * 0.6 > 400
+                    ? 400.0
+                    : constraints.maxHeight * 0.6;
+
+            return Miniplayer(
+              minHeight: minHeight,
+              maxHeight: maxHeight,
+              elevation: 8,
+              backgroundColor: Colors.transparent,
+              builder: (height, percentage) {
+                return GestureDetector(
+                  onTap: () {
+                    context.push(
+                      context,
+                      target: SongPlayerScreen(
+                        initialIndex: state.currentIndex,
+                        songList: state.songList!,
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: constraints.maxWidth, // Explicitly take full width
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          theme.colorScheme.surface.withOpacity(0.95),
+                          theme.colorScheme.surfaceContainerHighest.withOpacity(
+                            0.95,
+                          ),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(16),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: theme.shadowColor.withOpacity(0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, -4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 4,
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(2),
+                            child: LinearProgressIndicator(
+                              value: progress,
+                              backgroundColor:
+                                  theme.colorScheme.surfaceContainerHighest,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                theme.colorScheme.primary,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              _buildAlbumArt(state, height, theme),
+                              Flexible(child: _buildTrackInfo(state, theme)),
+                              _buildControlButtons(
+                                context,
+                                state,
+                                percentage,
+                                theme,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
-              child: Container(
-                decoration: BoxDecoration(
-                  // Using theme colors for gradient
-                  gradient: LinearGradient(
-                    colors: [
-                      theme.colorScheme.surface.withOpacity(0.95),
-                      theme.colorScheme.surfaceContainerHighest.withOpacity(0.95),
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(16),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: theme.shadowColor.withOpacity(0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, -4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 4,
-                      margin: const EdgeInsets.symmetric(horizontal: 8),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(2),
-                        child: LinearProgressIndicator(
-                          value: progress,
-                          // Using theme colors for progress indicator
-                          backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            theme.colorScheme.primary,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Row(
-                        children: [
-                          _buildAlbumArt(state, height, theme),
-                          _buildTrackInfo(state, theme),
-                          _buildControlButtons(context, state, percentage, theme),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             );
           },
         );
@@ -99,11 +122,15 @@ class MiniPlayerWidget extends StatelessWidget {
     );
   }
 
-  /// Builds the album art container with a shadow and rounded corners.
-  Widget _buildAlbumArt(AudioPlayerState state, double height, ThemeData theme) {
+  Widget _buildAlbumArt(
+    AudioPlayerState state,
+    double height,
+    ThemeData theme,
+  ) {
+    final constrainedSize = height * 0.8 > 60 ? 60.0 : height * 0.8;
     return Container(
-      width: height * 0.8,
-      height: height * 0.8,
+      width: constrainedSize,
+      height: constrainedSize,
       margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
@@ -117,49 +144,51 @@ class MiniPlayerWidget extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        child: state.currentSong!.thumbnailUrl.contains('http')
-            ? Image.network(
-          state.currentSong!.thumbnailUrl,
-          width: height * 0.8,
-          height: height * 0.8,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => Container(
-            color: theme.colorScheme.surfaceContainerHighest,
-            child: Icon(
-                Icons.music_note,
-                size: 30,
-                color: theme.colorScheme.onSurfaceVariant
-            ),
-          ),
-        )
-            : File(state.currentSong!.thumbnailUrl).existsSync()
-            ? Image.file(
-          File(state.currentSong!.thumbnailUrl),
-          width: height * 0.8,
-          height: height * 0.8,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => Container(
-            color: theme.colorScheme.surfaceContainerHighest,
-            child: Icon(
-                Icons.music_note,
-                size: 30,
-                color: theme.colorScheme.onSurfaceVariant
-            ),
-          ),
-        )
-            : Container(
-          color: theme.colorScheme.surfaceContainerHighest,
-          child: Icon(
-              Icons.music_note,
-              size: 30,
-              color: theme.colorScheme.onSurfaceVariant
-          ),
-        ),
+        child:
+            state.currentSong!.thumbnailUrl.contains('http')
+                ? Image.network(
+                  state.currentSong!.thumbnailUrl,
+                  width: constrainedSize,
+                  height: constrainedSize,
+                  fit: BoxFit.cover,
+                  errorBuilder:
+                      (context, error, stackTrace) => Container(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        child: Icon(
+                          Icons.music_note,
+                          size: 30,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                )
+                : File(state.currentSong!.thumbnailUrl).existsSync()
+                ? Image.file(
+                  File(state.currentSong!.thumbnailUrl),
+                  width: constrainedSize,
+                  height: constrainedSize,
+                  fit: BoxFit.cover,
+                  errorBuilder:
+                      (context, error, stackTrace) => Container(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        child: Icon(
+                          Icons.music_note,
+                          size: 30,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                )
+                : Container(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  child: Icon(
+                    Icons.music_note,
+                    size: 30,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
       ),
     );
   }
 
-  /// Builds the track title and artist information.
   Widget _buildTrackInfo(AudioPlayerState state, ThemeData theme) {
     return Expanded(
       child: Padding(
@@ -196,15 +225,18 @@ class MiniPlayerWidget extends StatelessWidget {
     );
   }
 
-  /// Builds the control buttons (play/pause, next, and more options).
   Widget _buildControlButtons(
-      BuildContext context, AudioPlayerState state, double percentage, ThemeData theme) {
+    BuildContext context,
+    AudioPlayerState state,
+    double percentage,
+    ThemeData theme,
+  ) {
     return Padding(
-      padding: EdgeInsets.all(context.width(context) * 0.04),
+      padding: const EdgeInsets.all(8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _AnimatedIconButton(
+          AnimatedIconButton(
             icon: Icon(
               state.isPlaying ? Icons.pause : Icons.play_arrow,
               color: theme.colorScheme.onSurface,
@@ -214,7 +246,7 @@ class MiniPlayerWidget extends StatelessWidget {
               context.read<AudioPlayerBlocCubit>().togglePlayPause();
             },
           ),
-          _AnimatedIconButton(
+          AnimatedIconButton(
             icon: Icon(
               Icons.skip_next,
               color: theme.colorScheme.onSurface,
@@ -225,61 +257,6 @@ class MiniPlayerWidget extends StatelessWidget {
             },
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// A custom icon button with a scale animation on tap.
-class _AnimatedIconButton extends StatefulWidget {
-  final Icon icon;
-  final VoidCallback onPressed;
-
-  const _AnimatedIconButton({
-    required this.icon,
-    required this.onPressed,
-  });
-
-  @override
-  State<_AnimatedIconButton> createState() => _AnimatedIconButtonState();
-}
-
-class _AnimatedIconButtonState extends State<_AnimatedIconButton>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 200),
-    );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.8).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => _controller.forward(),
-      onTapUp: (_) => _controller.reverse(),
-      onTapCancel: () => _controller.reverse(),
-      onTap: widget.onPressed,
-      child: ScaleTransition(
-        scale: _scaleAnimation,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: widget.icon,
-        ),
       ),
     );
   }

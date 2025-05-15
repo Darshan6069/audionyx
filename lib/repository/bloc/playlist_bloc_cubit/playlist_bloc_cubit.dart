@@ -6,7 +6,7 @@ class PlaylistBlocCubit extends Cubit<PlaylistState> {
   final PlaylistService _playlistService;
 
   PlaylistBlocCubit(this._playlistService) : super(const PlaylistState.initial()) {
-    print('PlaylistBlocCubit initialized: ${hashCode}');
+    print('PlaylistBlocCubit initialized: $hashCode');
   }
 
   Future<void> fetchPlaylists() async {

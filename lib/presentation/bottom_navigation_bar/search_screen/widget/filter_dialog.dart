@@ -140,7 +140,7 @@ class _FilterDialogState extends State<FilterDialog> {
             hint: Text(hint, style: TextStyle(color: theme.textTheme.bodyMedium?.color)),
             value: value,
             isExpanded: true,
-            dropdownColor: theme.inputDecorationTheme.fillColor,
+            dropdownColor: theme.inputDecorationTheme.prefixIconColor,
             underline: const SizedBox(),
             items: [
               DropdownMenuItem<String>(
