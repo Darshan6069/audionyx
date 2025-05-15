@@ -1,9 +1,6 @@
 import 'package:audionyx/core/constants/app_image.dart';
-import 'package:audionyx/core/constants/app_strings.dart';
 import 'package:audionyx/core/constants/extension.dart';
-import 'package:audionyx/repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_bloc_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../playlist_management_screen/playlist_management_screen.dart';
 

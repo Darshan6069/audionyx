@@ -1,7 +1,9 @@
-import 'package:audionyx/repository/service/song_service/playlist_service/playlist_service.dart';
+import 'package:audionyx/domain/song_model/song_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../repository/bloc/playlist_bloc_cubit/playlist_bloc_cubit.dart';
+import '../../repository/bloc/playlist_bloc_cubit/playlist_state.dart';
 
-import '../../domain/song_model/song_model.dart';
 
 class PlaylistSelectionPopup extends StatefulWidget {
   final SongData song;
@@ -13,14 +15,13 @@ class PlaylistSelectionPopup extends StatefulWidget {
 }
 
 class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
-  late Future<List<dynamic>> playlists;
   String? selectedPlaylistId;
 
   @override
   void initState() {
     super.initState();
-    print('Fetching playlists with token: ${widget.song}');
-    playlists = PlaylistService().fetchUserPlaylists();
+    print('PlaylistSelectionPopup init, song: ${widget.song.title}');
+    context.read<PlaylistBlocCubit>().fetchPlaylists();
   }
 
   @override
@@ -29,168 +30,190 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
 
     return Container(
       padding: const EdgeInsets.all(16.0),
-      height: 300, // Adjust height as needed
-      // Using surface color from theme
+      height: 300,
       color: theme.colorScheme.surface,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: BlocConsumer<PlaylistBlocCubit, PlaylistState>(
+        listener: (context, state) {
+          print('PlaylistState changed: $state');
+          if (state is PlaylistSuccess && state.isNewPlaylistCreated) {
+            print('New playlist created, resetting selection');
+            setState(() {
+              selectedPlaylistId = null;
+            });
+          } else if (state is PlaylistSongsFetched) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Song added to playlist successfully',
+                  style: TextStyle(color: theme.colorScheme.onPrimary),
+                ),
+                backgroundColor: theme.colorScheme.primary,
+              ),
+            );
+            Navigator.pop(context);
+          } else if (state is PlaylistFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Failed to add song: ${state.error}',
+                  style: TextStyle(color: theme.colorScheme.onError),
+                ),
+                backgroundColor: theme.colorScheme.error,
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Add Song to Playlist',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: _buildPlaylistContent(context, state, theme),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildPlaylistContent(BuildContext context, PlaylistState state, ThemeData theme) {
+    if (state is PlaylistLoading) {
+      return Center(
+        child: CircularProgressIndicator(
+          color: theme.colorScheme.primary,
+        ),
+      );
+    } else if (state is PlaylistFailure) {
+      print('Playlist fetch error: ${state.error}');
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Failed to load playlists. Please try again.',
+              style: TextStyle(color: theme.colorScheme.onSurface),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                context.read<PlaylistBlocCubit>().fetchPlaylists();
+              },
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    } else if (state is PlaylistSuccess && state.playlists.isEmpty) {
+      return Center(
+        child: Text(
+          'No playlists found. Create one first.',
+          style: TextStyle(color: theme.colorScheme.onSurface),
+        ),
+      );
+    } else if (state is PlaylistSuccess) {
+      // Safely convert state.playlists to List<Map<String, dynamic>>
+      final playlists = state.playlists
+          .where((item) => item is Map)
+          .map((item) => Map<String, dynamic>.from(item as Map))
+          .where((map) => map['_id'] is String && map['name'] is String)
+          .toList();
+
+      if (playlists.isEmpty) {
+        print('No valid playlists found after filtering');
+        return Center(
+          child: Text(
+            'No valid playlists found.',
+            style: TextStyle(color: theme.colorScheme.onSurface),
+          ),
+        );
+      }
+
+      return Column(
         children: [
-          Text(
-            'Add Song to Playlist',
-            // Using primary text color from theme with proper typography
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface,
+          Container(
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: DropdownButton<String>(
+              hint: Text(
+                'Select Playlist',
+                style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+              ),
+              value: selectedPlaylistId,
+              isExpanded: true,
+              icon: Icon(Icons.arrow_drop_down, color: theme.colorScheme.onSurfaceVariant),
+              underline: const SizedBox(),
+              dropdownColor: theme.colorScheme.surface,
+              onChanged: (value) {
+                print('Selected playlist ID: $value');
+                setState(() {
+                  selectedPlaylistId = value;
+                });
+              },
+              items: playlists.map<DropdownMenuItem<String>>((playlist) {
+                return DropdownMenuItem<String>(
+                  value: playlist['_id'] as String,
+                  child: Text(
+                    playlist['name'] as String,
+                    style: TextStyle(color: theme.colorScheme.onSurface),
+                  ),
+                );
+              }).toList(),
             ),
           ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: FutureBuilder<List<dynamic>>(
-              future: playlists,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: CircularProgressIndicator(
-                      // Using primary color from theme
-                      color: theme.colorScheme.primary,
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                if (selectedPlaylistId == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Please select a playlist',
+                        style: TextStyle(color: theme.colorScheme.onPrimary),
+                      ),
+                      backgroundColor: theme.colorScheme.primary,
                     ),
                   );
-                } else if (snapshot.hasError) {
-                  print('Playlist fetch error: ${snapshot.error}');
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Failed to load playlists. Please try again.',
-                          // Using on surface color from theme
-                          style: TextStyle(color: theme.colorScheme.onSurface),
-                        ),
-                        const SizedBox(height: 10),
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              playlists = PlaylistService().fetchUserPlaylists();
-                            });
-                          },
-                          // Button already uses theme styling from main.dart
-                          child: const Text('Retry'),
-                        ),
-                      ],
-                    ),
-                  );
-                } else {
-                  final playlists = snapshot.data!;
-                  if (playlists.isEmpty) {
-                    return Center(
-                      child: Text(
-                        'No playlists found. Create one first.',
-                        // Using on surface color from theme
-                        style: TextStyle(color: theme.colorScheme.onSurface),
-                      ),
-                    );
-                  }
-                  return Column(
-                    children: [
-                      // Using theme-consistent dropdown
-                      Container(
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: DropdownButton<String>(
-                          hint: Text(
-                            'Select Playlist',
-                            style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
-                          ),
-                          value: selectedPlaylistId,
-                          isExpanded: true,
-                          // Using dropdown theme alignment
-                          icon: Icon(Icons.arrow_drop_down, color: theme.colorScheme.onSurfaceVariant),
-                          underline: const SizedBox(), // Remove underline
-                          dropdownColor: theme.colorScheme.surface,
-                          onChanged: (value) {
-                            print('Selected playlist ID: $value');
-                            setState(() {
-                              selectedPlaylistId = value;
-                            });
-                          },
-                          items: playlists.map<DropdownMenuItem<String>>((playlist) {
-                            return DropdownMenuItem<String>(
-                              value: playlist['_id'],
-                              child: Text(
-                                playlist['name'],
-                                style: TextStyle(color: theme.colorScheme.onSurface),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            if (selectedPlaylistId == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Please select a playlist',
-                                    style: TextStyle(color: theme.colorScheme.onPrimary),
-                                  ),
-                                  backgroundColor: theme.colorScheme.primary,
-                                ),
-                              );
-                              return;
-                            }
-
-                            try {
-                              await PlaylistService().addSongToPlaylist(
-                                selectedPlaylistId!,
-                                widget.song.id as List<String>,
-                              );
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Song added to playlist successfully',
-                                    style: TextStyle(color: theme.colorScheme.onPrimary),
-                                  ),
-                                  backgroundColor: theme.colorScheme.primary,
-                                ),
-                              );
-                              Navigator.pop(context); // Close the bottom sheet
-                            } catch (e) {
-                              print('Add song error: $e');
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Failed to add song. Please try again.',
-                                    style: TextStyle(color: theme.colorScheme.onError),
-                                  ),
-                                  backgroundColor: theme.colorScheme.error,
-                                ),
-                              );
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: theme.colorScheme.primary,
-                            foregroundColor: theme.colorScheme.onPrimary,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: const Text('Add Song'),
-                        ),
-                      ),
-                    ],
-                  );
+                  return;
                 }
+
+                print('Adding song ${widget.song.id} to playlist $selectedPlaylistId');
+                context.read<PlaylistBlocCubit>().addSongToPlaylist(
+                  selectedPlaylistId!,
+                  [widget.song.id],
+                );
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Add Song'),
             ),
           ),
         ],
+      );
+    }
+    return Center(
+      child: Text(
+        'Please wait...',
+        style: TextStyle(color: theme.colorScheme.onSurface),
       ),
     );
   }

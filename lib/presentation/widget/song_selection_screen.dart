@@ -3,7 +3,6 @@ import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_bloc_cubit
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../../../domain/song_model/song_model.dart';
 import '../../repository/bloc/fetch_song_bloc_cubit/fetch_song_state.dart';
 import '../../repository/bloc/playlist_bloc_cubit/playlist_state.dart';
 

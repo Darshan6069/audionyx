@@ -8,11 +8,11 @@ class LoginService {
   final ApiService _apiService;
 
   LoginService(GlobalKey<NavigatorState> navigatorKey)
-      : _apiService = ApiService(navigatorKey);
+    : _apiService = ApiService(navigatorKey);
 
   Future<String> loginUser({
     required String email,
-    required String password,
+    required String password
   }) async {
     if (email.isEmpty || password.isEmpty) {
       throw Exception('All fields are required');

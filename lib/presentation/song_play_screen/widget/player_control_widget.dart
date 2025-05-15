@@ -2,7 +2,7 @@ import 'package:audionyx/domain/song_model/song_model.dart';
 import 'package:audionyx/presentation/widget/playlist_selection_popup.dart';
 import 'package:audionyx/presentation/song_play_screen/widget/progress_slider_widget.dart';
 import 'package:audionyx/repository/service/song_service/audio_service/audio_service.dart';
-import 'package:audionyx/repository/service/song_service/share_song_service/share_song_service.dart'; // Import the new service
+import 'package:audionyx/repository/service/song_service/share_song_service/share_song_service.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
@@ -27,7 +27,6 @@ class PlayerControlsWidget extends StatefulWidget {
 }
 
 class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
-  // Create an instance of the share service
   final ShareSongService _shareSongService = ShareSongService();
 
   @override
@@ -65,8 +64,15 @@ class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
         final isPlaying = playerState?.playing ?? widget.audioPlayerService.isPlaying;
 
         final currentIndex = widget.audioPlayerService.currentIndex ?? 0;
-        final canPlayPrevious = currentIndex > 0;
-        final canPlayNext = currentIndex < widget.songList.length - 1;
+        // Enable previous button if there's a previous song or loop mode is all
+        final canPlayPrevious = currentIndex > 0 || widget.audioPlayerService.loopMode == LoopMode.all;
+        // Enable next button if there's a next song or loop mode is all
+        final canPlayNext = currentIndex < widget.songList.length - 1 || widget.audioPlayerService.loopMode == LoopMode.all;
+
+        // Debug log
+        print('MediaControls: currentIndex=$currentIndex, canPlayPrevious=$canPlayPrevious, '
+            'canPlayNext=$canPlayNext, loopMode=${widget.audioPlayerService.loopMode}, '
+            'songList.length=${widget.songList.length}, isPlaying=$isPlaying');
 
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -87,8 +93,10 @@ class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
               icon: const Icon(Icons.skip_previous, color: Colors.white, size: 32),
               onPressed: canPlayPrevious
                   ? () {
-                print('Playing previous song, currentIndex: $currentIndex');
+                print('Previous button pressed, currentIndex: $currentIndex, '
+                    'songList.length: ${widget.songList.length}');
                 widget.audioPlayerService.playPrevious(widget.songList);
+                setState(() {}); // Force UI refresh
               }
                   : null,
               splashRadius: 24,
@@ -98,8 +106,10 @@ class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
               icon: const Icon(Icons.skip_next, color: Colors.white, size: 32),
               onPressed: canPlayNext
                   ? () {
-                print('Playing next song, currentIndex: $currentIndex');
+                print('Next button pressed, currentIndex: $currentIndex, '
+                    'songList.length: ${widget.songList.length}');
                 widget.audioPlayerService.playNext(widget.songList);
+                setState(() {}); // Force UI refresh
               }
                   : null,
               splashRadius: 24,
@@ -165,15 +175,15 @@ class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 ),
-                backgroundColor: Colors.grey[900], // Match your app's theme
-              );            },
+                backgroundColor: Colors.grey[900],
+              );
+            },
           ),
           _buildActionButton(
             icon: Icons.share,
             label: 'Share',
             color: Colors.blueAccent,
             onPressed: () {
-              // Use the share service instead of inline code
               _shareSongService.shareSong(widget.currentSong, context: context);
             },
           ),

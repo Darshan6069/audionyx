@@ -9,14 +9,14 @@ class CommonTextformfield extends StatefulWidget {
   final bool enabled; // New parameter to control field enable/disable state
 
   const CommonTextformfield({
-    Key? key,
+    super.key,
     required this.controller,
     required this.labelText,
     required this.errorText,
     required this.validator,
     this.isPassword = false, // Default to false for regular text fields
     this.enabled = true, // Default to true to allow editing
-  }) : super(key: key);
+  });
 
   @override
   State<CommonTextformfield> createState() => _CommonTextformfieldState();
