@@ -122,8 +122,8 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
     } else if (state is PlaylistSuccess) {
       // Safely convert state.playlists to List<Map<String, dynamic>>
       final playlists = state.playlists
-          .where((item) => item is Map)
-          .map((item) => Map<String, dynamic>.from(item as Map))
+          .whereType<Map>()
+          .map((item) => Map<String, dynamic>.from(item))
           .where((map) => map['_id'] is String && map['name'] is String)
           .toList();
 

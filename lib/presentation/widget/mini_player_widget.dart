@@ -24,20 +24,20 @@ class MiniPlayerWidget extends StatelessWidget {
         }
 
         final progress =
-            state.duration.inMilliseconds > 0
-                ? state.position.inMilliseconds / state.duration.inMilliseconds
-                : 0.0;
+        state.duration.inMilliseconds > 0
+            ? state.position.inMilliseconds / state.duration.inMilliseconds
+            : 0.0;
 
         return LayoutBuilder(
           builder: (context, constraints) {
             final minHeight =
-                constraints.maxHeight * 0.08 > 60
-                    ? 60.0
-                    : constraints.maxHeight * 0.08;
+            constraints.maxHeight * 0.08 > 60
+                ? 60.0
+                : constraints.maxHeight * 0.08;
             final maxHeight =
-                constraints.maxHeight * 0.6 > 400
-                    ? 400.0
-                    : constraints.maxHeight * 0.6;
+            constraints.maxHeight * 0.6 > 400
+                ? 400.0
+                : constraints.maxHeight * 0.6;
 
             return Miniplayer(
               minHeight: minHeight,
@@ -56,7 +56,7 @@ class MiniPlayerWidget extends StatelessWidget {
                     );
                   },
                   child: Container(
-                    width: constraints.maxWidth, // Explicitly take full width
+                    width: constraints.maxWidth,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
@@ -89,7 +89,7 @@ class MiniPlayerWidget extends StatelessWidget {
                             child: LinearProgressIndicator(
                               value: progress,
                               backgroundColor:
-                                  theme.colorScheme.surfaceContainerHighest,
+                              theme.colorScheme.surfaceContainerHighest,
                               valueColor: AlwaysStoppedAnimation<Color>(
                                 theme.colorScheme.primary,
                               ),
@@ -99,13 +99,22 @@ class MiniPlayerWidget extends StatelessWidget {
                         Expanded(
                           child: Row(
                             children: [
+                              // Album art with fixed size
                               _buildAlbumArt(state, height, theme),
-                              Flexible(child: _buildTrackInfo(state, theme)),
-                              _buildControlButtons(
-                                context,
-                                state,
-                                percentage,
-                                theme,
+                              // Track info with flexible space
+                              Expanded(
+                                flex: 3, // Takes more space
+                                child: _buildTrackInfo(state, theme),
+                              ),
+                              // Control buttons with fixed width
+                              SizedBox(
+                                width: 120, // Fixed width for buttons
+                                child: _buildControlButtons(
+                                  context,
+                                  state,
+                                  percentage,
+                                  theme,
+                                ),
                               ),
                             ],
                           ),
@@ -123,10 +132,10 @@ class MiniPlayerWidget extends StatelessWidget {
   }
 
   Widget _buildAlbumArt(
-    AudioPlayerState state,
-    double height,
-    ThemeData theme,
-  ) {
+      AudioPlayerState state,
+      double height,
+      ThemeData theme,
+      ) {
     final constrainedSize = height * 0.8 > 60 ? 60.0 : height * 0.8;
     return Container(
       width: constrainedSize,
@@ -144,120 +153,113 @@ class MiniPlayerWidget extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        child:
-            state.currentSong!.thumbnailUrl.contains('http')
-                ? Image.network(
-                  state.currentSong!.thumbnailUrl,
-                  width: constrainedSize,
-                  height: constrainedSize,
-                  fit: BoxFit.cover,
-                  errorBuilder:
-                      (context, error, stackTrace) => Container(
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        child: Icon(
-                          Icons.music_note,
-                          size: 30,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                )
-                : File(state.currentSong!.thumbnailUrl).existsSync()
-                ? Image.file(
-                  File(state.currentSong!.thumbnailUrl),
-                  width: constrainedSize,
-                  height: constrainedSize,
-                  fit: BoxFit.cover,
-                  errorBuilder:
-                      (context, error, stackTrace) => Container(
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        child: Icon(
-                          Icons.music_note,
-                          size: 30,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                )
-                : Container(
-                  color: theme.colorScheme.surfaceContainerHighest,
-                  child: Icon(
-                    Icons.music_note,
-                    size: 30,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-      ),
-    );
-  }
-
-  Widget _buildTrackInfo(AudioPlayerState state, ThemeData theme) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              state.currentSong!.title,
-              style: TextStyle(
-                color: theme.colorScheme.onSurface,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+        child: state.currentSong!.thumbnailUrl.contains('http')
+            ? Image.network(
+          state.currentSong!.thumbnailUrl,
+          width: constrainedSize,
+          height: constrainedSize,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => Container(
+            color: theme.colorScheme.surfaceContainerHighest,
+            child: Icon(
+              Icons.music_note,
+              size: 30,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
-            const SizedBox(height: 4),
-            Text(
-              state.currentSong!.artist.isNotEmpty
-                  ? state.currentSong!.artist
-                  : 'Unknown Artist',
-              style: TextStyle(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontSize: 14,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+          ),
+        )
+            : File(state.currentSong!.thumbnailUrl).existsSync()
+            ? Image.file(
+          File(state.currentSong!.thumbnailUrl),
+          width: constrainedSize,
+          height: constrainedSize,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => Container(
+            color: theme.colorScheme.surfaceContainerHighest,
+            child: Icon(
+              Icons.music_note,
+              size: 30,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
-          ],
+          ),
+        )
+            : Container(
+          color: theme.colorScheme.surfaceContainerHighest,
+          child: Icon(
+            Icons.music_note,
+            size: 30,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildControlButtons(
-    BuildContext context,
-    AudioPlayerState state,
-    double percentage,
-    ThemeData theme,
-  ) {
+  Widget _buildTrackInfo(AudioPlayerState state, ThemeData theme) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AnimatedIconButton(
-            icon: Icon(
-              state.isPlaying ? Icons.pause : Icons.play_arrow,
+          Text(
+            state.currentSong!.title,
+            style: TextStyle(
               color: theme.colorScheme.onSurface,
-              size: 28,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
             ),
-            onPressed: () {
-              context.read<AudioPlayerBlocCubit>().togglePlayPause();
-            },
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          AnimatedIconButton(
-            icon: Icon(
-              Icons.skip_next,
-              color: theme.colorScheme.onSurface,
-              size: 28,
+          const SizedBox(height: 4),
+          Text(
+            state.currentSong!.artist.isNotEmpty
+                ? state.currentSong!.artist
+                : 'Unknown Artist',
+            style: TextStyle(
+              color: theme.colorScheme.onSurfaceVariant,
+              fontSize: 14,
             ),
-            onPressed: () {
-              context.read<AudioPlayerBlocCubit>().playNext(state.songList!);
-            },
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildControlButtons(
+      BuildContext context,
+      AudioPlayerState state,
+      double percentage,
+      ThemeData theme,
+      ) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center, // Center buttons horizontally
+      children: [
+        AnimatedIconButton(
+          icon: Icon(
+            state.isPlaying ? Icons.pause : Icons.play_arrow,
+            color: theme.colorScheme.onSurface,
+            size: 28,
+          ),
+          onPressed: () {
+            context.read<AudioPlayerBlocCubit>().togglePlayPause();
+          },
+        ),
+        const SizedBox(width: 8), // Space between buttons
+        AnimatedIconButton(
+          icon: Icon(
+            Icons.skip_next,
+            color: theme.colorScheme.onSurface,
+            size: 28,
+          ),
+          onPressed: () {
+            context.read<AudioPlayerBlocCubit>().playNext(state.songList!);
+          },
+        ),
+      ],
     );
   }
 }

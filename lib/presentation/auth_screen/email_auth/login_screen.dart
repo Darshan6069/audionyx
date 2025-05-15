@@ -276,8 +276,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 },
                                 icon: Image.asset(
                                   AppImage.iconGoogle,
-                                  height: 48,
-                                  color: theme.colorScheme.primary,
+                                  fit: BoxFit.cover,
+                                  height: context.height(context) * 0.03,
                                 ),
                               ),
                               const SizedBox(height: 20),
