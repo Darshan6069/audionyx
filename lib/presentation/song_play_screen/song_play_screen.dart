@@ -7,6 +7,7 @@ import 'package:audionyx/presentation/song_play_screen/widget/song_thumbnail.dar
 import 'package:audionyx/repository/service/song_service/favorite_song_service/favorite_song_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../lyrics_widget.dart';
 import '../../repository/bloc/audio_player_bloc_cubit/audio_player_bloc_cubit.dart';
 import '../../repository/bloc/audio_player_bloc_cubit/audio_player_state.dart';
 
@@ -30,6 +31,7 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
   bool isLiked = false;
   late AnimationController animationController;
   SongData? _lastCheckedSong;
+  bool _isLyricsModalOpen = false;
 
   @override
   void initState() {
@@ -39,7 +41,6 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
       duration: const Duration(milliseconds: 300),
     );
 
-    // Initialize player via cubit
     print('Initializing player with song index: ${widget.initialIndex}');
     context.read<AudioPlayerBlocCubit>().loadAndPlay(
       widget.songList[widget.initialIndex],
@@ -116,7 +117,8 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
       listener: (context, state) {
         print(
           'AudioPlayerState: isLoading=${state.isLoading}, currentSong=${state.currentSong?.id}, '
-          'hasError=${state.hasError}, isPlaying=${state.isPlaying}, position=${state.position}',
+              'hasError=${state.hasError}, isPlaying=${state.isPlaying}, position=${state.position}, '
+              'showLyrics=${state.showLyrics}, lyricsCount=${state.lyrics.length}',
         );
         if (state.position != Duration.zero && state.isPlaying) {
           animationController.forward();
@@ -125,6 +127,19 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
         }
         if (state.currentSong != _lastCheckedSong) {
           _checkFavoriteStatus(state.currentSong);
+        }
+        if (state.showLyrics && !_isLyricsModalOpen && state.lyrics.isNotEmpty) {
+          _showLyricsModal(context, state);
+        } else if (state.showLyrics && state.lyrics.isEmpty) {
+          print('Cannot show lyrics modal: No lyrics available');
+          context.read<AudioPlayerBlocCubit>().toggleLyrics();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('No lyrics available for this song'),
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: Colors.redAccent,
+            ),
+          );
         }
       },
       builder: (context, state) {
@@ -153,13 +168,13 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
         final currentSong = state.currentSong!;
 
         return Scaffold(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor, // Use theme background
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Theme.of(context).colorScheme.primary.withOpacity(0.8), // Use primary color
-                  Theme.of(context).colorScheme.surface, // Use background color
+                  Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                  Theme.of(context).colorScheme.surface,
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -172,7 +187,8 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
                   SongThumbnail(currentSong: currentSong),
                   SongInfoWidget(currentSong: currentSong),
                   PlayerControlsWidget(
-                    audioPlayerService: context.read<AudioPlayerBlocCubit>().service,
+                    audioPlayerService:
+                    context.read<AudioPlayerBlocCubit>().service,
                     songList: widget.songList,
                     currentSong: currentSong,
                     isLiked: isLiked,
@@ -187,11 +203,65 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
     );
   }
 
+  void _showLyricsModal(BuildContext context, AudioPlayerState state) {
+    print('Opening lyrics modal for song: ${state.currentSong?.id}, lyricsCount=${state.lyrics.length}');
+    _isLyricsModalOpen = true;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (modalContext) => BlocProvider.value(
+        value: context.read<AudioPlayerBlocCubit>(),
+        child: DraggableScrollableSheet(
+          initialChildSize: 0.7,
+          minChildSize: 0.3,
+          maxChildSize: 0.9,
+          builder: (context, scrollController) => Container(
+            decoration: const BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              children: [
+                Container(
+                  width: 40,
+                  height: 5,
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[400],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                Expanded(
+                  child: LyricsWidget(
+                    lyrics: state.lyrics,
+                    onLyricTap: (duration) {
+                      print('Seeking to lyric at $duration');
+                      context.read<AudioPlayerBlocCubit>().seekTo(duration);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ).whenComplete(() {
+      print('Closing lyrics modal');
+      if (mounted) {
+        context.read<AudioPlayerBlocCubit>().toggleLyrics();
+        setState(() {
+          _isLyricsModalOpen = false;
+        });
+      }
+    });
+  }
+
   Widget _buildErrorScreen(AudioPlayerState state) {
     final errorMessage =
-        state.hasError
-            ? 'Failed to load audio. Please try again.'
-            : 'No song selected.';
+    state.hasError
+        ? 'Failed to load audio. Please try again.'
+        : 'No song selected.';
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(

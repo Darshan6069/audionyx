@@ -24,20 +24,20 @@ class MiniPlayerWidget extends StatelessWidget {
         }
 
         final progress =
-        state.duration.inMilliseconds > 0
-            ? state.position.inMilliseconds / state.duration.inMilliseconds
-            : 0.0;
+            state.duration.inMilliseconds > 0
+                ? state.position.inMilliseconds / state.duration.inMilliseconds
+                : 0.0;
 
         return LayoutBuilder(
           builder: (context, constraints) {
             final minHeight =
-            constraints.maxHeight * 0.08 > 60
-                ? 60.0
-                : constraints.maxHeight * 0.08;
+                constraints.maxHeight * 0.08 > 60
+                    ? 60.0
+                    : constraints.maxHeight * 0.08;
             final maxHeight =
-            constraints.maxHeight * 0.6 > 400
-                ? 400.0
-                : constraints.maxHeight * 0.6;
+                constraints.maxHeight * 0.6 > 400
+                    ? 400.0
+                    : constraints.maxHeight * 0.6;
 
             return Miniplayer(
               minHeight: minHeight,
@@ -89,7 +89,7 @@ class MiniPlayerWidget extends StatelessWidget {
                             child: LinearProgressIndicator(
                               value: progress,
                               backgroundColor:
-                              theme.colorScheme.surfaceContainerHighest,
+                                  theme.colorScheme.surfaceContainerHighest,
                               valueColor: AlwaysStoppedAnimation<Color>(
                                 theme.colorScheme.primary,
                               ),
@@ -132,10 +132,10 @@ class MiniPlayerWidget extends StatelessWidget {
   }
 
   Widget _buildAlbumArt(
-      AudioPlayerState state,
-      double height,
-      ThemeData theme,
-      ) {
+    AudioPlayerState state,
+    double height,
+    ThemeData theme,
+  ) {
     final constrainedSize = height * 0.8 > 60 ? 60.0 : height * 0.8;
     return Container(
       width: constrainedSize,
@@ -153,44 +153,47 @@ class MiniPlayerWidget extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        child: state.currentSong!.thumbnailUrl.contains('http')
-            ? Image.network(
-          state.currentSong!.thumbnailUrl,
-          width: constrainedSize,
-          height: constrainedSize,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => Container(
-            color: theme.colorScheme.surfaceContainerHighest,
-            child: Icon(
-              Icons.music_note,
-              size: 30,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        )
-            : File(state.currentSong!.thumbnailUrl).existsSync()
-            ? Image.file(
-          File(state.currentSong!.thumbnailUrl),
-          width: constrainedSize,
-          height: constrainedSize,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => Container(
-            color: theme.colorScheme.surfaceContainerHighest,
-            child: Icon(
-              Icons.music_note,
-              size: 30,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        )
-            : Container(
-          color: theme.colorScheme.surfaceContainerHighest,
-          child: Icon(
-            Icons.music_note,
-            size: 30,
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
+        child:
+            state.currentSong!.thumbnailUrl.contains('http')
+                ? Image.network(
+                  state.currentSong!.thumbnailUrl,
+                  width: constrainedSize,
+                  height: constrainedSize,
+                  fit: BoxFit.cover,
+                  errorBuilder:
+                      (context, error, stackTrace) => Container(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        child: Icon(
+                          Icons.music_note,
+                          size: 30,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                )
+                : File(state.currentSong!.thumbnailUrl).existsSync()
+                ? Image.file(
+                  File(state.currentSong!.thumbnailUrl),
+                  width: constrainedSize,
+                  height: constrainedSize,
+                  fit: BoxFit.cover,
+                  errorBuilder:
+                      (context, error, stackTrace) => Container(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        child: Icon(
+                          Icons.music_note,
+                          size: 30,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                )
+                : Container(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  child: Icon(
+                    Icons.music_note,
+                    size: 30,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
       ),
     );
   }
@@ -230,13 +233,14 @@ class MiniPlayerWidget extends StatelessWidget {
   }
 
   Widget _buildControlButtons(
-      BuildContext context,
-      AudioPlayerState state,
-      double percentage,
-      ThemeData theme,
-      ) {
+    BuildContext context,
+    AudioPlayerState state,
+    double percentage,
+    ThemeData theme,
+  ) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center, // Center buttons horizontally
+      mainAxisAlignment: MainAxisAlignment.center,
+      // Center buttons horizontally
       children: [
         AnimatedIconButton(
           icon: Icon(

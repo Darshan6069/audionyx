@@ -28,7 +28,8 @@ class FavoriteSongService {
     }
 
     List<dynamic> decodedList = jsonDecode(favoriteList);
-    List<SongData> songs = decodedList.map((item) => SongData.fromJson(item)).toList();
+    List<SongData> songs =
+        decodedList.map((item) => SongData.fromJson(item)).toList();
 
     // Check if song exists by its ID or unique identifier
     return songs.any((favSong) => favSong.id == song.id);
@@ -49,7 +50,8 @@ class FavoriteSongService {
       currentFavorites.add(song);
 
       // Convert list to JSON and save
-      List<Map<String, dynamic>> jsonList = currentFavorites.map((song) => song.toMap()).toList();
+      List<Map<String, dynamic>> jsonList =
+          currentFavorites.map((song) => song.toMap()).toList();
       await prefs.setString(_favoriteSongsKey, jsonEncode(jsonList));
 
       return true;
@@ -69,7 +71,8 @@ class FavoriteSongService {
       currentFavorites.removeWhere((favSong) => favSong.id == song.id);
 
       // Convert list to JSON and save
-      List<Map<String, dynamic>> jsonList = currentFavorites.map((song) => song.toMap()).toList();
+      List<Map<String, dynamic>> jsonList =
+          currentFavorites.map((song) => song.toMap()).toList();
       await prefs.setString(_favoriteSongsKey, jsonEncode(jsonList));
 
       return true;

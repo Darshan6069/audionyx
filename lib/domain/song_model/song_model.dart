@@ -8,7 +8,7 @@ class SongData {
   final String genre;
   final DateTime? createdAt;
 
-  final String? subtitleUrl; // ✅ New: URL to .srt file
+  final String subtitleUrl; // ✅ New: URL to .srt file
 
   SongData({
     required this.id,
@@ -19,7 +19,7 @@ class SongData {
     this.album = '',
     this.genre = 'Unknown',
     this.createdAt,
-    this.subtitleUrl,
+    required this.subtitleUrl,
   });
 
   Map<String, dynamic> toMap() {
@@ -33,7 +33,14 @@ class SongData {
       'genre': genre,
       'createdAt': createdAt?.toIso8601String(),
       'subtitleUrl': subtitleUrl,
-    }..removeWhere((key, value) => value == null && key != 'id' && key != 'mp3Url' && key != 'title' && key != 'artist');
+    }..removeWhere(
+      (key, value) =>
+          value == null &&
+          key != 'id' &&
+          key != 'mp3Url' &&
+          key != 'title' &&
+          key != 'artist',
+    );
   }
 
   factory SongData.fromJson(Map<String, dynamic> json) {
@@ -45,7 +52,8 @@ class SongData {
       thumbnailUrl: json['thumbnailUrl'] ?? '',
       album: json['album'] ?? '',
       genre: json['genre'] ?? 'Unknown',
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+      createdAt:
+          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
       subtitleUrl: json['subtitleUrl'],
     );
   }

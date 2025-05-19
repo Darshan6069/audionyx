@@ -5,20 +5,21 @@ import 'upload_song_state.dart';
 class UploadSongBlocCubit extends Cubit<UploadSongState> {
   final UploadSongService uploadSongService = UploadSongService();
 
-  UploadSongBlocCubit()
-      : super(const UploadSongState.initial());
+  UploadSongBlocCubit() : super(const UploadSongState.initial());
 
   Future<void> pickSongFile() async {
     try {
       await uploadSongService.pickSongFile();
-      emit(UploadSongState.initial(
-        isSongPicked: uploadSongService.songFileName != null,
-        isThumbnailPicked: uploadSongService.thumbnailFileName != null,
-        isLyricsPicked: uploadSongService.lyricsFileName != null,
-        songFileName: uploadSongService.songFileName ?? '',
-        thumbnailFileName: uploadSongService.thumbnailFileName ?? '',
-        lyricsFileName: uploadSongService.lyricsFileName ?? '',
-      ));
+      emit(
+        UploadSongState.initial(
+          isSongPicked: uploadSongService.songFileName != null,
+          isThumbnailPicked: uploadSongService.thumbnailFileName != null,
+          isLyricsPicked: uploadSongService.lyricsFileName != null,
+          songFileName: uploadSongService.songFileName ?? '',
+          thumbnailFileName: uploadSongService.thumbnailFileName ?? '',
+          lyricsFileName: uploadSongService.lyricsFileName ?? '',
+        ),
+      );
     } catch (e) {
       emit(UploadSongState.failure(e.toString()));
     }
@@ -27,14 +28,16 @@ class UploadSongBlocCubit extends Cubit<UploadSongState> {
   Future<void> pickThumbnailFile() async {
     try {
       await uploadSongService.pickThumbnailFile();
-      emit(UploadSongState.initial(
-        isSongPicked: uploadSongService.songFileName != null,
-        isThumbnailPicked: uploadSongService.thumbnailFileName != null,
-        isLyricsPicked: uploadSongService.lyricsFileName != null,
-        songFileName: uploadSongService.songFileName ?? '',
-        thumbnailFileName: uploadSongService.thumbnailFileName ?? '',
-        lyricsFileName: uploadSongService.lyricsFileName ?? '',
-      ));
+      emit(
+        UploadSongState.initial(
+          isSongPicked: uploadSongService.songFileName != null,
+          isThumbnailPicked: uploadSongService.thumbnailFileName != null,
+          isLyricsPicked: uploadSongService.lyricsFileName != null,
+          songFileName: uploadSongService.songFileName ?? '',
+          thumbnailFileName: uploadSongService.thumbnailFileName ?? '',
+          lyricsFileName: uploadSongService.lyricsFileName ?? '',
+        ),
+      );
     } catch (e) {
       emit(UploadSongState.failure(e.toString()));
     }
@@ -43,13 +46,15 @@ class UploadSongBlocCubit extends Cubit<UploadSongState> {
   Future<void> pickLyricsFile() async {
     try {
       await uploadSongService.pickLyricsFile();
-      emit(UploadSongState.initial(
-        isSongPicked: uploadSongService.songFileName != null,
-        isThumbnailPicked: uploadSongService.thumbnailFileName != null,
-        isLyricsPicked: uploadSongService.lyricsFileName != null,
-        songFileName: uploadSongService.songFileName ?? '',
-        thumbnailFileName: uploadSongService.thumbnailFileName ?? '',
-      ));
+      emit(
+        UploadSongState.initial(
+          isSongPicked: uploadSongService.songFileName != null,
+          isThumbnailPicked: uploadSongService.thumbnailFileName != null,
+          isLyricsPicked: uploadSongService.lyricsFileName != null,
+          songFileName: uploadSongService.songFileName ?? '',
+          thumbnailFileName: uploadSongService.thumbnailFileName ?? '',
+        ),
+      );
     } catch (e) {
       emit(UploadSongState.failure(e.toString()));
     }

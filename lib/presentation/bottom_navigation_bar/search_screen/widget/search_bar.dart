@@ -35,12 +35,13 @@ class SearchBarWidget extends StatelessWidget {
           hintText: 'Search songs, artists, albums...',
           hintStyle: theme.textTheme.bodyMedium,
           prefixIcon: Icon(Icons.search, color: theme.iconTheme.color),
-          suffixIcon: searchQuery.isNotEmpty
-              ? IconButton(
-            icon: Icon(Icons.clear, color: theme.iconTheme.color),
-            onPressed: onClear,
-          )
-              : null,
+          suffixIcon:
+              searchQuery.isNotEmpty
+                  ? IconButton(
+                    icon: Icon(Icons.clear, color: theme.iconTheme.color),
+                    onPressed: onClear,
+                  )
+                  : null,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 12),
         ),

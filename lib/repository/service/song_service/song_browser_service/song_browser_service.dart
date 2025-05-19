@@ -21,13 +21,16 @@ class SongBrowserService {
   }
 
   List<SongData> filterSongs(
-      List<SongData> songs,
-      String searchQuery,
-      String? genre,
-      String? artist,
-      String? album,
-      ) {
-    if (searchQuery.isEmpty && genre == null && artist == null && album == null) {
+    List<SongData> songs,
+    String searchQuery,
+    String? genre,
+    String? artist,
+    String? album,
+  ) {
+    if (searchQuery.isEmpty &&
+        genre == null &&
+        artist == null &&
+        album == null) {
       return songs;
     }
 
@@ -35,7 +38,8 @@ class SongBrowserService {
 
     return songs.where((song) {
       // Handle search query - match against multiple fields with weighted relevance
-      final matchesSearch = searchQuery.isEmpty ||
+      final matchesSearch =
+          searchQuery.isEmpty ||
           song.title.toLowerCase().contains(normalizedQuery) ||
           song.artist.toLowerCase().contains(normalizedQuery) ||
           song.album.toLowerCase().contains(normalizedQuery) ||
@@ -50,7 +54,12 @@ class SongBrowserService {
     }).toList();
   }
 
-  Future<void> playSong(BuildContext context, SongData song, int index, List<SongData> songs) async {
+  Future<void> playSong(
+    BuildContext context,
+    SongData song,
+    int index,
+    List<SongData> songs,
+  ) async {
     try {
       // Add to recently played
       await RecentlyPlayedManager.addSongToRecentlyPlayed(song);
@@ -59,10 +68,9 @@ class SongBrowserService {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => SongPlayerScreen(
-            songList: songs,
-            initialIndex: index,
-          ),
+          builder:
+              (context) =>
+                  SongPlayerScreen(songList: songs, initialIndex: index),
         ),
       );
     } catch (e) {

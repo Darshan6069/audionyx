@@ -9,9 +9,10 @@ class PlaylistState with _$PlaylistState {
   const factory PlaylistState.initial() = PlaylistInitial;
   const factory PlaylistState.loading() = PlaylistLoading;
   const factory PlaylistState.success(
-      List<dynamic> playlists, {
-        @Default(false) bool isNewPlaylistCreated,
-      }) = PlaylistSuccess;
-  const factory PlaylistState.songsFetched(List<SongData> songs) = PlaylistSongsFetched;
+    List<dynamic> playlists, {
+    @Default(false) bool isNewPlaylistCreated,
+  }) = PlaylistSuccess;
+  const factory PlaylistState.songsFetched(List<SongData> songs) =
+      PlaylistSongsFetched;
   const factory PlaylistState.failure(String error) = PlaylistFailure;
 }

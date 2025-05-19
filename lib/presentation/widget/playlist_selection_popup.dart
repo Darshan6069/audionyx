@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../repository/bloc/playlist_bloc_cubit/playlist_bloc_cubit.dart';
 import '../../repository/bloc/playlist_bloc_cubit/playlist_state.dart';
 
-
 class PlaylistSelectionPopup extends StatefulWidget {
   final SongData song;
 
@@ -75,9 +74,7 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
                 ),
               ),
               const SizedBox(height: 16),
-              Expanded(
-                child: _buildPlaylistContent(context, state, theme),
-              ),
+              Expanded(child: _buildPlaylistContent(context, state, theme)),
             ],
           );
         },
@@ -85,12 +82,14 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
     );
   }
 
-  Widget _buildPlaylistContent(BuildContext context, PlaylistState state, ThemeData theme) {
+  Widget _buildPlaylistContent(
+    BuildContext context,
+    PlaylistState state,
+    ThemeData theme,
+  ) {
     if (state is PlaylistLoading) {
       return Center(
-        child: CircularProgressIndicator(
-          color: theme.colorScheme.primary,
-        ),
+        child: CircularProgressIndicator(color: theme.colorScheme.primary),
       );
     } else if (state is PlaylistFailure) {
       print('Playlist fetch error: ${state.error}');
@@ -121,11 +120,12 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
       );
     } else if (state is PlaylistSuccess) {
       // Safely convert state.playlists to List<Map<String, dynamic>>
-      final playlists = state.playlists
-          .whereType<Map>()
-          .map((item) => Map<String, dynamic>.from(item))
-          .where((map) => map['_id'] is String && map['name'] is String)
-          .toList();
+      final playlists =
+          state.playlists
+              .whereType<Map>()
+              .map((item) => Map<String, dynamic>.from(item))
+              .where((map) => map['_id'] is String && map['name'] is String)
+              .toList();
 
       if (playlists.isEmpty) {
         print('No valid playlists found after filtering');
@@ -152,7 +152,10 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
               ),
               value: selectedPlaylistId,
               isExpanded: true,
-              icon: Icon(Icons.arrow_drop_down, color: theme.colorScheme.onSurfaceVariant),
+              icon: Icon(
+                Icons.arrow_drop_down,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
               underline: const SizedBox(),
               dropdownColor: theme.colorScheme.surface,
               onChanged: (value) {
@@ -161,15 +164,16 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
                   selectedPlaylistId = value;
                 });
               },
-              items: playlists.map<DropdownMenuItem<String>>((playlist) {
-                return DropdownMenuItem<String>(
-                  value: playlist['_id'] as String,
-                  child: Text(
-                    playlist['name'] as String,
-                    style: TextStyle(color: theme.colorScheme.onSurface),
-                  ),
-                );
-              }).toList(),
+              items:
+                  playlists.map<DropdownMenuItem<String>>((playlist) {
+                    return DropdownMenuItem<String>(
+                      value: playlist['_id'] as String,
+                      child: Text(
+                        playlist['name'] as String,
+                        style: TextStyle(color: theme.colorScheme.onSurface),
+                      ),
+                    );
+                  }).toList(),
             ),
           ),
           const SizedBox(height: 20),
@@ -190,7 +194,9 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
                   return;
                 }
 
-                print('Adding song ${widget.song.id} to playlist $selectedPlaylistId');
+                print(
+                  'Adding song ${widget.song.id} to playlist $selectedPlaylistId',
+                );
                 context.read<PlaylistBlocCubit>().addSongToPlaylist(
                   selectedPlaylistId!,
                   [widget.song.id],

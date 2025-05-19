@@ -6,11 +6,10 @@ class ThemeColor {
   static const darGreyColor = Color(0xff282828);
   static const lightGrey = Color(0xff777777);
 
-  static const  darkBackground = Color(0xFF121212);
-  static const  greenAccent = Color(0xFF1DB954);
-  static const  white = Colors.white;
-  static const  grey = Color(0xFFB3B3B3);
-
+  static const darkBackground = Color(0xFF121212);
+  static const greenAccent = Color(0xFF1DB954);
+  static const white = Colors.white;
+  static const grey = Color(0xFFB3B3B3);
 
   static const Color black = Colors.black;
   static const Color greenColor = Color(0xFF1DB954); // Spotify-like green
@@ -25,9 +24,7 @@ class ThemeColor {
   }
 
   static Color getTextColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.light
-        ? black
-        : white;
+    return Theme.of(context).brightness == Brightness.light ? black : white;
   }
 
   static Color getSecondaryTextColor(BuildContext context) {

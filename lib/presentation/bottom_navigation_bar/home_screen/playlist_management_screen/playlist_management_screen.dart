@@ -1,3 +1,5 @@
+import 'package:audionyx/core/constants/extension.dart';
+import 'package:audionyx/presentation/auth_screen/email_auth/login_screen.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/playlist_management_screen/playlist_screen.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/playlist_management_screen/widget/create_playlist_dialog_widget.dart';
 import 'package:audionyx/presentation/bottom_navigation_bar/home_screen/playlist_management_screen/widget/playlist_tile_widget.dart';
@@ -5,8 +7,6 @@ import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_bloc_cubit
 import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:audionyx/core/constants/extension.dart';
-import 'package:audionyx/presentation/auth_screen/email_auth/login_screen.dart';
 
 class PlaylistManagementScreen extends StatefulWidget {
   final bool showAppBar; // New parameter to control AppBar visibility
@@ -30,16 +30,17 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
   void _showCreatePlaylistDialog() {
     showDialog(
       context: context,
-      builder: (context) => CreatePlaylistDialogWidget(
-        controller: _playlistNameController,
-        onCreate: (playlistName) {
-          // When creating a playlist, we'll handle the UI update in the BlocConsumer
-          context.read<PlaylistBlocCubit>().createPlaylist(playlistName);
-          _playlistNameController.clear();
-          Navigator.pop(context);
-        },
-        onCancel: () => Navigator.pop(context),
-      ),
+      builder:
+          (context) => CreatePlaylistDialogWidget(
+            controller: _playlistNameController,
+            onCreate: (playlistName) {
+              // When creating a playlist, we'll handle the UI update in the BlocConsumer
+              context.read<PlaylistBlocCubit>().createPlaylist(playlistName);
+              _playlistNameController.clear();
+              Navigator.pop(context);
+            },
+            onCancel: () => Navigator.pop(context),
+          ),
     );
   }
 
@@ -88,47 +89,53 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
 
         return Scaffold(
           backgroundColor: theme.scaffoldBackgroundColor,
-          appBar: widget.showAppBar
-              ? AppBar(
-            title: Text(
-              'My Playlists',
-              style: textTheme.headlineSmall?.copyWith(
-                color: colorScheme.onSurface,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            flexibleSpace: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    colorScheme.surface.withOpacity(0.8),
-                    theme.scaffoldBackgroundColor,
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-            ),
-          )
-              : null,
-          floatingActionButton: showFAB
-              ? FloatingActionButton(
-            onPressed: _showCreatePlaylistDialog,
-            tooltip: 'Create Playlist',
-            backgroundColor: colorScheme.primary,
-            child: Icon(Icons.add, color: colorScheme.onPrimary),
-          )
-              : null,
+          appBar:
+              widget.showAppBar
+                  ? AppBar(
+                    title: Text(
+                      'My Playlists',
+                      style: textTheme.headlineSmall?.copyWith(
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    flexibleSpace: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            colorScheme.surface.withOpacity(0.8),
+                            theme.scaffoldBackgroundColor,
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
+                    ),
+                  )
+                  : null,
+          floatingActionButton:
+              showFAB
+                  ? FloatingActionButton(
+                    onPressed: _showCreatePlaylistDialog,
+                    tooltip: 'Create Playlist',
+                    backgroundColor: colorScheme.primary,
+                    child: Icon(Icons.add, color: colorScheme.onPrimary),
+                  )
+                  : null,
           body: _buildBody(context, state, colorScheme, textTheme),
         );
       },
     );
   }
 
-  Widget _buildBody(BuildContext context, PlaylistState state,
-      ColorScheme colorScheme, TextTheme textTheme) {
+  Widget _buildBody(
+    BuildContext context,
+    PlaylistState state,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+  ) {
     if (state is PlaylistInitial || state is PlaylistLoading) {
       return Center(
         child: CircularProgressIndicator(color: colorScheme.primary),
@@ -139,11 +146,7 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.queue_music,
-                color: colorScheme.secondary,
-                size: 80,
-              ),
+              Icon(Icons.queue_music, color: colorScheme.secondary, size: 80),
               const SizedBox(height: 16),
               Text(
                 'No playlists yet',
@@ -182,27 +185,24 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
         );
       }
       return ListView.builder(
-        padding: const EdgeInsets.symmetric(
-          vertical: 8,
-          horizontal: 16,
-        ),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         itemCount: state.playlists.length,
         itemBuilder: (context, index) {
           final playlist = state.playlists[index];
-          final title =
-              playlist['name']?.toString() ?? 'Unknown Playlist';
+          final title = playlist['name']?.toString() ?? 'Unknown Playlist';
           final playlistId = playlist['_id']?.toString() ?? '';
 
           return PlaylistTileWidget(
             title: title,
             playlistId: playlistId,
-            onTap: () => context.push(
-              context,
-              target: PlaylistSongsScreen(
-                playlistId: playlistId,
-                playlistName: title,
-              ),
-            ),
+            onTap:
+                () => context.push(
+                  context,
+                  target: PlaylistSongsScreen(
+                    playlistId: playlistId,
+                    playlistName: title,
+                  ),
+                ),
             onDelete: () {
               if (playlistId.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -216,9 +216,7 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
                 );
                 return;
               }
-              context.read<PlaylistBlocCubit>().deletePlaylist(
-                playlistId,
-              );
+              context.read<PlaylistBlocCubit>().deletePlaylist(playlistId);
             },
           );
         },
@@ -228,11 +226,7 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              color: colorScheme.error,
-              size: 80,
-            ),
+            Icon(Icons.error_outline, color: colorScheme.error, size: 80),
             const SizedBox(height: 16),
             Text(
               state.error,
@@ -243,7 +237,8 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () => context.read<PlaylistBlocCubit>().fetchPlaylists(),
+              onPressed:
+                  () => context.read<PlaylistBlocCubit>().fetchPlaylists(),
               style: ElevatedButton.styleFrom(
                 backgroundColor: colorScheme.primary,
                 padding: const EdgeInsets.symmetric(
@@ -266,4 +261,3 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
     return const SizedBox.shrink();
   }
 }
-

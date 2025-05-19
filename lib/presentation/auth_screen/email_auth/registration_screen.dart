@@ -34,7 +34,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -43,7 +42,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => RegistrationBlocCubit()),
-        BlocProvider(create: (context) => GoogleLoginBlocCubit(GoogleAuthService())),
+        BlocProvider(
+          create: (context) => GoogleLoginBlocCubit(GoogleAuthService()),
+        ),
       ],
       child: Scaffold(
         body: SafeArea(
@@ -57,15 +58,24 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       if (state is RegistrationSuccess) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(state.message, style: textTheme.bodyMedium),
+                            content: Text(
+                              state.message,
+                              style: textTheme.bodyMedium,
+                            ),
                             backgroundColor: theme.colorScheme.primary,
                           ),
                         );
-                        context.pushAndRemoveUntil(context, target: const LoginScreen());
+                        context.pushAndRemoveUntil(
+                          context,
+                          target: const LoginScreen(),
+                        );
                       } else if (state is RegistrationFailure) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(state.error, style: textTheme.bodyMedium),
+                            content: Text(
+                              state.error,
+                              style: textTheme.bodyMedium,
+                            ),
                             backgroundColor: theme.colorScheme.error,
                           ),
                         );
@@ -77,15 +87,24 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       if (state is LoginSuccess) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Google Sign-In successful', style: textTheme.bodyMedium),
+                            content: Text(
+                              'Google Sign-In successful',
+                              style: textTheme.bodyMedium,
+                            ),
                             backgroundColor: theme.colorScheme.primary,
                           ),
                         );
-                        context.pushAndRemoveUntil(context, target: const BottomNavigationBarScreen());
+                        context.pushAndRemoveUntil(
+                          context,
+                          target: const BottomNavigationBarScreen(),
+                        );
                       } else if (state is LoginFailure) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(state.error, style: textTheme.bodyMedium),
+                            content: Text(
+                              state.error,
+                              style: textTheme.bodyMedium,
+                            ),
                             backgroundColor: theme.colorScheme.error,
                           ),
                         );
@@ -107,11 +126,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 tag: 'app_logo',
                                 child: CircleAvatar(
                                   radius: 60,
-                                  backgroundColor: theme.colorScheme.primaryContainer,
-                                  child: Image.asset(
-                                    AppImage.logo,
-                                    height: 80,
-                                  ),
+                                  backgroundColor:
+                                      theme.colorScheme.primaryContainer,
+                                  child: Image.asset(AppImage.logo, height: 80),
                                 ),
                               ),
                               const SizedBox(height: 40),
@@ -128,7 +145,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               Text(
                                 AppStrings.ifNeedSupport,
                                 style: textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                                  color: theme.colorScheme.onSurface
+                                      .withOpacity(0.6),
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -140,7 +158,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 labelText: AppStrings.labelTextForUserName,
                                 errorText: AppStrings.errorTextForUserName,
                                 validator: (value) {
-                                  final nameRegex = RegExp(AppStrings.nameRegex);
+                                  final nameRegex = RegExp(
+                                    AppStrings.nameRegex,
+                                  );
                                   if (value == null || value.isEmpty) {
                                     return 'Name is required';
                                   } else if (!nameRegex.hasMatch(value)) {
@@ -157,7 +177,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 labelText: AppStrings.labelTextForEmail,
                                 errorText: AppStrings.errorTextForEmail,
                                 validator: (value) {
-                                  final emailRegex = RegExp(AppStrings.emailRegex);
+                                  final emailRegex = RegExp(
+                                    AppStrings.emailRegex,
+                                  );
                                   if (value == null || value.isEmpty) {
                                     return 'Email is required';
                                   } else if (!emailRegex.hasMatch(value)) {
@@ -173,9 +195,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 controller: _passwordController,
                                 labelText: AppStrings.labelTextForPassword,
                                 errorText: AppStrings.errorTextForPassword,
-                                isPassword: true,  // Enable password masking
+                                isPassword: true, // Enable password masking
                                 validator: (value) {
-                                  final passwordRegex = RegExp(AppStrings.passwordRegex);
+                                  final passwordRegex = RegExp(
+                                    AppStrings.passwordRegex,
+                                  );
                                   if (value == null || value.isEmpty) {
                                     return 'Password is required';
                                   } else if (!passwordRegex.hasMatch(value)) {
@@ -188,20 +212,31 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               const SizedBox(height: 24),
 
                               // Register Button or Loading Indicator
-                              regState is RegistrationLoading || googleState is LoginLoading
-                                  ? CircularProgressIndicator(color: theme.colorScheme.primary)
+                              regState is RegistrationLoading ||
+                                      googleState is LoginLoading
+                                  ? CircularProgressIndicator(
+                                    color: theme.colorScheme.primary,
+                                  )
                                   : AuthPrimaryButton(
-                                label: AppStrings.registerHere,
-                                onPressed: (){
-                                  if (_formKey.currentState?.validate() ?? false) {
-                                    context.read<RegistrationBlocCubit>().registerUser(
-                                      name: _fullNameController.text.trim(),
-                                      email: _emailController.text.trim(),
-                                      password: _passwordController.text.trim(),
-                                    );
-                                  }
-                                },
-                              ),
+                                    label: AppStrings.registerHere,
+                                    onPressed: () {
+                                      if (_formKey.currentState?.validate() ??
+                                          false) {
+                                        context
+                                            .read<RegistrationBlocCubit>()
+                                            .registerUser(
+                                              name:
+                                                  _fullNameController.text
+                                                      .trim(),
+                                              email:
+                                                  _emailController.text.trim(),
+                                              password:
+                                                  _passwordController.text
+                                                      .trim(),
+                                            );
+                                      }
+                                    },
+                                  ),
 
                               const SizedBox(height: 20),
 
@@ -210,21 +245,26 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 children: [
                                   Expanded(
                                     child: Divider(
-                                      color: theme.colorScheme.onSurface.withOpacity(0.3),
+                                      color: theme.colorScheme.onSurface
+                                          .withOpacity(0.3),
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
                                     child: Text(
                                       AppStrings.or,
                                       style: textTheme.bodyMedium?.copyWith(
-                                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                                        color: theme.colorScheme.onSurface
+                                            .withOpacity(0.6),
                                       ),
                                     ),
                                   ),
                                   Expanded(
                                     child: Divider(
-                                      color: theme.colorScheme.onSurface.withOpacity(0.3),
+                                      color: theme.colorScheme.onSurface
+                                          .withOpacity(0.3),
                                     ),
                                   ),
                                 ],
@@ -234,7 +274,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               // Google Sign-In
                               IconButton(
                                 onPressed: () {
-                                  context.read<GoogleLoginBlocCubit>().signInWithGoogle();
+                                  context
+                                      .read<GoogleLoginBlocCubit>()
+                                      .signInWithGoogle();
                                 },
                                 icon: Image.asset(
                                   AppImage.iconGoogle,
@@ -245,7 +287,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               const SizedBox(height: 20),
                               TextButton(
                                 onPressed: () {
-                                  context.pushAndRemoveUntil(context, target: const LoginScreen());
+                                  context.pushAndRemoveUntil(
+                                    context,
+                                    target: const LoginScreen(),
+                                  );
                                 },
                                 child: Text(
                                   AppStrings.haveAccount,

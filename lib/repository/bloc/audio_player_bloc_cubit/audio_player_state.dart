@@ -2,6 +2,8 @@ import 'package:just_audio/just_audio.dart';
 import 'package:audionyx/domain/song_model/song_model.dart';
 import 'dart:typed_data';
 
+import '../../../lyrics_model.dart';
+
 class AudioPlayerState {
   final Duration position;
   final Duration duration;
@@ -15,6 +17,8 @@ class AudioPlayerState {
   final int currentIndex;
   final bool isLoading;
   final bool hasError;
+  final List<Lyric> lyrics;
+  final bool showLyrics;
 
   AudioPlayerState({
     required this.position,
@@ -29,6 +33,8 @@ class AudioPlayerState {
     required this.currentIndex,
     required this.isLoading,
     required this.hasError,
+    this.lyrics = const [],
+    this.showLyrics = false,
   });
 
   factory AudioPlayerState.initial() => AudioPlayerState(
@@ -44,6 +50,8 @@ class AudioPlayerState {
     currentIndex: 0,
     isLoading: false,
     hasError: false,
+    lyrics: const [],
+    showLyrics: false,
   );
 
   AudioPlayerState copyWith({
@@ -59,6 +67,8 @@ class AudioPlayerState {
     int? currentIndex,
     bool? isLoading,
     bool? hasError,
+    List<Lyric>? lyrics,
+    bool? showLyrics,
   }) {
     return AudioPlayerState(
       position: position ?? this.position,
@@ -73,6 +83,8 @@ class AudioPlayerState {
       currentIndex: currentIndex ?? this.currentIndex,
       isLoading: isLoading ?? this.isLoading,
       hasError: hasError ?? this.hasError,
+      lyrics: lyrics ?? this.lyrics,
+      showLyrics: showLyrics ?? this.showLyrics,
     );
   }
 }

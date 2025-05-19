@@ -6,10 +6,9 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import '../../../../main.dart';
 import '../../../service/auth_service/login_service.dart';
 
-class   LoginBlocCubit extends Cubit<LoginState> {
+class LoginBlocCubit extends Cubit<LoginState> {
   final LoginService loginService = LoginService(navigatorKey);
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
-
 
   LoginBlocCubit() : super(const LoginState.initial());
 

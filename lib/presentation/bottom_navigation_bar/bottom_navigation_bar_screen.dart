@@ -43,7 +43,9 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
         const HomeScreen(),
         const SongBrowserScreen(),
         const LibraryScreen(),
-        UserProfileScreen(userId: _userId ?? ''), // Fallback to empty string if null
+        UserProfileScreen(
+          userId: _userId ?? '',
+        ), // Fallback to empty string if null
       ];
     });
   }
@@ -54,15 +56,15 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
 
     // Show a loading indicator while userId is being fetched
     if (_isLoadingUserId) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
       body: BlocBuilder<AudioPlayerBlocCubit, AudioPlayerState>(
         builder: (context, state) {
-          return Stack(children: [_screens[_currentIndex], const MiniPlayerWidget()]);
+          return Stack(
+            children: [_screens[_currentIndex], const MiniPlayerWidget()],
+          );
         },
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -73,29 +75,48 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
           });
         },
         type: BottomNavigationBarType.fixed,
-        backgroundColor: theme.brightness == Brightness.dark
-            ? theme.scaffoldBackgroundColor
-            : Colors.white,
+        backgroundColor:
+            theme.brightness == Brightness.dark
+                ? theme.scaffoldBackgroundColor
+                : Colors.white,
         selectedItemColor: theme.colorScheme.primary,
         unselectedItemColor: theme.iconTheme.color?.withOpacity(0.6),
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: theme.iconTheme.color?.withOpacity(0.6)),
+            icon: Icon(
+              Icons.home,
+              color: theme.iconTheme.color?.withOpacity(0.6),
+            ),
             activeIcon: Icon(Icons.home, color: theme.colorScheme.primary),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.search, color: theme.iconTheme.color?.withOpacity(0.6)),
-            activeIcon: Icon(CupertinoIcons.search, color: theme.colorScheme.primary),
+            icon: Icon(
+              CupertinoIcons.search,
+              color: theme.iconTheme.color?.withOpacity(0.6),
+            ),
+            activeIcon: Icon(
+              CupertinoIcons.search,
+              color: theme.colorScheme.primary,
+            ),
             label: 'Search',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.library_music_rounded, color: theme.iconTheme.color?.withOpacity(0.6)),
-            activeIcon: Icon(Icons.library_music_rounded, color: theme.colorScheme.primary),
+            icon: Icon(
+              Icons.library_music_rounded,
+              color: theme.iconTheme.color?.withOpacity(0.6),
+            ),
+            activeIcon: Icon(
+              Icons.library_music_rounded,
+              color: theme.colorScheme.primary,
+            ),
             label: 'Library',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person, color: theme.iconTheme.color?.withOpacity(0.6)),
+            icon: Icon(
+              Icons.person,
+              color: theme.iconTheme.color?.withOpacity(0.6),
+            ),
             activeIcon: Icon(Icons.person, color: theme.colorScheme.primary),
             label: 'Profile',
           ),

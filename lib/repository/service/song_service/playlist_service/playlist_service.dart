@@ -8,12 +8,10 @@ class PlaylistService {
   final _storage = const FlutterSecureStorage();
   final ApiService _apiService = ApiService(navigatorKey);
 
-
   Future<String?> _getUserId() async {
     final userId = await _storage.read(key: 'userId');
     return userId;
   }
-  
 
   Future<List<dynamic>> fetchUserPlaylists() async {
     try {
@@ -73,7 +71,10 @@ class PlaylistService {
     }
   }
 
-  Future<Map<String, dynamic>> addSongToPlaylist(String playlistId, List<String> songIds) async {
+  Future<Map<String, dynamic>> addSongToPlaylist(
+    String playlistId,
+    List<String> songIds,
+  ) async {
     try {
       final response = await _apiService.post(
         'playlists/add-song',
@@ -97,7 +98,8 @@ class PlaylistService {
 
       if (response.statusCode == 200) {
         final data = response.data['songs']; // List<dynamic>
-        final List<SongData> songs = data.map<SongData>((json) => SongData.fromJson(json)).toList();
+        final List<SongData> songs =
+            data.map<SongData>((json) => SongData.fromJson(json)).toList();
 
         return songs;
       } else {

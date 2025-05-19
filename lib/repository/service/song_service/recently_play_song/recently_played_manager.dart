@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,9 +10,8 @@ class RecentlyPlayedManager {
   static Future<List<SongData>> loadRecentlyPlayed() async {
     final prefs = await SharedPreferences.getInstance();
     final songsJson = prefs.getStringList('recentlyPlayed') ?? [];
-    recentlyPlayed = songsJson
-        .map((e) => SongData.fromJson(json.decode(e)))
-        .toList();
+    recentlyPlayed =
+        songsJson.map((e) => SongData.fromJson(json.decode(e))).toList();
     return recentlyPlayed;
   }
 
@@ -32,9 +30,8 @@ class RecentlyPlayedManager {
     }
 
     // Save updated list
-    final songsJson = recentlyPlayed
-        .map((e) => json.encode(e.toMap()))
-        .toList();
+    final songsJson =
+        recentlyPlayed.map((e) => json.encode(e.toMap())).toList();
     await prefs.setStringList('recentlyPlayed', songsJson);
   }
 }

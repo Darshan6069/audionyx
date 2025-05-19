@@ -28,12 +28,12 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
       '/storage/emulated/0/Android/data/com.example.audionyx/files/Downloads',
     );
     final files =
-    dir.existsSync()
-        ? dir
-        .listSync()
-        .where((file) => file.path.endsWith('.mp3'))
-        .toList()
-        : [];
+        dir.existsSync()
+            ? dir
+                .listSync()
+                .where((file) => file.path.endsWith('.mp3'))
+                .toList()
+            : [];
 
     if (mounted) {
       setState(() {
@@ -44,18 +44,19 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
 
   void _playSong(int index) {
     final songDataList =
-    downloadedFiles.map<SongData>((file) {
-      final name = file.path.split('/').last;
-      return SongData(
-        mp3Url: file.path,
-        title: name,
-        thumbnailUrl: file.path.replaceAll('.mp3', '_thumbnail.jpg'),
-        genre: '',
-        artist: '',
-        album: '',
-        id: '',
-      );
-    }).toList();
+        downloadedFiles.map<SongData>((file) {
+          final name = file.path.split('/').last;
+          return SongData(
+            mp3Url: file.path,
+            title: name,
+            thumbnailUrl: file.path.replaceAll('.mp3', '_thumbnail.jpg'),
+            genre: '',
+            artist: '',
+            album: '',
+            id: '',
+            subtitleUrl: ''
+          );
+        }).toList();
 
     context.push(
       context,
@@ -112,9 +113,9 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
           color: theme.colorScheme.surface,
         ),
         child: Icon(
-            Icons.music_note,
-            size: 30,
-            color: theme.colorScheme.onSurface.withOpacity(0.5)
+          Icons.music_note,
+          size: 30,
+          color: theme.colorScheme.onSurface.withOpacity(0.5),
         ),
       );
     }
@@ -127,103 +128,107 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
     final textTheme = theme.textTheme;
 
     return Scaffold(
-      appBar: widget.showAppBar
-          ? AppBar(
-        title: Text(
-          'Downloaded Songs',
-          style: textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: colorScheme.onSurface,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.refresh, color: colorScheme.primary),
-            onPressed: _loadDownloadedSongs,
-          ),
-        ],
-      )
-          : null,
-      body: downloadedFiles.isEmpty
-          ? Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-                Icons.music_off,
-                size: 80,
-                color: colorScheme.secondary.withOpacity(0.5)
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'No downloaded songs found.',
-              style: textTheme.titleMedium?.copyWith(
-                color: colorScheme.onSurface.withOpacity(0.7),
-              ),
-            ),
-          ],
-        ),
-      )
-          : ListView.builder(
-        itemCount: downloadedFiles.length,
-        itemBuilder: (context, index) {
-          final file = downloadedFiles[index];
-          final fileName = file.path.split('/').last;
-          return Card(
-            margin: const EdgeInsets.symmetric(
-              horizontal: 10,
-              vertical: 5,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            color: colorScheme.surface,
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Row(
-                children: [
-                  _loadThumbnail(index),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          fileName,
-                          style: textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.onSurface,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          'Tap play to listen or delete to remove',
-                          style: textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurface.withOpacity(0.7),
-                          ),
-                        ),
-                      ],
-                    ),
+      appBar:
+          widget.showAppBar
+              ? AppBar(
+                title: Text(
+                  'Downloaded Songs',
+                  style: textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
                   ),
+                ),
+                centerTitle: true,
+                actions: [
                   IconButton(
-                    icon: Icon(
-                      Icons.play_arrow,
-                      color: colorScheme.primary,
-                    ),
-                    onPressed: () => _playSong(index),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.delete, color: colorScheme.error),
-                    onPressed: () => _deleteSong(index),
+                    icon: Icon(Icons.refresh, color: colorScheme.primary),
+                    onPressed: _loadDownloadedSongs,
                   ),
                 ],
+              )
+              : null,
+      body:
+          downloadedFiles.isEmpty
+              ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.music_off,
+                      size: 80,
+                      color: colorScheme.secondary.withOpacity(0.5),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      'No downloaded songs found.',
+                      style: textTheme.titleMedium?.copyWith(
+                        color: colorScheme.onSurface.withOpacity(0.7),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+              : ListView.builder(
+                itemCount: downloadedFiles.length,
+                itemBuilder: (context, index) {
+                  final file = downloadedFiles[index];
+                  final fileName = file.path.split('/').last;
+                  return Card(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    color: colorScheme.surface,
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Row(
+                        children: [
+                          _loadThumbnail(index),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  fileName,
+                                  style: textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: colorScheme.onSurface,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  'Tap play to listen or delete to remove',
+                                  style: textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurface.withOpacity(
+                                      0.7,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.play_arrow,
+                              color: colorScheme.primary,
+                            ),
+                            onPressed: () => _playSong(index),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete, color: colorScheme.error),
+                            onPressed: () => _deleteSong(index),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
-            ),
-          );
-        },
-      ),
     );
   }
 }

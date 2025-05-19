@@ -4,7 +4,6 @@ class AppStrings {
   ///font
   static const String uberFont = 'UberFont';
 
-
   static FlutterSecureStorage secureStorage = const FlutterSecureStorage();
 
   /// api url
