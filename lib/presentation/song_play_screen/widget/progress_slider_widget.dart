@@ -4,10 +4,7 @@ import 'package:flutter/material.dart';
 class ProgressSliderWidget extends StatefulWidget {
   final AudioPlayerService audioPlayerService;
 
-  const ProgressSliderWidget({
-    super.key,
-    required this.audioPlayerService,
-  });
+  const ProgressSliderWidget({super.key, required this.audioPlayerService});
 
   @override
   State<ProgressSliderWidget> createState() => _ProgressSliderWidgetState();
@@ -28,9 +25,10 @@ class _ProgressSliderWidgetState extends State<ProgressSliderWidget> {
 
         // Calculate slider value (0.0 to 1.0)
         final maxValue = duration.inMilliseconds.toDouble();
-        final currentValue = _isUserSeeking
-            ? _sliderValue
-            : position.inMilliseconds.toDouble().clamp(0.0, maxValue);
+        final currentValue =
+            _isUserSeeking
+                ? _sliderValue
+                : position.inMilliseconds.toDouble().clamp(0.0, maxValue);
 
         // Format duration and position for display
         final positionText = _formatDuration(position);
@@ -52,7 +50,9 @@ class _ProgressSliderWidgetState extends State<ProgressSliderWidget> {
               },
               onChangeEnd: (value) {
                 // Seek to the new position when the user releases the slider
-                widget.audioPlayerService.seekTo(Duration(milliseconds: value.toInt()));
+                widget.audioPlayerService.seekTo(
+                  Duration(milliseconds: value.toInt()),
+                );
                 setState(() {
                   _isUserSeeking = false;
                 });
@@ -66,13 +66,17 @@ class _ProgressSliderWidgetState extends State<ProgressSliderWidget> {
                   Text(
                     positionText,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.7),
                     ),
                   ),
                   Text(
                     durationText,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.7),
                     ),
                   ),
                 ],

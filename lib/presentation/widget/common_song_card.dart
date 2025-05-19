@@ -27,10 +27,11 @@ class _CommonSongCardState extends State<CommonSongCard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => SongPlayerScreen(
-              songList: widget.song,
-              initialIndex: widget.index,
-            ),
+            builder:
+                (context) => SongPlayerScreen(
+                  songList: widget.song,
+                  initialIndex: widget.index,
+                ),
           ),
         );
       },
@@ -47,29 +48,31 @@ class _CommonSongCardState extends State<CommonSongCard> {
                 width: 150,
                 height: 150,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                  // Using surface variant color for the placeholder
-                  color: theme.colorScheme.surfaceContainerHighest,
-                  width: 150,
-                  height: 150,
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      // Using primary color for the loader
-                      color: theme.colorScheme.primary,
+                placeholder:
+                    (context, url) => Container(
+                      // Using surface variant color for the placeholder
+                      color: theme.colorScheme.surfaceContainerHighest,
+                      width: 150,
+                      height: 150,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          // Using primary color for the loader
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                errorWidget: (context, url, error) => Container(
-                  width: 150,
-                  height: 150,
-                  // Using surface variant for error background
-                  color: theme.colorScheme.surfaceContainerHighest,
-                  child: Icon(
-                    Icons.music_note,
-                    // Using on surface variant for the icon
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
+                errorWidget:
+                    (context, url, error) => Container(
+                      width: 150,
+                      height: 150,
+                      // Using surface variant for error background
+                      color: theme.colorScheme.surfaceContainerHighest,
+                      child: Icon(
+                        Icons.music_note,
+                        // Using on surface variant for the icon
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
               ),
             ),
             const SizedBox(height: 8),
@@ -87,8 +90,8 @@ class _CommonSongCardState extends State<CommonSongCard> {
               widget.song[widget.index].artist,
               style: TextStyle(
                 // Using secondary text color from theme
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontSize: 12
+                color: theme.colorScheme.onSurfaceVariant,
+                fontSize: 12,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

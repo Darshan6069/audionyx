@@ -84,10 +84,16 @@ class OnboardingScreen extends StatelessWidget {
 
               // Get Started Button
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 30.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40.0,
+                  vertical: 30.0,
+                ),
                 child: ElevatedButton(
                   onPressed: () {
-                    context.pushAndRemoveUntil(context, target: const RegistrationScreen());
+                    context.pushAndRemoveUntil(
+                      context,
+                      target: const RegistrationScreen(),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ThemeColor.greenAccent,

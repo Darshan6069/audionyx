@@ -27,7 +27,8 @@ class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }
 
@@ -37,9 +38,7 @@ void main() async {
   if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
     await FlutterDownloader.initialize();
   }
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   NotificationService().init();
   NotificationHandler.setupFirebaseMessaging();
@@ -62,7 +61,9 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => PlaylistBlocCubit(PlaylistService())),
         BlocProvider(create: (context) => AudioPlayerBlocCubit()),
         BlocProvider(create: (context) => ThemeCubit()),
-        BlocProvider(create: (context) => GoogleLoginBlocCubit(GoogleAuthService())),
+        BlocProvider(
+          create: (context) => GoogleLoginBlocCubit(GoogleAuthService()),
+        ),
       ],
       child: BlocBuilder<ThemeCubit, bool>(
         builder: (context, isDarkMode) {

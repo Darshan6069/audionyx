@@ -5,10 +5,7 @@ import 'package:flutter/material.dart';
 class SongThumbnail extends StatelessWidget {
   final SongData currentSong;
 
-  const SongThumbnail({
-    super.key,
-    required this.currentSong,
-  });
+  const SongThumbnail({super.key, required this.currentSong});
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +26,11 @@ class SongThumbnail extends StatelessWidget {
                 ),
               ],
               image: DecorationImage(
-                image: currentSong.thumbnailUrl.startsWith('http')
-                    ? NetworkImage(currentSong.thumbnailUrl)
-                    : FileImage(File(currentSong.thumbnailUrl)) as ImageProvider,
+                image:
+                    currentSong.thumbnailUrl.startsWith('http')
+                        ? NetworkImage(currentSong.thumbnailUrl)
+                        : FileImage(File(currentSong.thumbnailUrl))
+                            as ImageProvider,
                 fit: BoxFit.cover,
               ),
             ),

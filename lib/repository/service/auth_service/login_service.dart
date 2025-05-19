@@ -12,7 +12,7 @@ class LoginService {
 
   Future<String> loginUser({
     required String email,
-    required String password
+    required String password,
   }) async {
     if (email.isEmpty || password.isEmpty) {
       throw Exception('All fields are required');

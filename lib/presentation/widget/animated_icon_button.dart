@@ -4,7 +4,8 @@ class AnimatedIconButton extends StatefulWidget {
   final Icon icon;
   final VoidCallback onPressed;
 
-  const AnimatedIconButton({super.key,
+  const AnimatedIconButton({
+    super.key,
     required this.icon,
     required this.onPressed,
   });
@@ -25,9 +26,10 @@ class AnimatedIconButtonState extends State<AnimatedIconButton>
       vsync: this,
       duration: const Duration(milliseconds: 200),
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.8).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.8,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override

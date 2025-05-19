@@ -80,17 +80,20 @@ class _SongBrowserScreenState extends State<SongBrowserScreen>
       appBar: AppBar(
         title: Text(
           'Browse Music',
-          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
         backgroundColor: theme.appBarTheme.backgroundColor,
         elevation: 0,
         actions: [
           IconButton(
             icon: Icon(Icons.download_rounded, color: theme.iconTheme.color),
-            onPressed: () => context.push(
-              context,
-              target: const DownloadedSongsScreen(),
-            ),
+            onPressed:
+                () => context.push(
+                  context,
+                  target: const DownloadedSongsScreen(),
+                ),
           ),
         ],
       ),
@@ -98,7 +101,9 @@ class _SongBrowserScreenState extends State<SongBrowserScreen>
         builder: (context, state) {
           if (state is FetchSongLoading) {
             return Center(
-              child: CircularProgressIndicator(color: theme.colorScheme.primary),
+              child: CircularProgressIndicator(
+                color: theme.colorScheme.primary,
+              ),
             );
           } else if (state is FetchSongFailure) {
             return _buildErrorView(state.error, theme);
@@ -140,7 +145,7 @@ class _SongBrowserScreenState extends State<SongBrowserScreen>
                     filteredSongs: filteredSongs,
                     searchQuery: searchQuery,
                     hasFilters:
-                    selectedGenre != null ||
+                        selectedGenre != null ||
                         selectedArtist != null ||
                         selectedAlbum != null,
                     service: _service,
@@ -159,10 +164,7 @@ class _SongBrowserScreenState extends State<SongBrowserScreen>
             );
           }
           return Center(
-            child: Text(
-              'No songs yet',
-              style: theme.textTheme.bodyLarge,
-            ),
+            child: Text('No songs yet', style: theme.textTheme.bodyLarge),
           );
         },
       ),
@@ -189,29 +191,31 @@ class _SongBrowserScreenState extends State<SongBrowserScreen>
         IconButton(
           icon: Icon(
             Icons.filter_list,
-            color: selectedGenre != null ||
-                selectedArtist != null ||
-                selectedAlbum != null
-                ? theme.colorScheme.primary
-                : theme.iconTheme.color,
+            color:
+                selectedGenre != null ||
+                        selectedArtist != null ||
+                        selectedAlbum != null
+                    ? theme.colorScheme.primary
+                    : theme.iconTheme.color,
           ),
           onPressed: () {
             showDialog(
               context: context,
-              builder: (context) => FilterDialog(
-                allSongs: allSongs,
-                selectedGenre: selectedGenre,
-                selectedArtist: selectedArtist,
-                selectedAlbum: selectedAlbum,
-                service: _service,
-                onApply: (genre, artist, album) {
-                  setState(() {
-                    selectedGenre = genre;
-                    selectedArtist = artist;
-                    selectedAlbum = album;
-                  });
-                },
-              ),
+              builder:
+                  (context) => FilterDialog(
+                    allSongs: allSongs,
+                    selectedGenre: selectedGenre,
+                    selectedArtist: selectedArtist,
+                    selectedAlbum: selectedAlbum,
+                    service: _service,
+                    onApply: (genre, artist, album) {
+                      setState(() {
+                        selectedGenre = genre;
+                        selectedArtist = artist;
+                        selectedAlbum = album;
+                      });
+                    },
+                  ),
             );
           },
         ),

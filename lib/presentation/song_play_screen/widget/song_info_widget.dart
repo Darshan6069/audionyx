@@ -4,10 +4,7 @@ import 'package:flutter/material.dart';
 class SongInfoWidget extends StatelessWidget {
   final SongData currentSong;
 
-  const SongInfoWidget({
-    super.key,
-    required this.currentSong,
-  });
+  const SongInfoWidget({super.key, required this.currentSong});
 
   @override
   Widget build(BuildContext context) {

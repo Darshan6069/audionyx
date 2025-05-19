@@ -24,9 +24,7 @@ class PlaylistTileWidget extends StatelessWidget {
       color: colorScheme.surface,
       elevation: 2,
       margin: const EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         title: Text(
@@ -40,54 +38,49 @@ class PlaylistTileWidget extends StatelessWidget {
         ),
         leading: CircleAvatar(
           backgroundColor: colorScheme.primary.withOpacity(0.2),
-          child: Icon(
-            Icons.queue_music,
-            color: colorScheme.primary,
-          ),
+          child: Icon(Icons.queue_music, color: colorScheme.primary),
         ),
         trailing: IconButton(
-          icon: Icon(
-            Icons.delete_outline,
-            color: colorScheme.error,
-          ),
+          icon: Icon(Icons.delete_outline, color: colorScheme.error),
           onPressed: () {
             showDialog(
               context: context,
-              builder: (dialogContext) => AlertDialog(
-                backgroundColor: theme.scaffoldBackgroundColor,
-                title: Text(
-                  'Delete Playlist',
-                  style: textTheme.titleMedium?.copyWith(
-                    color: colorScheme.onSurface,
-                  ),
-                ),
-                content: Text(
-                  'Are you sure you want to delete the playlist "$title"?',
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurface.withOpacity(0.7),
-                  ),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(dialogContext),
-                    child: Text(
-                      'Cancel',
-                      style: TextStyle(color: colorScheme.onSurface),
+              builder:
+                  (dialogContext) => AlertDialog(
+                    backgroundColor: theme.scaffoldBackgroundColor,
+                    title: Text(
+                      'Delete Playlist',
+                      style: textTheme.titleMedium?.copyWith(
+                        color: colorScheme.onSurface,
+                      ),
                     ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(dialogContext);
-                      onDelete();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.error,
-                      foregroundColor: colorScheme.onError,
+                    content: Text(
+                      'Are you sure you want to delete the playlist "$title"?',
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurface.withOpacity(0.7),
+                      ),
                     ),
-                    child: const Text('Delete'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(dialogContext),
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(color: colorScheme.onSurface),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(dialogContext);
+                          onDelete();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colorScheme.error,
+                          foregroundColor: colorScheme.onError,
+                        ),
+                        child: const Text('Delete'),
+                      ),
+                    ],
                   ),
-                ],
-              ),
             );
           },
         ),

@@ -19,10 +19,7 @@ class PlaylistCard extends StatelessWidget {
       onTap: () {
         context.push(
           context,
-          target: PlaylistSongsScreen(
-            playlistId: id,
-            playlistName: name,
-          ),
+          target: PlaylistSongsScreen(playlistId: id, playlistName: name),
         );
       },
       child: Container(
@@ -33,43 +30,45 @@ class PlaylistCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: thumbnailUrl.isNotEmpty
-                  ? Image.network(
-                thumbnailUrl,
-                width: 150,
-                height: 150,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  width: 150,
-                  height: 150,
-                  // Using theme surface variant instead of hardcoded grey
-                  color: theme.colorScheme.surfaceContainerHighest,
-                  child: Icon(
-                    Icons.music_note,
-                    // Using theme on surface variant color instead of hardcoded white
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              )
-                  : Container(
-                width: 150,
-                height: 150,
-                // Using theme surface variant color
-                color: theme.colorScheme.surfaceContainerHighest,
-                child: Icon(
-                  Icons.queue_music,
-                  // Using theme on surface variant color
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
+              child:
+                  thumbnailUrl.isNotEmpty
+                      ? Image.network(
+                        thumbnailUrl,
+                        width: 150,
+                        height: 150,
+                        fit: BoxFit.cover,
+                        errorBuilder:
+                            (context, error, stackTrace) => Container(
+                              width: 150,
+                              height: 150,
+                              // Using theme surface variant instead of hardcoded grey
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              child: Icon(
+                                Icons.music_note,
+                                // Using theme on surface variant color instead of hardcoded white
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                      )
+                      : Container(
+                        width: 150,
+                        height: 150,
+                        // Using theme surface variant color
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        child: Icon(
+                          Icons.queue_music,
+                          // Using theme on surface variant color
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
             ),
             const SizedBox(height: 8),
             Text(
               name,
               style: TextStyle(
                 // Using theme on background color instead of hardcoded white
-                  color: theme.colorScheme.onSurface,
-                  fontSize: 14
+                color: theme.colorScheme.onSurface,
+                fontSize: 14,
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,

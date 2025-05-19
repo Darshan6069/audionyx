@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 class AppTheme {
   // Color constants
   static const Color primaryLight = Color(0xFF3B82F6); // Primary blue color
-  static const Color primaryDark = Color(0xFF60A5FA); // Lighter blue for dark mode
+  static const Color primaryDark = Color(
+    0xFF60A5FA,
+  ); // Lighter blue for dark mode
   static const Color backgroundLight = Colors.white;
   static const Color backgroundDark = Color(0xFF121212);
   static const Color textPrimaryLight = Colors.black87;

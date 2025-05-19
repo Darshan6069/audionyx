@@ -55,11 +55,11 @@ class RecentlyPlayedScreen extends StatelessWidget {
             final song = recentlyPlayedSongs[index];
 
             return _buildSongCard(
-                context,
-                song,
-                isLargeScreen,
-                recentlyPlayedSongs,
-                index
+              context,
+              song,
+              isLargeScreen,
+              recentlyPlayedSongs,
+              index,
             );
           },
         );
@@ -68,31 +68,33 @@ class RecentlyPlayedScreen extends StatelessWidget {
   }
 
   Widget _buildSongCard(
-      BuildContext context,
-      SongData song,
-      bool isLargeScreen,
-      List<SongData> songList,
-      int index,
-      ) {
+    BuildContext context,
+    SongData song,
+    bool isLargeScreen,
+    List<SongData> songList,
+    int index,
+  ) {
     final ThemeData theme = Theme.of(context);
     return Card(
-      color: theme.brightness == Brightness.dark
-          ? theme.colorScheme.surface
-          : Colors.white,
+      color:
+          theme.brightness == Brightness.dark
+              ? theme.colorScheme.surface
+              : Colors.white,
       elevation: 1,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: theme.brightness == Brightness.dark
-              ? Colors.white10
-              : Colors.grey[200]!,
+          color:
+              theme.brightness == Brightness.dark
+                  ? Colors.white10
+                  : Colors.grey[200]!,
           width: 1,
         ),
       ),
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
       child: ListTile(
         contentPadding: const EdgeInsets.all(12),
-        leading: _buildSongThumbnail(song, isLargeScreen,context),
+        leading: _buildSongThumbnail(song, isLargeScreen, context),
         title: Text(
           song.title,
           style: theme.textTheme.titleMedium?.copyWith(
@@ -122,10 +124,7 @@ class RecentlyPlayedScreen extends StatelessWidget {
             // Navigate to SongPlayerScreen when play button is pressed
             context.push(
               context,
-              target: SongPlayerScreen(
-                songList: songList,
-                initialIndex: index,
-              ),
+              target: SongPlayerScreen(songList: songList, initialIndex: index),
             );
           },
         ),
@@ -133,44 +132,43 @@ class RecentlyPlayedScreen extends StatelessWidget {
           // Navigate to SongPlayerScreen when card is tapped
           context.push(
             context,
-            target: SongPlayerScreen(
-              songList: songList,
-              initialIndex: index,
-            ),
+            target: SongPlayerScreen(songList: songList, initialIndex: index),
           );
         },
       ),
     );
   }
 
-  Widget _buildSongThumbnail(SongData song, bool isLargeScreen,BuildContext context) {
+  Widget _buildSongThumbnail(
+    SongData song,
+    bool isLargeScreen,
+    BuildContext context,
+  ) {
     final ThemeData theme = Theme.of(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
-      child: song.thumbnailUrl != null
-          ? Image.network(
-        song.thumbnailUrl,
-        width: isLargeScreen ? 60 : 50,
-        height: isLargeScreen ? 60 : 50,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) =>
-            _buildPlaceholderThumbnail(isLargeScreen,context),
-      )
-          : _buildPlaceholderThumbnail(isLargeScreen,context),
+      child:
+          song.thumbnailUrl != null
+              ? Image.network(
+                song.thumbnailUrl,
+                width: isLargeScreen ? 60 : 50,
+                height: isLargeScreen ? 60 : 50,
+                fit: BoxFit.cover,
+                errorBuilder:
+                    (context, error, stackTrace) =>
+                        _buildPlaceholderThumbnail(isLargeScreen, context),
+              )
+              : _buildPlaceholderThumbnail(isLargeScreen, context),
     );
   }
 
-  Widget _buildPlaceholderThumbnail(bool isLargeScreen,BuildContext context) {
+  Widget _buildPlaceholderThumbnail(bool isLargeScreen, BuildContext context) {
     final ThemeData theme = Theme.of(context);
     return Container(
       width: isLargeScreen ? 60 : 50,
       height: isLargeScreen ? 60 : 50,
       color: theme.colorScheme.surface,
-      child: Icon(
-        Icons.music_note,
-        color: theme.iconTheme.color,
-        size: 24,
-      ),
+      child: Icon(Icons.music_note, color: theme.iconTheme.color, size: 24),
     );
   }
 }

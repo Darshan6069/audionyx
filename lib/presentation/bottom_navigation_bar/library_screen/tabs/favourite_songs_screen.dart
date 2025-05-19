@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/domain/song_model/song_model.dart';
 import 'package:audionyx/presentation/song_play_screen/song_play_screen.dart';
@@ -79,13 +81,18 @@ class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
   }
 
   void _playSong(int index) {
-    context.push(context, target: SongPlayerScreen(
-      songList: _favoriteSongs,
-      initialIndex: index,
-    ),).then((_) {
-      // Refresh the list when coming back from player screen
-      _loadFavoriteSongs();
-    });
+    context
+        .push(
+          context,
+          target: SongPlayerScreen(
+            songList: _favoriteSongs,
+            initialIndex: index,
+          ),
+        )
+        .then((_) {
+          // Refresh the list when coming back from player screen
+          _loadFavoriteSongs();
+        });
   }
 
   @override
@@ -101,21 +108,22 @@ class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
                   : Colors.white.withOpacity(0.9),
               theme.brightness == Brightness.dark
                   ? theme.scaffoldBackgroundColor
-                  : Colors.white
+                  : Colors.white,
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
-        child: _isLoading
-            ? Center(
-          child: CircularProgressIndicator(
-            color: theme.colorScheme.secondary,
-          ),
-        )
-            : _favoriteSongs.isEmpty
-            ? _buildEmptyState()
-            : _buildSongList(),
+        child:
+            _isLoading
+                ? Center(
+                  child: CircularProgressIndicator(
+                    color: theme.colorScheme.secondary,
+                  ),
+                )
+                : _favoriteSongs.isEmpty
+                ? _buildEmptyState()
+                : _buildSongList(),
       ),
     );
   }
@@ -171,34 +179,67 @@ class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: theme.brightness == Brightness.dark
-            ? Colors.white.withOpacity(0.05)
-            : Colors.grey[100],
+        color:
+            theme.brightness == Brightness.dark
+                ? Colors.white.withOpacity(0.05)
+                : Colors.grey[100],
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: song.thumbnailUrl.isNotEmpty
-              ? Image.network(
-            song.thumbnailUrl,
-            width: 56,
-            height: 56,
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(
-              width: 56,
-              height: 56,
-              color: theme.colorScheme.surface,
-              child: Icon(Icons.music_note, color: theme.iconTheme.color),
-            ),
-          )
-              : Container(
-            width: 56,
-            height: 56,
-            color: theme.colorScheme.surface,
-            child: Icon(Icons.music_note, color: theme.iconTheme.color),
-          ),
+          child:
+              song.thumbnailUrl.isNotEmpty
+                  ? song.thumbnailUrl.contains('http')
+                      ? Image.network(
+                        song.thumbnailUrl,
+                        width: 56,
+                        height: 56,
+                        fit: BoxFit.cover,
+                        errorBuilder:
+                            (_, __, ___) => Container(
+                              width: 56,
+                              height: 56,
+                              color: theme.colorScheme.surface,
+                              child: Icon(
+                                Icons.music_note,
+                                color: theme.iconTheme.color,
+                              ),
+                            ),
+                      )
+                      : File(song.thumbnailUrl).existsSync()
+                      ? Image.file(
+                        File(song.thumbnailUrl),
+                        width: 56,
+                        height: 56,
+                        fit: BoxFit.cover,
+                        errorBuilder:
+                            (_, __, ___) => Container(
+                              width: 56,
+                              height: 56,
+                              color: theme.colorScheme.surface,
+                              child: Icon(
+                                Icons.music_note,
+                                color: theme.iconTheme.color,
+                              ),
+                            ),
+                      )
+                      : Container(
+                        width: 56,
+                        height: 56,
+                        color: theme.colorScheme.surface,
+                        child: Icon(
+                          Icons.music_note,
+                          color: theme.iconTheme.color,
+                        ),
+                      )
+                  : Container(
+                    width: 56,
+                    height: 56,
+                    color: theme.colorScheme.surface,
+                    child: Icon(Icons.music_note, color: theme.iconTheme.color),
+                  ),
         ),
         title: Text(
           song.title,
@@ -219,10 +260,11 @@ class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
         ),
         trailing: IconButton(
           icon: Icon(
-              Icons.favorite,
-              color: theme.brightness == Brightness.dark
-                  ? Colors.pinkAccent
-                  : Colors.pink[600]
+            Icons.favorite,
+            color:
+                theme.brightness == Brightness.dark
+                    ? Colors.pinkAccent
+                    : Colors.pink[600],
           ),
           onPressed: () => _removeFavorite(song),
         ),

@@ -34,30 +34,34 @@ class SongTile extends StatelessWidget {
                 width: 60,
                 height: 60,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                  width: 60,
-                  height: 60,
-                  color: theme.brightness == Brightness.dark
-                      ? Colors.white10
-                      : Colors.grey[200],
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: theme.colorScheme.secondary,
-                      strokeWidth: 2,
+                placeholder:
+                    (context, url) => Container(
+                      width: 60,
+                      height: 60,
+                      color:
+                          theme.brightness == Brightness.dark
+                              ? Colors.white10
+                              : Colors.grey[200],
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: theme.colorScheme.secondary,
+                          strokeWidth: 2,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                errorWidget: (context, url, error) => Container(
-                  width: 60,
-                  height: 60,
-                  color: theme.brightness == Brightness.dark
-                      ? Colors.white10
-                      : Colors.grey[200],
-                  child: Icon(
-                    Icons.music_note,
-                    color: theme.iconTheme.color,
-                  ),
-                ),
+                errorWidget:
+                    (context, url, error) => Container(
+                      width: 60,
+                      height: 60,
+                      color:
+                          theme.brightness == Brightness.dark
+                              ? Colors.white10
+                              : Colors.grey[200],
+                      child: Icon(
+                        Icons.music_note,
+                        color: theme.iconTheme.color,
+                      ),
+                    ),
               ),
             ),
             const SizedBox(width: 16),
@@ -78,7 +82,9 @@ class SongTile extends StatelessWidget {
                   Text(
                     '${song.artist} • ${song.album}',
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                      color: theme.textTheme.bodyMedium?.color?.withOpacity(
+                        0.7,
+                      ),
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -98,75 +104,71 @@ class SongTile extends StatelessWidget {
 
     return PopupMenuButton<String>(
       icon: Icon(Icons.more_vert, color: theme.iconTheme.color),
-      color: theme.brightness == Brightness.dark
-          ? Colors.white10
-          : Colors.white,
+      color:
+          theme.brightness == Brightness.dark ? Colors.white10 : Colors.white,
       onSelected: (value) {
         switch (value) {
           case 'play':
             service.playSong(context, song, index, songs);
             break;
           case 'add_to_playlist':
-          // TODO: Implement add to playlist
+            // TODO: Implement add to playlist
             break;
           case 'download':
-          // TODO: Implement download
+            // TODO: Implement download
             break;
         }
       },
-      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-        PopupMenuItem<String>(
-          value: 'play',
-          child: Row(
-            children: [
-              Icon(
-                  Icons.play_arrow,
-                  color: theme.iconTheme.color,
-                  size: 20
+      itemBuilder:
+          (BuildContext context) => <PopupMenuEntry<String>>[
+            PopupMenuItem<String>(
+              value: 'play',
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.play_arrow,
+                    color: theme.iconTheme.color,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Play',
+                    style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
-              Text(
-                  'Play',
-                  style: TextStyle(color: theme.textTheme.bodyLarge?.color)
+            ),
+            PopupMenuItem<String>(
+              value: 'add_to_playlist',
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.playlist_add,
+                    color: theme.iconTheme.color,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Add to Playlist',
+                    style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'add_to_playlist',
-          child: Row(
-            children: [
-              Icon(
-                  Icons.playlist_add,
-                  color: theme.iconTheme.color,
-                  size: 20
+            ),
+            PopupMenuItem<String>(
+              value: 'download',
+              child: Row(
+                children: [
+                  Icon(Icons.download, color: theme.iconTheme.color, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Download',
+                    style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
-              Text(
-                  'Add to Playlist',
-                  style: TextStyle(color: theme.textTheme.bodyLarge?.color)
-              ),
-            ],
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'download',
-          child: Row(
-            children: [
-              Icon(
-                  Icons.download,
-                  color: theme.iconTheme.color,
-                  size: 20
-              ),
-              const SizedBox(width: 8),
-              Text(
-                  'Download',
-                  style: TextStyle(color: theme.textTheme.bodyLarge?.color)
-              ),
-            ],
-          ),
-        ),
-      ],
+            ),
+          ],
     );
   }
 }

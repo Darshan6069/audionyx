@@ -1,4 +1,3 @@
-
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/registration_bloc_cubit/registration_state.dart';
 import 'package:audionyx/repository/service/auth_service/google_auth_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,7 +38,7 @@ class RegistrationBlocCubit extends Cubit<RegistrationState> {
     try {
       final result = await GoogleAuthService().signInWithGoogle();
       if (result != null) {
-        emit(RegistrationSuccess(result['message']?? 'error'));
+        emit(RegistrationSuccess(result['message'] ?? 'error'));
       } else {
         emit(RegistrationFailure('Google Sign-In failed'));
       }

@@ -56,10 +56,7 @@ class CreatePlaylistDialogWidget extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: onCancel,
-          child: Text(
-            'Cancel',
-            style: TextStyle(color: colorScheme.onSurface),
-          ),
+          child: Text('Cancel', style: TextStyle(color: colorScheme.onSurface)),
         ),
         ElevatedButton(
           onPressed: () {

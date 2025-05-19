@@ -16,7 +16,13 @@ class JwtService {
   Future<bool> isTokenValid() async {
     final token = await AppStrings.secureStorage.read(key: 'jwt_token');
 
+    // Debug log to help identify token issues
+    debugPrint(
+      'Checking JWT token validity: ${token?.isEmpty == true ? 'Empty' : (token == null ? 'Null' : 'Present')}',
+    );
+
     if (token == null || token.isEmpty) {
+      debugPrint('Token is null or empty');
       return false;
     }
 
@@ -24,13 +30,17 @@ class JwtService {
       // Check if token is expired
       if (JwtDecoder.isExpired(token)) {
         // Token expired, clear it
+        debugPrint('Token is expired');
         await AppStrings.secureStorage.delete(key: 'jwt_token');
         return false;
       }
 
+      // Token is valid
+      debugPrint('Token is valid and not expired');
       return true;
     } catch (e) {
       // Invalid token format
+      debugPrint('Invalid token format: $e');
       await AppStrings.secureStorage.delete(key: 'jwt_token');
       return false;
     }
@@ -44,6 +54,7 @@ class JwtService {
 
       return JwtDecoder.getExpirationDate(token);
     } catch (e) {
+      debugPrint('Error getting token expiry date: $e');
       return null;
     }
   }
@@ -56,12 +67,14 @@ class JwtService {
 
       return JwtDecoder.decode(token);
     } catch (e) {
+      debugPrint('Error decoding token payload: $e');
       return null;
     }
   }
 
   // Handle expired token (clear token and navigate to login)
   void handleExpiredToken(BuildContext context) {
+    debugPrint('Handling expired token, redirecting to login');
     AppStrings.secureStorage.delete(key: 'jwt_token');
 
     // Using the extension method from extension.dart

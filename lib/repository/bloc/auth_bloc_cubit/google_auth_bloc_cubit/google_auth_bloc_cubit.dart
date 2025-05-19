@@ -7,7 +7,8 @@ class GoogleLoginBlocCubit extends Cubit<LoginState> {
   final GoogleAuthService _googleAuthService;
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  GoogleLoginBlocCubit(this._googleAuthService) : super(const LoginState.initial());
+  GoogleLoginBlocCubit(this._googleAuthService)
+    : super(const LoginState.initial());
 
   Future<void> signInWithGoogle() async {
     emit(const LoginState.loading());
@@ -23,8 +24,11 @@ class GoogleLoginBlocCubit extends Cubit<LoginState> {
       final name = result['name'] ?? 'Unknown';
       // Assuming the backend returns a JWT token in the message or another field
       // Adjust based on actual backend response
-      final token = result['message'] ?? ''; // Replace with actual token field if different
-      final userId = email; // Use email as userId or adjust based on backend response
+      final token =
+          result['message'] ??
+          ''; // Replace with actual token field if different
+      final userId =
+          email; // Use email as userId or adjust based on backend response
 
       await _storage.write(key: 'jwt_token', value: token);
       await _storage.write(key: 'userId', value: userId);

@@ -8,7 +8,6 @@ import '../../../main.dart'; // Adjust import path as needed
 class RegistrationService {
   final ApiService _apiService = ApiService(navigatorKey);
 
-
   Future<String> registerUser({
     required String name,
     required String email,
@@ -20,7 +19,9 @@ class RegistrationService {
     final String endpoint = isGoogleAuth ? 'auth/google' : 'auth/register';
 
     debugPrint('Sending registration to $endpoint');
-    debugPrint('Data: {user_name: $name, email: $email, isGoogleAuth: $isGoogleAuth}');
+    debugPrint(
+      'Data: {user_name: $name, email: $email, isGoogleAuth: $isGoogleAuth}',
+    );
 
     try {
       // Prepare registration data
@@ -40,20 +41,28 @@ class RegistrationService {
       }
 
       // Use the ApiService to make the request
-      final response = await _apiService.post(
-        endpoint,
-        data: registrationData,
-      );
+      final response = await _apiService.post(endpoint, data: registrationData);
 
       debugPrint('Response: ${response.statusCode} ${response.data}');
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        // For Google Auth, extract the token from the response
+        if (isGoogleAuth && response.data['token'] != null) {
+          debugPrint('JWT token extracted from response');
+          return response.data['token'];
+        }
+
+        // For regular registration, return the message
         return response.data['msg'] ?? 'User registered successfully';
       } else {
-        throw Exception('Failed to register: ${response.data['msg'] ?? response.statusMessage}');
+        throw Exception(
+          'Failed to register: ${response.data['msg'] ?? response.statusMessage}',
+        );
       }
     } on DioException catch (e) {
-      debugPrint('DioError: type=${e.type}, message=${e.message}, response=${e.response}');
+      debugPrint(
+        'DioError: type=${e.type}, message=${e.message}, response=${e.response}',
+      );
       if (e.response != null) {
         throw Exception('Error: ${e.response?.data['msg'] ?? e.message}');
       } else {

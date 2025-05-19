@@ -26,16 +26,19 @@ class FilterChipsWidget extends StatelessWidget {
       label: Text(
         label,
         style: TextStyle(
-          color: theme.brightness == Brightness.dark ? Colors.white : Colors.black87,
+          color:
+              theme.brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black87,
           fontSize: 12,
         ),
       ),
-      backgroundColor: theme.brightness == Brightness.dark
-          ? Colors.white10
-          : Colors.grey[300],
-      deleteIconColor: theme.brightness == Brightness.dark
-          ? Colors.white
-          : Colors.black87,
+      backgroundColor:
+          theme.brightness == Brightness.dark
+              ? Colors.white10
+              : Colors.grey[300],
+      deleteIconColor:
+          theme.brightness == Brightness.dark ? Colors.white : Colors.black87,
       onDeleted: onDelete,
     );
   }
@@ -45,27 +48,17 @@ class FilterChipsWidget extends StatelessWidget {
     List<Widget> chips = [];
 
     if (selectedGenre != null) {
-      chips.add(_buildChip(
-        context,
-        "Genre: $selectedGenre",
-        onGenreDeleted,
-      ));
+      chips.add(_buildChip(context, "Genre: $selectedGenre", onGenreDeleted));
     }
 
     if (selectedArtist != null) {
-      chips.add(_buildChip(
-        context,
-        "Artist: $selectedArtist",
-        onArtistDeleted,
-      ));
+      chips.add(
+        _buildChip(context, "Artist: $selectedArtist", onArtistDeleted),
+      );
     }
 
     if (selectedAlbum != null) {
-      chips.add(_buildChip(
-        context,
-        "Album: $selectedAlbum",
-        onAlbumDeleted,
-      ));
+      chips.add(_buildChip(context, "Album: $selectedAlbum", onAlbumDeleted));
     }
 
     final ThemeData theme = Theme.of(context);
@@ -73,26 +66,26 @@ class FilterChipsWidget extends StatelessWidget {
     return chips.isEmpty
         ? const SizedBox.shrink()
         : Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Wrap(
-        spacing: 8.0,
-        runSpacing: 4.0,
-        children: [
-          ...chips,
-          if (chips.length > 1)
-            TextButton.icon(
-              icon: Icon(
-                  Icons.clear_all,
-                  color: theme.colorScheme.secondary
-              ),
-              label: Text(
-                  'Clear All',
-                  style: TextStyle(color: theme.colorScheme.secondary)
-              ),
-              onPressed: onClearAll,
-            ),
-        ],
-      ),
-    );
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Wrap(
+            spacing: 8.0,
+            runSpacing: 4.0,
+            children: [
+              ...chips,
+              if (chips.length > 1)
+                TextButton.icon(
+                  icon: Icon(
+                    Icons.clear_all,
+                    color: theme.colorScheme.secondary,
+                  ),
+                  label: Text(
+                    'Clear All',
+                    style: TextStyle(color: theme.colorScheme.secondary),
+                  ),
+                  onPressed: onClearAll,
+                ),
+            ],
+          ),
+        );
   }
 }

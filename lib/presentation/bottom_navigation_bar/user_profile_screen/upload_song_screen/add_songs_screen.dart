@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/theme_color.dart';
 import '../../../../repository/bloc/upload_song_bloc_cubit/upload_song_bloc_cubit.dart';
 
-
 class AddSongsScreen extends StatefulWidget {
   const AddSongsScreen({super.key});
 
@@ -56,9 +55,12 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
       builder: (context, state) {
         final cubit = context.read<UploadSongBlocCubit>();
         final isLoading = state is UploadSongLoading;
-        final songFileName = state is UploadSongInitial ? state.songFileName : '';
-        final thumbnailFileName = state is UploadSongInitial ? state.thumbnailFileName : '';
-        final lyricsFileName = state is UploadSongInitial ? state.lyricsFileName : '';
+        final songFileName =
+            state is UploadSongInitial ? state.songFileName : '';
+        final thumbnailFileName =
+            state is UploadSongInitial ? state.thumbnailFileName : '';
+        final lyricsFileName =
+            state is UploadSongInitial ? state.lyricsFileName : '';
 
         return Scaffold(
           backgroundColor: ThemeColor.getBackgroundColor(context),
@@ -153,7 +155,10 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
                 // Pick Thumbnail Button
                 _buildActionButton(
                   icon: Icons.image,
-                  label: thumbnailFileName.isEmpty ? 'Pick Thumbnail Image' : thumbnailFileName,
+                  label:
+                      thumbnailFileName.isEmpty
+                          ? 'Pick Thumbnail Image'
+                          : thumbnailFileName,
                   onPressed: isLoading ? null : () => cubit.pickThumbnailFile(),
                   fontScale: fontScale,
                 ),
@@ -161,7 +166,10 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
                 // Pick Lyrics File Button
                 _buildActionButton(
                   icon: Icons.description,
-                  label: lyricsFileName.isEmpty ? 'Pick Lyrics File' : lyricsFileName,
+                  label:
+                      lyricsFileName.isEmpty
+                          ? 'Pick Lyrics File'
+                          : lyricsFileName,
                   onPressed: isLoading ? null : () => cubit.pickLyricsFile(),
                   fontScale: fontScale,
                 ),
@@ -169,27 +177,28 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
                 // Upload Button
                 _buildUploadButton(
                   isLoading: isLoading,
-                  onPressed: isLoading
-                      ? null
-                      : () {
-                    // Validate all fields before uploading
-                    if (titleController.text.isEmpty ||
-                        artistController.text.isEmpty ||
-                        albumController.text.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Please fill all fields'),
-                          backgroundColor: ThemeColor.errorColor,
-                        ),
-                      );
-                      return;
-                    }
-                    cubit.uploadSong(
-                      title: titleController.text,
-                      artist: artistController.text,
-                      album: albumController.text,
-                    );
-                  },
+                  onPressed:
+                      isLoading
+                          ? null
+                          : () {
+                            // Validate all fields before uploading
+                            if (titleController.text.isEmpty ||
+                                artistController.text.isEmpty ||
+                                albumController.text.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Please fill all fields'),
+                                  backgroundColor: ThemeColor.errorColor,
+                                ),
+                              );
+                              return;
+                            }
+                            cubit.uploadSong(
+                              title: titleController.text,
+                              artist: artistController.text,
+                              album: albumController.text,
+                            );
+                          },
                   fontScale: fontScale,
                 ),
               ],
@@ -220,10 +229,16 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               decoration: BoxDecoration(
-                color: isDarkMode ? Colors.white10 : ThemeColor.grey.withOpacity(0.2),
+                color:
+                    isDarkMode
+                        ? Colors.white10
+                        : ThemeColor.grey.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: isDarkMode ? ThemeColor.grey.withOpacity(0.3) : ThemeColor.grey.withOpacity(0.5),
+                  color:
+                      isDarkMode
+                          ? ThemeColor.grey.withOpacity(0.3)
+                          : ThemeColor.grey.withOpacity(0.5),
                   width: 1,
                 ),
               ),
@@ -267,27 +282,26 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
         backgroundColor: ThemeColor.greenColor,
         foregroundColor: ThemeColor.white,
         padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 2,
       ),
-      child: isLoading
-          ? SizedBox(
-        width: 24 * fontScale,
-        height: 24 * fontScale,
-        child: const CircularProgressIndicator(
-          color: ThemeColor.white,
-          strokeWidth: 2,
-        ),
-      )
-          : Text(
-        'Upload',
-        style: TextStyle(
-          fontSize: 16 * fontScale,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
+      child:
+          isLoading
+              ? SizedBox(
+                width: 24 * fontScale,
+                height: 24 * fontScale,
+                child: const CircularProgressIndicator(
+                  color: ThemeColor.white,
+                  strokeWidth: 2,
+                ),
+              )
+              : Text(
+                'Upload',
+                style: TextStyle(
+                  fontSize: 16 * fontScale,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
     );
   }
 }

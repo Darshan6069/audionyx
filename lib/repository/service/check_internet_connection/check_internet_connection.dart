@@ -13,7 +13,8 @@ class CheckInternetConnection extends StatefulWidget {
   const CheckInternetConnection({super.key});
 
   @override
-  State<CheckInternetConnection> createState() => _CheckInternetConnectionState();
+  State<CheckInternetConnection> createState() =>
+      _CheckInternetConnectionState();
 }
 
 class _CheckInternetConnectionState extends State<CheckInternetConnection> {
@@ -28,7 +29,9 @@ class _CheckInternetConnectionState extends State<CheckInternetConnection> {
   void initState() {
     super.initState();
     _performChecks();
-    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> results) {
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((
+      List<ConnectivityResult> results,
+    ) {
       _performChecks();
     });
   }
@@ -70,13 +73,17 @@ class _CheckInternetConnectionState extends State<CheckInternetConnection> {
     bool isFirstTime = await _checkIfFirstTime(); // Check if first time
 
     final connectivityResults = await Connectivity().checkConnectivity();
-    bool hasNetwork = !(connectivityResults.contains(ConnectivityResult.none) && connectivityResults.length == 1);
+    bool hasNetwork =
+        !(connectivityResults.contains(ConnectivityResult.none) &&
+            connectivityResults.length == 1);
 
     if (!hasNetwork) {
       currentlyOffline = true;
     } else {
       try {
-        final result = await InternetAddress.lookup('google.com').timeout(const Duration(seconds: 5));
+        final result = await InternetAddress.lookup(
+          'google.com',
+        ).timeout(const Duration(seconds: 5));
         currentlyOffline = result.isEmpty || result[0].rawAddress.isEmpty;
       } on SocketException {
         currentlyOffline = true;

@@ -83,27 +83,40 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     ),
                     SizedBox(height: verticalSpacing),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: horizontalPadding,
+                      ),
                       child: Column(
                         children: [
                           _buildActionButton(
-                            icon: isDarkMode ? Icons.dark_mode : Icons.light_mode,
-                            label: 'Toggle ${isDarkMode ? "Light" : "Dark"} Mode',
-                            onPressed: () => context.read<ThemeCubit>().toggleTheme(),
+                            icon:
+                                isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                            label:
+                                'Toggle ${isDarkMode ? "Light" : "Dark"} Mode',
+                            onPressed:
+                                () => context.read<ThemeCubit>().toggleTheme(),
                             fontScale: fontScale,
                           ),
                           SizedBox(height: verticalSpacing * 0.5),
                           _buildActionButton(
                             icon: Icons.download,
                             label: 'Downloads',
-                            onPressed: () => context.push(context, target: const DownloadedSongsScreen()),
+                            onPressed:
+                                () => context.push(
+                                  context,
+                                  target: const DownloadedSongsScreen(),
+                                ),
                             fontScale: fontScale,
                           ),
                           SizedBox(height: verticalSpacing * 0.5),
                           _buildActionButton(
                             icon: Icons.add,
                             label: 'Add Song',
-                            onPressed: () => context.push(context, target: const AddSongsScreen()),
+                            onPressed:
+                                () => context.push(
+                                  context,
+                                  target: const AddSongsScreen(),
+                                ),
                             fontScale: fontScale,
                           ),
                           SizedBox(height: verticalSpacing * 0.5),
@@ -115,7 +128,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text('Logged out')),
                               );
-                              context.pushAndRemoveUntil(context, target: const LoginScreen());
+                              context.pushAndRemoveUntil(
+                                context,
+                                target: const LoginScreen(),
+                              );
                             },
                             fontScale: fontScale,
                           ),
@@ -144,7 +160,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.2),
+          color: Theme.of(
+            context,
+          ).colorScheme.surfaceContainerHighest.withOpacity(0.2),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(

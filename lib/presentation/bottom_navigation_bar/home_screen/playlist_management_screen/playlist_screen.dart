@@ -187,11 +187,11 @@ class _PlaylistSongsScreenState extends State<PlaylistSongsScreen> {
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
 
-     await showDialog<bool>(
+    await showDialog<bool>(
       context: context,
       builder:
           (dialogContext) => AlertDialog(
-            title:  Text(
+            title: Text(
               'Remove Song',
               style: textTheme.titleMedium?.copyWith(
                 color: colorScheme.onSurface,
@@ -213,9 +213,13 @@ class _PlaylistSongsScreenState extends State<PlaylistSongsScreen> {
               ),
               TextButton(
                 onPressed: () {
-                  _playlistCubit.removeSongFromPlaylist(widget.playlistId, song.id);
+                  _playlistCubit.removeSongFromPlaylist(
+                    widget.playlistId,
+                    song.id,
+                  );
                   _playlistCubit.fetchSongsFromPlaylist(widget.playlistId);
-                  Navigator.pop(dialogContext, true);},
+                  Navigator.pop(dialogContext, true);
+                },
                 child: Text(
                   'Remove',
                   style: TextStyle(color: colorScheme.error),

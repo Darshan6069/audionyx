@@ -68,7 +68,7 @@ class _FilterDialogState extends State<FilterDialog> {
               'Any Genre',
               genres,
               tempGenre,
-                  (value) => setState(() => tempGenre = value),
+              (value) => setState(() => tempGenre = value),
             ),
             const SizedBox(height: 16),
             _buildDropdown(
@@ -77,7 +77,7 @@ class _FilterDialogState extends State<FilterDialog> {
               'Any Artist',
               artists,
               tempArtist,
-                  (value) => setState(() => tempArtist = value),
+              (value) => setState(() => tempArtist = value),
             ),
             const SizedBox(height: 16),
             _buildDropdown(
@@ -86,14 +86,17 @@ class _FilterDialogState extends State<FilterDialog> {
               'Any Album',
               albums,
               tempAlbum,
-                  (value) => setState(() => tempAlbum = value),
+              (value) => setState(() => tempAlbum = value),
             ),
           ],
         ),
       ),
       actions: [
         TextButton(
-          child: Text('Reset', style: TextStyle(color: theme.colorScheme.primary)),
+          child: Text(
+            'Reset',
+            style: TextStyle(color: theme.colorScheme.primary),
+          ),
           onPressed: () {
             setState(() {
               tempGenre = null;
@@ -106,7 +109,10 @@ class _FilterDialogState extends State<FilterDialog> {
           style: ElevatedButton.styleFrom(
             backgroundColor: theme.colorScheme.primary,
           ),
-          child: Text('Apply', style: TextStyle(color: theme.colorScheme.onPrimary)),
+          child: Text(
+            'Apply',
+            style: TextStyle(color: theme.colorScheme.onPrimary),
+          ),
           onPressed: () {
             widget.onApply(tempGenre, tempArtist, tempAlbum);
             Navigator.pop(context);
@@ -117,13 +123,13 @@ class _FilterDialogState extends State<FilterDialog> {
   }
 
   Widget _buildDropdown(
-      String label,
-      String hint,
-      String anyLabel,
-      List<String> items,
-      String? value,
-      Function(String?) onChanged,
-      ) {
+    String label,
+    String hint,
+    String anyLabel,
+    List<String> items,
+    String? value,
+    Function(String?) onChanged,
+  ) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,7 +143,10 @@ class _FilterDialogState extends State<FilterDialog> {
             borderRadius: BorderRadius.circular(8),
           ),
           child: DropdownButton<String>(
-            hint: Text(hint, style: TextStyle(color: theme.textTheme.bodyMedium?.color)),
+            hint: Text(
+              hint,
+              style: TextStyle(color: theme.textTheme.bodyMedium?.color),
+            ),
             value: value,
             isExpanded: true,
             dropdownColor: theme.inputDecorationTheme.prefixIconColor,
@@ -145,12 +154,18 @@ class _FilterDialogState extends State<FilterDialog> {
             items: [
               DropdownMenuItem<String>(
                 value: null,
-                child: Text(anyLabel, style: TextStyle(color: theme.textTheme.bodyMedium?.color)),
+                child: Text(
+                  anyLabel,
+                  style: TextStyle(color: theme.textTheme.bodyMedium?.color),
+                ),
               ),
               ...items.map((item) {
                 return DropdownMenuItem(
                   value: item,
-                  child: Text(item, style: TextStyle(color: theme.textTheme.bodyLarge?.color)),
+                  child: Text(
+                    item,
+                    style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+                  ),
                 );
               }),
             ],

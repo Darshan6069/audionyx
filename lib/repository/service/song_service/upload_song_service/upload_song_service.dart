@@ -145,7 +145,7 @@ class UploadSongService {
               filename: thumbnailFileName,
               contentType: MediaType.parse(imgMimeType),
             ),
-          )
+          ),
         );
       } else if (selectedThumbnailFile != null && thumbnailFileName != null) {
         final imgMimeType = lookupMimeType(thumbnailFileName!) ?? 'image/jpeg';
@@ -194,10 +194,7 @@ class UploadSongService {
       formData.fields.add(MapEntry('album', album));
 
       // Send the request using ApiService
-      final response = await _apiService.post(
-        'songs/upload',
-        data: formData,
-      );
+      final response = await _apiService.post('songs/upload', data: formData);
 
       if (response.statusCode == 201) {
         // Clear file data
