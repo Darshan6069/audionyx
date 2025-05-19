@@ -1,6 +1,6 @@
 # 🎵 Flutter Music Player App
 
-A full-featured and modern music streaming app built using Flutter. This project includes a user-friendly UI, song playback, playlist management, and optional admin panel functionality. It’s designed for both music lovers and developers exploring Flutter + Firebase integration.
+A full-featured and modern music streaming app built using Flutter. This project includes a user-friendly UI, song playback, playlist management, and optional admin panel functionality. It’s designed for both music lovers and developers exploring Flutter.
 
 ---
 
@@ -10,8 +10,7 @@ A full-featured and modern music streaming app built using Flutter. This project
 
 - 🔐 **Authentication**
     - Splash screen with logo
-    - Login/Signup (Firebase Auth or local storage)
-    - Google Sign-In (optional)
+    - Login/Signup (local storage)
 
 - 🏠 **Home Screen**
     - Featured playlists
@@ -55,7 +54,7 @@ A full-featured and modern music streaming app built using Flutter. This project
 
 ---
 
-## 🔹 Extra Features (If Time Permits)
+## 🔹 Extra Features 
 
 - 📥 Offline download support
 - 📃 Lyrics display
@@ -69,10 +68,9 @@ A full-featured and modern music streaming app built using Flutter. This project
 ## 🛠️ Tech Stack
 
 - Flutter (Mobile & Web)
-- Firebase Authentication
-- Local Storage (Hive / SharedPreferences)
+- Local Storage (SharedPreferences)
 - just_audio (Audio playback)
-- Node.js + MongoDB (Admin APIs)
+- Node.js + MongoDB (APIs)
 
 ---
 
