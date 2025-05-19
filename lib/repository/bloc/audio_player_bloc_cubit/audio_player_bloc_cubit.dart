@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:audionyx/domain/song_model/song_model.dart';
 import 'package:dio/dio.dart';
-import '../../../lyrics_model.dart';
+import '../../../domain/lyrics_model/lyrics_model.dart';
 import '../../service/song_service/audio_service/audio_service.dart';
 import 'audio_player_state.dart';
 

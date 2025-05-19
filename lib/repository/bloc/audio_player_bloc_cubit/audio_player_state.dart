@@ -2,7 +2,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:audionyx/domain/song_model/song_model.dart';
 import 'dart:typed_data';
 
-import '../../../lyrics_model.dart';
+import '../../../domain/lyrics_model/lyrics_model.dart';
 
 class AudioPlayerState {
   final Duration position;
