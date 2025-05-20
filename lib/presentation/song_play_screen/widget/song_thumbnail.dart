@@ -29,8 +29,7 @@ class SongThumbnail extends StatelessWidget {
                 image:
                     currentSong.thumbnailUrl.startsWith('http')
                         ? NetworkImage(currentSong.thumbnailUrl)
-                        : FileImage(File(currentSong.thumbnailUrl))
-                            as ImageProvider,
+                        : FileImage(File(currentSong.thumbnailUrl)) as ImageProvider,
                 fit: BoxFit.cover,
               ),
             ),

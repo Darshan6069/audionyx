@@ -31,9 +31,7 @@ class NotificationService {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   }
 
-  static Future<void> _firebaseMessagingBackgroundHandler(
-    RemoteMessage message,
-  ) async {
+  static Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     await Firebase.initializeApp();
     NotificationService().showNotification(message);
   }
@@ -51,6 +49,9 @@ class NotificationService {
       'New Songs',
       importance: Importance.max,
       priority: Priority.high,
+      styleInformation: BigTextStyleInformation(''), // For longer text
+      playSound: true,
+      sound: RawResourceAndroidNotificationSound('custom_sound'),
     );
 
     await _flutterLocalNotificationsPlugin.show(

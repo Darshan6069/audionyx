@@ -30,16 +30,13 @@ class LyricsFocusedView extends StatelessWidget {
     final theme = Theme.of(context);
     final prevLyric = currentIndex > 0 ? lyrics[currentIndex - 1] : null;
     final currentLyric = lyrics[currentIndex];
-    final nextLyric =
-    currentIndex < lyrics.length - 1 ? lyrics[currentIndex + 1] : null;
+    final nextLyric = currentIndex < lyrics.length - 1 ? lyrics[currentIndex + 1] : null;
 
     double progress = 0.0;
     if (currentIndex < lyrics.length - 1) {
-      final totalDuration =
-          lyrics[currentIndex + 1].startTime - currentLyric.startTime;
+      final totalDuration = lyrics[currentIndex + 1].startTime - currentLyric.startTime;
       final elapsed = position - currentLyric.startTime;
-      progress = (elapsed.inMilliseconds / totalDuration.inMilliseconds)
-          .clamp(0.0, 1.0);
+      progress = (elapsed.inMilliseconds / totalDuration.inMilliseconds).clamp(0.0, 1.0);
     }
 
     return Column(
@@ -51,24 +48,12 @@ class LyricsFocusedView extends StatelessWidget {
             children: [
               TextButton.icon(
                 onPressed: showAllLyricsCallback,
-                icon: const Icon(
-                  Icons.format_list_bulleted,
-                  color: Colors.white70,
-                  size: 18,
-                ),
-                label: const Text(
-                  'All Lyrics',
-                  style: TextStyle(color: Colors.white70),
-                ),
+                icon: const Icon(Icons.format_list_bulleted, color: Colors.white70, size: 18),
+                label: const Text('All Lyrics', style: TextStyle(color: Colors.white70)),
                 style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   backgroundColor: Colors.white10,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 ),
               ),
               Text(
@@ -100,18 +85,12 @@ class LyricsFocusedView extends StatelessWidget {
                     scale: pulseAnimation.value,
                     child: Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 16,
-                        horizontal: 24,
-                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                       margin: const EdgeInsets.symmetric(horizontal: 24),
                       decoration: BoxDecoration(
                         color: theme.primaryColor.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: theme.primaryColor.withOpacity(0.3),
-                          width: 1,
-                        ),
+                        border: Border.all(color: theme.primaryColor.withOpacity(0.3), width: 1),
                       ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -170,9 +149,7 @@ class LyricsFocusedView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
-                onPressed: prevLyric != null
-                    ? () => onLyricTap(prevLyric.startTime)
-                    : null,
+                onPressed: prevLyric != null ? () => onLyricTap(prevLyric.startTime) : null,
                 icon: Icon(
                   Icons.skip_previous,
                   color: prevLyric != null ? Colors.white : Colors.white24,
@@ -182,10 +159,7 @@ class LyricsFocusedView extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: Colors.white10,
                   borderRadius: BorderRadius.circular(20),
@@ -201,9 +175,7 @@ class LyricsFocusedView extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               IconButton(
-                onPressed: nextLyric != null
-                    ? () => onLyricTap(nextLyric.startTime)
-                    : null,
+                onPressed: nextLyric != null ? () => onLyricTap(nextLyric.startTime) : null,
                 icon: Icon(
                   Icons.skip_next,
                   color: nextLyric != null ? Colors.white : Colors.white24,

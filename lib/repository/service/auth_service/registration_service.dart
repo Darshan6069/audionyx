@@ -19,9 +19,7 @@ class RegistrationService {
     final String endpoint = isGoogleAuth ? 'auth/google' : 'auth/register';
 
     debugPrint('Sending registration to $endpoint');
-    debugPrint(
-      'Data: {user_name: $name, email: $email, isGoogleAuth: $isGoogleAuth}',
-    );
+    debugPrint('Data: {user_name: $name, email: $email, isGoogleAuth: $isGoogleAuth}');
 
     try {
       // Prepare registration data
@@ -55,14 +53,10 @@ class RegistrationService {
         // For regular registration, return the message
         return response.data['msg'] ?? 'User registered successfully';
       } else {
-        throw Exception(
-          'Failed to register: ${response.data['msg'] ?? response.statusMessage}',
-        );
+        throw Exception('Failed to register: ${response.data['msg'] ?? response.statusMessage}');
       }
     } on DioException catch (e) {
-      debugPrint(
-        'DioError: type=${e.type}, message=${e.message}, response=${e.response}',
-      );
+      debugPrint('DioError: type=${e.type}, message=${e.message}, response=${e.response}');
       if (e.response != null) {
         throw Exception('Error: ${e.response?.data['msg'] ?? e.message}');
       } else {

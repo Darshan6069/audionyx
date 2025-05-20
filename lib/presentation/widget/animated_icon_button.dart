@@ -4,11 +4,7 @@ class AnimatedIconButton extends StatefulWidget {
   final Icon icon;
   final VoidCallback onPressed;
 
-  const AnimatedIconButton({
-    super.key,
-    required this.icon,
-    required this.onPressed,
-  });
+  const AnimatedIconButton({super.key, required this.icon, required this.onPressed});
 
   @override
   State<AnimatedIconButton> createState() => AnimatedIconButtonState();
@@ -22,10 +18,7 @@ class AnimatedIconButtonState extends State<AnimatedIconButton>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 200),
-    );
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 200));
     _scaleAnimation = Tween<double>(
       begin: 1.0,
       end: 0.8,
@@ -47,10 +40,7 @@ class AnimatedIconButtonState extends State<AnimatedIconButton>
       onTap: widget.onPressed,
       child: ScaleTransition(
         scale: _scaleAnimation,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: widget.icon,
-        ),
+        child: Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: widget.icon),
       ),
     );
   }

@@ -38,38 +38,22 @@ class PlayerErrorScreen extends StatelessWidget {
               TextButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh, color: Colors.white),
-                label: const Text(
-                  'Retry',
-                  style: TextStyle(color: Colors.white),
-                ),
+                label: const Text('Retry', style: TextStyle(color: Colors.white)),
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.white.withOpacity(0.1),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 ),
               ),
               const SizedBox(height: 8),
               TextButton.icon(
                 onPressed: onGoBack,
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
-                label: const Text(
-                  'Go Back',
-                  style: TextStyle(color: Colors.white),
-                ),
+                label: const Text('Go Back', style: TextStyle(color: Colors.white)),
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.white.withOpacity(0.1),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 ),
               ),
             ],

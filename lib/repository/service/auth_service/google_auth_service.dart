@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 
 class GoogleAuthService {
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    clientId:
-        '815538582382-4fkhe4kd3mk63k7oofs96pj75noaq2vt.apps.googleusercontent.com',
+    clientId: '815538582382-4fkhe4kd3mk63k7oofs96pj75noaq2vt.apps.googleusercontent.com',
     scopes: ['email', 'profile'],
   );
   final RegistrationService _registrationService = RegistrationService();
@@ -19,17 +18,14 @@ class GoogleAuthService {
         throw Exception('Google Sign-In canceled');
       }
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       final idToken = googleAuth.idToken;
 
       if (idToken == null) {
         throw Exception('Failed to get ID token');
       }
 
-      debugPrint(
-        'Google Sign-In successful: ${googleUser.displayName}, ${googleUser.email}',
-      );
+      debugPrint('Google Sign-In successful: ${googleUser.displayName}, ${googleUser.email}');
 
       // Register user in MongoDB via backend and get JWT token
       final jwtToken = await _registrationService.registerUser(
@@ -45,9 +41,7 @@ class GoogleAuthService {
 
       // Verify token was saved correctly
       final savedToken = await _storage.read(key: 'jwt_token');
-      debugPrint(
-        'Verified saved token: ${savedToken != null ? 'Present' : 'Missing'}',
-      );
+      debugPrint('Verified saved token: ${savedToken != null ? 'Present' : 'Missing'}');
 
       if (savedToken != null) {
         debugPrint('Token length: ${savedToken.length}');

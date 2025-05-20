@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 class AppTheme {
   // Color constants
   static const Color primaryLight = Color(0xFF3B82F6); // Primary blue color
-  static const Color primaryDark = Color(
-    0xFF60A5FA,
-  ); // Lighter blue for dark mode
+  static const Color primaryDark = Color(0xFF60A5FA); // Lighter blue for dark mode
   static const Color backgroundLight = Colors.white;
   static const Color backgroundDark = Color(0xFF121212);
   static const Color textPrimaryLight = Colors.black87;
@@ -18,10 +16,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: primaryLight,
-        brightness: Brightness.light,
-      ),
+      colorScheme: ColorScheme.fromSeed(seedColor: primaryLight, brightness: Brightness.light),
       scaffoldBackgroundColor: backgroundLight,
       appBarTheme: AppBarTheme(
         backgroundColor: backgroundLight,
@@ -35,10 +30,7 @@ class AppTheme {
         bodyMedium: TextStyle(color: textSecondaryLight),
       ),
       iconTheme: IconThemeData(color: textPrimaryLight),
-      listTileTheme: ListTileThemeData(
-        iconColor: textPrimaryLight,
-        textColor: textPrimaryLight,
-      ),
+      listTileTheme: ListTileThemeData(iconColor: textPrimaryLight, textColor: textPrimaryLight),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Colors.grey[100],
@@ -55,9 +47,7 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryLight,
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
     );
@@ -68,10 +58,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: primaryDark,
-        brightness: Brightness.dark,
-      ),
+      colorScheme: ColorScheme.fromSeed(seedColor: primaryDark, brightness: Brightness.dark),
       scaffoldBackgroundColor: backgroundDark,
       appBarTheme: AppBarTheme(
         backgroundColor: backgroundDark,
@@ -85,10 +72,7 @@ class AppTheme {
         bodyMedium: TextStyle(color: textSecondaryDark),
       ),
       iconTheme: IconThemeData(color: textPrimaryDark),
-      listTileTheme: ListTileThemeData(
-        iconColor: textPrimaryDark,
-        textColor: textPrimaryDark,
-      ),
+      listTileTheme: ListTileThemeData(iconColor: textPrimaryDark, textColor: textPrimaryDark),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Colors.white10,
@@ -105,9 +89,7 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryDark,
           foregroundColor: Colors.black87,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
     );

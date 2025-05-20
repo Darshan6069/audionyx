@@ -12,7 +12,6 @@ class PlaylistState with _$PlaylistState {
     List<dynamic> playlists, {
     @Default(false) bool isNewPlaylistCreated,
   }) = PlaylistSuccess;
-  const factory PlaylistState.songsFetched(List<SongData> songs) =
-      PlaylistSongsFetched;
+  const factory PlaylistState.songsFetched(List<SongData> songs) = PlaylistSongsFetched;
   const factory PlaylistState.failure(String error) = PlaylistFailure;
 }

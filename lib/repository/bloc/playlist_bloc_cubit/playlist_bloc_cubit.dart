@@ -5,8 +5,7 @@ import 'playlist_state.dart';
 class PlaylistBlocCubit extends Cubit<PlaylistState> {
   final PlaylistService _playlistService;
 
-  PlaylistBlocCubit(this._playlistService)
-    : super(const PlaylistState.initial()) {
+  PlaylistBlocCubit(this._playlistService) : super(const PlaylistState.initial()) {
     print('PlaylistBlocCubit initialized: $hashCode');
   }
 
@@ -51,19 +50,14 @@ class PlaylistBlocCubit extends Cubit<PlaylistState> {
     }
   }
 
-  Future<void> addSongToPlaylist(
-    String playlistId,
-    List<String> songIds,
-  ) async {
+  Future<void> addSongToPlaylist(String playlistId, List<String> songIds) async {
     print('Adding songs to playlist $playlistId: $songIds');
     emit(const PlaylistState.loading());
     try {
       await _playlistService.addSongToPlaylist(playlistId, songIds);
       final songs = await _playlistService.fetchSongsFromPlaylist(playlistId);
       final playlists = await _playlistService.fetchUserPlaylists();
-      print(
-        'Songs added, fetched ${songs.length} songs and ${playlists.length} playlists',
-      );
+      print('Songs added, fetched ${songs.length} songs and ${playlists.length} playlists');
       emit(PlaylistState.songsFetched(songs));
       emit(PlaylistState.success(playlists));
     } catch (e) {
@@ -89,13 +83,9 @@ class PlaylistBlocCubit extends Cubit<PlaylistState> {
     print('Removing song $songId from playlist $playlistId');
     try {
       await _playlistService.removeSongFromPlaylist(playlistId, songId);
-      final updatedSongs = await _playlistService.fetchSongsFromPlaylist(
-        playlistId,
-      );
+      final updatedSongs = await _playlistService.fetchSongsFromPlaylist(playlistId);
       final playlists = await _playlistService.fetchUserPlaylists();
-      print(
-        'Song removed, fetched ${updatedSongs.length} songs and ${playlists.length} playlists',
-      );
+      print('Song removed, fetched ${updatedSongs.length} songs and ${playlists.length} playlists');
       emit(PlaylistState.songsFetched(updatedSongs));
       emit(PlaylistState.success(playlists));
     } catch (e) {

@@ -35,32 +35,23 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
       listener: (context, state) {
         if (state is UploadSongSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: ThemeColor.greenColor,
-            ),
+            SnackBar(content: Text(state.message), backgroundColor: ThemeColor.greenColor),
           );
           titleController.clear();
           artistController.clear();
           albumController.clear();
         } else if (state is UploadSongFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.error),
-              backgroundColor: ThemeColor.errorColor,
-            ),
+            SnackBar(content: Text(state.error), backgroundColor: ThemeColor.errorColor),
           );
         }
       },
       builder: (context, state) {
         final cubit = context.read<UploadSongBlocCubit>();
         final isLoading = state is UploadSongLoading;
-        final songFileName =
-            state is UploadSongInitial ? state.songFileName : '';
-        final thumbnailFileName =
-            state is UploadSongInitial ? state.thumbnailFileName : '';
-        final lyricsFileName =
-            state is UploadSongInitial ? state.lyricsFileName : '';
+        final songFileName = state is UploadSongInitial ? state.songFileName : '';
+        final thumbnailFileName = state is UploadSongInitial ? state.thumbnailFileName : '';
+        final lyricsFileName = state is UploadSongInitial ? state.lyricsFileName : '';
 
         return Scaffold(
           backgroundColor: ThemeColor.getBackgroundColor(context),
@@ -155,10 +146,7 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
                 // Pick Thumbnail Button
                 _buildActionButton(
                   icon: Icons.image,
-                  label:
-                      thumbnailFileName.isEmpty
-                          ? 'Pick Thumbnail Image'
-                          : thumbnailFileName,
+                  label: thumbnailFileName.isEmpty ? 'Pick Thumbnail Image' : thumbnailFileName,
                   onPressed: isLoading ? null : () => cubit.pickThumbnailFile(),
                   fontScale: fontScale,
                 ),
@@ -166,10 +154,7 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
                 // Pick Lyrics File Button
                 _buildActionButton(
                   icon: Icons.description,
-                  label:
-                      lyricsFileName.isEmpty
-                          ? 'Pick Lyrics File'
-                          : lyricsFileName,
+                  label: lyricsFileName.isEmpty ? 'Pick Lyrics File' : lyricsFileName,
                   onPressed: isLoading ? null : () => cubit.pickLyricsFile(),
                   fontScale: fontScale,
                 ),
@@ -229,10 +214,7 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               decoration: BoxDecoration(
-                color:
-                    isDarkMode
-                        ? Colors.white10
-                        : ThemeColor.grey.withOpacity(0.2),
+                color: isDarkMode ? Colors.white10 : ThemeColor.grey.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color:
@@ -244,11 +226,7 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
               ),
               child: Row(
                 children: [
-                  Icon(
-                    icon,
-                    color: ThemeColor.getTextColor(context),
-                    size: 24 * fontScale,
-                  ),
+                  Icon(icon, color: ThemeColor.getTextColor(context), size: 24 * fontScale),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -290,17 +268,11 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
               ? SizedBox(
                 width: 24 * fontScale,
                 height: 24 * fontScale,
-                child: const CircularProgressIndicator(
-                  color: ThemeColor.white,
-                  strokeWidth: 2,
-                ),
+                child: const CircularProgressIndicator(color: ThemeColor.white, strokeWidth: 2),
               )
               : Text(
                 'Upload',
-                style: TextStyle(
-                  fontSize: 16 * fontScale,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16 * fontScale, fontWeight: FontWeight.bold),
               ),
     );
   }

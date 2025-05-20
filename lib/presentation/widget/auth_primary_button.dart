@@ -4,11 +4,7 @@ class AuthPrimaryButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
 
-  const AuthPrimaryButton({
-    super.key,
-    required this.label,
-    required this.onPressed,
-  });
+  const AuthPrimaryButton({super.key, required this.label, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +13,7 @@ class AuthPrimaryButton extends StatelessWidget {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         minimumSize: Size(MediaQuery.of(context).size.width, 49),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(25)),
-        ),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(25))),
         // Using primary color from theme instead of hardcoded green
         backgroundColor: theme.colorScheme.primary,
       ),
@@ -56,9 +50,7 @@ class AuthOutlinedButton extends StatelessWidget {
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
         minimumSize: Size(MediaQuery.of(context).size.width, 49),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(25)),
-        ),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(25))),
         side: BorderSide(
           width: 1,
           // Using outline color from theme

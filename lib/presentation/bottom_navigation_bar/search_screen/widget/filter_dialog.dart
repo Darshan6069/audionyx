@@ -93,10 +93,7 @@ class _FilterDialogState extends State<FilterDialog> {
       ),
       actions: [
         TextButton(
-          child: Text(
-            'Reset',
-            style: TextStyle(color: theme.colorScheme.primary),
-          ),
+          child: Text('Reset', style: TextStyle(color: theme.colorScheme.primary)),
           onPressed: () {
             setState(() {
               tempGenre = null;
@@ -106,13 +103,8 @@ class _FilterDialogState extends State<FilterDialog> {
           },
         ),
         ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: theme.colorScheme.primary,
-          ),
-          child: Text(
-            'Apply',
-            style: TextStyle(color: theme.colorScheme.onPrimary),
-          ),
+          style: ElevatedButton.styleFrom(backgroundColor: theme.colorScheme.primary),
+          child: Text('Apply', style: TextStyle(color: theme.colorScheme.onPrimary)),
           onPressed: () {
             widget.onApply(tempGenre, tempArtist, tempAlbum);
             Navigator.pop(context);
@@ -143,10 +135,7 @@ class _FilterDialogState extends State<FilterDialog> {
             borderRadius: BorderRadius.circular(8),
           ),
           child: DropdownButton<String>(
-            hint: Text(
-              hint,
-              style: TextStyle(color: theme.textTheme.bodyMedium?.color),
-            ),
+            hint: Text(hint, style: TextStyle(color: theme.textTheme.bodyMedium?.color)),
             value: value,
             isExpanded: true,
             dropdownColor: theme.inputDecorationTheme.prefixIconColor,
@@ -154,18 +143,12 @@ class _FilterDialogState extends State<FilterDialog> {
             items: [
               DropdownMenuItem<String>(
                 value: null,
-                child: Text(
-                  anyLabel,
-                  style: TextStyle(color: theme.textTheme.bodyMedium?.color),
-                ),
+                child: Text(anyLabel, style: TextStyle(color: theme.textTheme.bodyMedium?.color)),
               ),
               ...items.map((item) {
                 return DropdownMenuItem(
                   value: item,
-                  child: Text(
-                    item,
-                    style: TextStyle(color: theme.textTheme.bodyLarge?.color),
-                  ),
+                  child: Text(item, style: TextStyle(color: theme.textTheme.bodyLarge?.color)),
                 );
               }),
             ],

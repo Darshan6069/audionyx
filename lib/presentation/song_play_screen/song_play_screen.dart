@@ -15,18 +15,13 @@ class SongPlayerScreen extends StatefulWidget {
   final List<SongData> songList;
   final int initialIndex;
 
-  const SongPlayerScreen({
-    super.key,
-    required this.songList,
-    required this.initialIndex,
-  });
+  const SongPlayerScreen({super.key, required this.songList, required this.initialIndex});
 
   @override
   State<SongPlayerScreen> createState() => _SongPlayerScreenState();
 }
 
-class _SongPlayerScreenState extends State<SongPlayerScreen>
-    with SingleTickerProviderStateMixin {
+class _SongPlayerScreenState extends State<SongPlayerScreen> with SingleTickerProviderStateMixin {
   final FavoriteSongService _favoriteSongService = FavoriteSongService();
   bool isLiked = false;
   late AnimationController animationController;
@@ -75,8 +70,10 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
         isLiked = !isLiked;
         _lastCheckedSong = currentSong;
       });
-      _showSnackbar(isLiked ? 'Added to favorites' : 'Removed from favorites',
-          color: isLiked ? Colors.pinkAccent : Colors.blueGrey);
+      _showSnackbar(
+        isLiked ? 'Added to favorites' : 'Removed from favorites',
+        color: isLiked ? Colors.pinkAccent : Colors.blueGrey,
+      );
     } else if (mounted) {
       _showSnackbar('Failed to update favorites', color: Colors.redAccent);
     }
@@ -84,11 +81,7 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
 
   void _showSnackbar(String message, {required Color color}) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: color,
-      ),
+      SnackBar(content: Text(message), behavior: SnackBarBehavior.floating, backgroundColor: color),
     );
   }
 
@@ -126,8 +119,7 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
           );
         } else if (state.showLyrics && state.lyrics.isEmpty) {
           context.read<AudioPlayerBlocCubit>().toggleLyrics();
-          _showSnackbar('No lyrics available for this song',
-              color: Colors.redAccent);
+          _showSnackbar('No lyrics available for this song', color: Colors.redAccent);
         }
       },
       builder: (context, state) {
@@ -136,15 +128,15 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
         }
         if (state.hasError || state.currentSong == null) {
           return PlayerErrorScreen(
-            onRetry: () => context.read<AudioPlayerBlocCubit>().loadAndPlay(
-              widget.songList[widget.initialIndex],
-              widget.songList,
-              widget.initialIndex,
-            ),
+            onRetry:
+                () => context.read<AudioPlayerBlocCubit>().loadAndPlay(
+                  widget.songList[widget.initialIndex],
+                  widget.songList,
+                  widget.initialIndex,
+                ),
             onGoBack: () => Navigator.of(context).pop(),
-            errorMessage: state.hasError
-                ? 'Failed to load audio. Please try again.'
-                : 'No song selected.',
+            errorMessage:
+                state.hasError ? 'Failed to load audio. Please try again.' : 'No song selected.',
           );
         }
         final currentSong = state.currentSong!;
@@ -168,8 +160,7 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
                   SongThumbnail(currentSong: currentSong),
                   SongInfoWidget(currentSong: currentSong),
                   PlayerControlsWidget(
-                    audioPlayerService:
-                    context.read<AudioPlayerBlocCubit>().service,
+                    audioPlayerService: context.read<AudioPlayerBlocCubit>().service,
                     songList: widget.songList,
                     currentSong: currentSong,
                     isLiked: isLiked,
@@ -189,10 +180,7 @@ class _SongPlayerScreenState extends State<SongPlayerScreen>
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Colors.black.withOpacity(0.8),
-              const Color(0xFF1A2A44),
-            ],
+            colors: [Colors.black.withOpacity(0.8), const Color(0xFF1A2A44)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),

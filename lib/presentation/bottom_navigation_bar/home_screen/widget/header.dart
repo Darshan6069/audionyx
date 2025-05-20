@@ -12,21 +12,11 @@ class Header extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Image.asset(
-          AppImage.logo,
-          height: 40,
-          color: Theme.of(context).iconTheme.color,
-        ),
+        Image.asset(AppImage.logo, height: 40, color: Theme.of(context).iconTheme.color),
         IconButton(
-          icon: Icon(
-            Icons.queue_music,
-            color: Theme.of(context).iconTheme.color,
-          ),
+          icon: Icon(Icons.queue_music, color: Theme.of(context).iconTheme.color),
           onPressed:
-              () => context.push(
-                context,
-                target: const PlaylistManagementScreen(showAppBar: true),
-              ),
+              () => context.push(context, target: const PlaylistManagementScreen(showAppBar: true)),
         ),
       ],
     );

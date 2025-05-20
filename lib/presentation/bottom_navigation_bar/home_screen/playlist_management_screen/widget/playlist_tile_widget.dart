@@ -50,9 +50,7 @@ class PlaylistTileWidget extends StatelessWidget {
                     backgroundColor: theme.scaffoldBackgroundColor,
                     title: Text(
                       'Delete Playlist',
-                      style: textTheme.titleMedium?.copyWith(
-                        color: colorScheme.onSurface,
-                      ),
+                      style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface),
                     ),
                     content: Text(
                       'Are you sure you want to delete the playlist "$title"?',
@@ -63,10 +61,7 @@ class PlaylistTileWidget extends StatelessWidget {
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(dialogContext),
-                        child: Text(
-                          'Cancel',
-                          style: TextStyle(color: colorScheme.onSurface),
-                        ),
+                        child: Text('Cancel', style: TextStyle(color: colorScheme.onSurface)),
                       ),
                       ElevatedButton(
                         onPressed: () {

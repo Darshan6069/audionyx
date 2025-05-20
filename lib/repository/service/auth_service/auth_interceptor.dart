@@ -12,10 +12,7 @@ class AuthInterceptor extends Interceptor {
   AuthInterceptor(this.dio, this.navigatorKey);
 
   @override
-  Future<void> onRequest(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) async {
+  Future<void> onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     try {
       debugPrint('Reading JWT token...');
       final token = await AppStrings.secureStorage.read(key: 'jwt_token');
@@ -58,9 +55,7 @@ class AuthInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    debugPrint(
-      'Dio error: ${err.message}, Status: ${err.response?.statusCode}',
-    );
+    debugPrint('Dio error: ${err.message}, Status: ${err.response?.statusCode}');
     // Check for 401 Unauthorized response (token expired or invalid)
     if (err.response?.statusCode == 401) {
       debugPrint('Received 401, redirecting to login');

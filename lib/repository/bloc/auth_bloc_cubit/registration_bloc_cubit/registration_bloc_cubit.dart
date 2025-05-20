@@ -27,7 +27,7 @@ class RegistrationBlocCubit extends Cubit<RegistrationState> {
         email: email,
         password: password,
       );
-      emit(RegistrationState.success(message));
+      emit(RegistrationState.success(message as String));
     } catch (e) {
       emit(RegistrationState.failure(e.toString()));
     }

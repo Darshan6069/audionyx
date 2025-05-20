@@ -31,16 +31,18 @@ class FetchSongService {
             }
           }
           // Create a new SongData with lyrics content (temporary solution)
-          songs.add(SongData(
-            id: song.id,
-            title: song.title,
-            mp3Url: song.mp3Url,
-            subtitleUrl: song.subtitleUrl,
-            thumbnailUrl: song.thumbnailUrl,
-            artist: song.artist,
-            album: song.album,
-            genre: song.genre,
-          ));
+          songs.add(
+            SongData(
+              id: song.id,
+              title: song.title,
+              mp3Url: song.mp3Url,
+              subtitleUrl: song.subtitleUrl,
+              thumbnailUrl: song.thumbnailUrl,
+              artist: song.artist,
+              album: song.album,
+              genre: song.genre,
+            ),
+          );
         }
         return songs;
       } else {

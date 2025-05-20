@@ -8,10 +8,12 @@ import 'audio_player_state.dart';
 
 class AudioPlayerBlocCubit extends Cubit<AudioPlayerState> {
   final AudioPlayerService service = AudioPlayerService();
-  final Dio _dio = Dio(BaseOptions(
-    connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 10),
-  ));
+  final Dio _dio = Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+    ),
+  );
 
   AudioPlayerBlocCubit() : super(AudioPlayerState.initial()) {
     service.positionStream.listen((position) {
@@ -30,11 +32,7 @@ class AudioPlayerBlocCubit extends Cubit<AudioPlayerState> {
     });
   }
 
-  Future<void> loadAndPlay(
-      SongData song,
-      List<SongData> songList,
-      int index,
-      ) async {
+  Future<void> loadAndPlay(SongData song, List<SongData> songList, int index) async {
     emit(state.copyWith(isLoading: true, hasError: false));
     try {
       // Fetch and parse lyrics from subtitleUrl
@@ -70,12 +68,7 @@ class AudioPlayerBlocCubit extends Cubit<AudioPlayerState> {
       );
     } catch (e) {
       print('Error loading song ${song.title}: $e');
-      emit(state.copyWith(
-        isLoading: false,
-        hasError: true,
-        currentSong: null,
-        lyrics: const [],
-      ));
+      emit(state.copyWith(isLoading: false, hasError: true, currentSong: null, lyrics: const []));
     }
   }
 

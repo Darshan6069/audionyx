@@ -17,10 +17,7 @@ class PlaylistCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        context.push(
-          context,
-          target: PlaylistSongsScreen(playlistId: id, playlistName: name),
-        );
+        context.push(context, target: PlaylistSongsScreen(playlistId: id, playlistName: name));
       },
       child: Container(
         width: 150,

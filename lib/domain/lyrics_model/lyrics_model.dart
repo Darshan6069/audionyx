@@ -3,11 +3,7 @@ class Lyric {
   final Duration endTime;
   final String text;
 
-  Lyric({
-    required this.startTime,
-    required this.endTime,
-    required this.text,
-  });
+  Lyric({required this.startTime, required this.endTime, required this.text});
 }
 
 class LyricParser {
@@ -29,7 +25,9 @@ class LyricParser {
 
       index++;
       if (index >= lines.length) break;
-      final timeMatch = RegExp(r'(\d{2}:\d{2}:\d{2},\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2},\d{3})').firstMatch(lines[index]);
+      final timeMatch = RegExp(
+        r'(\d{2}:\d{2}:\d{2},\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2},\d{3})',
+      ).firstMatch(lines[index]);
       if (timeMatch == null) {
         index++;
         continue;
@@ -40,18 +38,16 @@ class LyricParser {
 
       index++;
       final textLines = <String>[];
-      while (index < lines.length && lines[index].trim().isNotEmpty && !RegExp(r'^\d+$').hasMatch(lines[index].trim())) {
+      while (index < lines.length &&
+          lines[index].trim().isNotEmpty &&
+          !RegExp(r'^\d+$').hasMatch(lines[index].trim())) {
         textLines.add(lines[index].trim());
         index++;
       }
 
       final text = textLines.join(' ');
       if (text.isNotEmpty) {
-        lyrics.add(Lyric(
-          startTime: startTime,
-          endTime: endTime,
-          text: text,
-        ));
+        lyrics.add(Lyric(startTime: startTime, endTime: endTime, text: text));
       }
     }
 
@@ -65,11 +61,6 @@ class LyricParser {
     final minutes = int.parse(parts[1]);
     final seconds = int.parse(secondsParts[0]);
     final milliseconds = int.parse(secondsParts[1]);
-    return Duration(
-      hours: hours,
-      minutes: minutes,
-      seconds: seconds,
-      milliseconds: milliseconds,
-    );
+    return Duration(hours: hours, minutes: minutes, seconds: seconds, milliseconds: milliseconds);
   }
 }

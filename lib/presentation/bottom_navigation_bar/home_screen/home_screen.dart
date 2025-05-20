@@ -20,8 +20,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with AutomaticKeepAliveClientMixin {
+class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin {
   List<SongData> recentlyPlayed = [];
 
   @override
@@ -69,8 +68,7 @@ class _HomeScreenState extends State<HomeScreen>
             _loadData();
           },
           child: SingleChildScrollView(
-            physics:
-                const AlwaysScrollableScrollPhysics(), // Changed to support RefreshIndicator
+            physics: const AlwaysScrollableScrollPhysics(), // Changed to support RefreshIndicator
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,18 +86,11 @@ class _HomeScreenState extends State<HomeScreen>
                       return HorizontalListView(
                         isLoading: state is PlaylistLoading,
                         isFailed: state is PlaylistFailure,
-                        errorMessage:
-                            state is PlaylistFailure ? state.error : null,
+                        errorMessage: state is PlaylistFailure ? state.error : null,
                         items: state is PlaylistSuccess ? state.playlists : [],
                         emptyMessage: 'No playlists found',
-                        itemBuilder:
-                            (context, item, index) =>
-                                PlaylistCard(playlist: item),
-                        onRetry:
-                            () =>
-                                context
-                                    .read<PlaylistBlocCubit>()
-                                    .fetchPlaylists(),
+                        itemBuilder: (context, item, index) => PlaylistCard(playlist: item),
+                        onRetry: () => context.read<PlaylistBlocCubit>().fetchPlaylists(),
                       );
                     },
                   ),
@@ -127,14 +118,12 @@ class _HomeScreenState extends State<HomeScreen>
                       return HorizontalListView(
                         isLoading: state is FetchSongLoading,
                         isFailed: state is FetchSongFailure,
-                        errorMessage:
-                            state is FetchSongFailure ? state.error : null,
+                        errorMessage: state is FetchSongFailure ? state.error : null,
                         items: state is FetchSongSuccess ? state.songs : [],
                         emptyMessage: 'No trending tracks available',
                         itemBuilder:
                             (context, item, index) => CommonSongCard(
-                              song:
-                                  state is FetchSongSuccess ? state.songs : [],
+                              song: state is FetchSongSuccess ? state.songs : [],
                               index: index,
                             ),
                       );

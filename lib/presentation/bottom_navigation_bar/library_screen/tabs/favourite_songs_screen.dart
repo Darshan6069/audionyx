@@ -82,13 +82,7 @@ class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
 
   void _playSong(int index) {
     context
-        .push(
-          context,
-          target: SongPlayerScreen(
-            songList: _favoriteSongs,
-            initialIndex: index,
-          ),
-        )
+        .push(context, target: SongPlayerScreen(songList: _favoriteSongs, initialIndex: index))
         .then((_) {
           // Refresh the list when coming back from player screen
           _loadFavoriteSongs();
@@ -106,9 +100,7 @@ class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
               theme.brightness == Brightness.dark
                   ? theme.scaffoldBackgroundColor
                   : Colors.white.withOpacity(0.9),
-              theme.brightness == Brightness.dark
-                  ? theme.scaffoldBackgroundColor
-                  : Colors.white,
+              theme.brightness == Brightness.dark ? theme.scaffoldBackgroundColor : Colors.white,
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -116,11 +108,7 @@ class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
         ),
         child:
             _isLoading
-                ? Center(
-                  child: CircularProgressIndicator(
-                    color: theme.colorScheme.secondary,
-                  ),
-                )
+                ? Center(child: CircularProgressIndicator(color: theme.colorScheme.secondary))
                 : _favoriteSongs.isEmpty
                 ? _buildEmptyState()
                 : _buildSongList(),
@@ -134,11 +122,7 @@ class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.favorite_border,
-            size: 80,
-            color: theme.iconTheme.color?.withOpacity(0.5),
-          ),
+          Icon(Icons.favorite_border, size: 80, color: theme.iconTheme.color?.withOpacity(0.5)),
           const SizedBox(height: 16),
           Text(
             'No favorite songs yet',
@@ -180,9 +164,7 @@ class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color:
-            theme.brightness == Brightness.dark
-                ? Colors.white.withOpacity(0.05)
-                : Colors.grey[100],
+            theme.brightness == Brightness.dark ? Colors.white.withOpacity(0.05) : Colors.grey[100],
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
@@ -202,10 +184,7 @@ class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
                               width: 56,
                               height: 56,
                               color: theme.colorScheme.surface,
-                              child: Icon(
-                                Icons.music_note,
-                                color: theme.iconTheme.color,
-                              ),
+                              child: Icon(Icons.music_note, color: theme.iconTheme.color),
                             ),
                       )
                       : File(song.thumbnailUrl).existsSync()
@@ -219,20 +198,14 @@ class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
                               width: 56,
                               height: 56,
                               color: theme.colorScheme.surface,
-                              child: Icon(
-                                Icons.music_note,
-                                color: theme.iconTheme.color,
-                              ),
+                              child: Icon(Icons.music_note, color: theme.iconTheme.color),
                             ),
                       )
                       : Container(
                         width: 56,
                         height: 56,
                         color: theme.colorScheme.surface,
-                        child: Icon(
-                          Icons.music_note,
-                          color: theme.iconTheme.color,
-                        ),
+                        child: Icon(Icons.music_note, color: theme.iconTheme.color),
                       )
                   : Container(
                     width: 56,
@@ -261,10 +234,7 @@ class _FavoriteSongScreenState extends State<FavoriteSongScreen> {
         trailing: IconButton(
           icon: Icon(
             Icons.favorite,
-            color:
-                theme.brightness == Brightness.dark
-                    ? Colors.pinkAccent
-                    : Colors.pink[600],
+            color: theme.brightness == Brightness.dark ? Colors.pinkAccent : Colors.pink[600],
           ),
           onPressed: () => _removeFavorite(song),
         ),

@@ -26,19 +26,12 @@ class FilterChipsWidget extends StatelessWidget {
       label: Text(
         label,
         style: TextStyle(
-          color:
-              theme.brightness == Brightness.dark
-                  ? Colors.white
-                  : Colors.black87,
+          color: theme.brightness == Brightness.dark ? Colors.white : Colors.black87,
           fontSize: 12,
         ),
       ),
-      backgroundColor:
-          theme.brightness == Brightness.dark
-              ? Colors.white10
-              : Colors.grey[300],
-      deleteIconColor:
-          theme.brightness == Brightness.dark ? Colors.white : Colors.black87,
+      backgroundColor: theme.brightness == Brightness.dark ? Colors.white10 : Colors.grey[300],
+      deleteIconColor: theme.brightness == Brightness.dark ? Colors.white : Colors.black87,
       onDeleted: onDelete,
     );
   }
@@ -52,9 +45,7 @@ class FilterChipsWidget extends StatelessWidget {
     }
 
     if (selectedArtist != null) {
-      chips.add(
-        _buildChip(context, "Artist: $selectedArtist", onArtistDeleted),
-      );
+      chips.add(_buildChip(context, "Artist: $selectedArtist", onArtistDeleted));
     }
 
     if (selectedAlbum != null) {
@@ -74,14 +65,8 @@ class FilterChipsWidget extends StatelessWidget {
               ...chips,
               if (chips.length > 1)
                 TextButton.icon(
-                  icon: Icon(
-                    Icons.clear_all,
-                    color: theme.colorScheme.secondary,
-                  ),
-                  label: Text(
-                    'Clear All',
-                    style: TextStyle(color: theme.colorScheme.secondary),
-                  ),
+                  icon: Icon(Icons.clear_all, color: theme.colorScheme.secondary),
+                  label: Text('Clear All', style: TextStyle(color: theme.colorScheme.secondary)),
                   onPressed: onClearAll,
                 ),
             ],

@@ -17,20 +17,14 @@ class RecentlyPlayedScreen extends StatelessWidget {
       future: RecentlyPlayedManager.loadRecentlyPlayed(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(
-              color: theme.colorScheme.secondary,
-            ),
-          );
+          return Center(child: CircularProgressIndicator(color: theme.colorScheme.secondary));
         }
 
         if (snapshot.hasError) {
           return Center(
             child: Text(
               'Error loading recently played songs.',
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.textTheme.bodyLarge?.color,
-              ),
+              style: theme.textTheme.titleMedium?.copyWith(color: theme.textTheme.bodyLarge?.color),
             ),
           );
         }
@@ -39,9 +33,7 @@ class RecentlyPlayedScreen extends StatelessWidget {
           return Center(
             child: Text(
               'No recently played songs.',
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.textTheme.bodyLarge?.color,
-              ),
+              style: theme.textTheme.titleMedium?.copyWith(color: theme.textTheme.bodyLarge?.color),
             ),
           );
         }
@@ -54,13 +46,7 @@ class RecentlyPlayedScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             final song = recentlyPlayedSongs[index];
 
-            return _buildSongCard(
-              context,
-              song,
-              isLargeScreen,
-              recentlyPlayedSongs,
-              index,
-            );
+            return _buildSongCard(context, song, isLargeScreen, recentlyPlayedSongs, index);
           },
         );
       },
@@ -76,18 +62,12 @@ class RecentlyPlayedScreen extends StatelessWidget {
   ) {
     final ThemeData theme = Theme.of(context);
     return Card(
-      color:
-          theme.brightness == Brightness.dark
-              ? theme.colorScheme.surface
-              : Colors.white,
+      color: theme.brightness == Brightness.dark ? theme.colorScheme.surface : Colors.white,
       elevation: 1,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color:
-              theme.brightness == Brightness.dark
-                  ? Colors.white10
-                  : Colors.grey[200]!,
+          color: theme.brightness == Brightness.dark ? Colors.white10 : Colors.grey[200]!,
           width: 1,
         ),
       ),
@@ -130,20 +110,13 @@ class RecentlyPlayedScreen extends StatelessWidget {
         ),
         onTap: () {
           // Navigate to SongPlayerScreen when card is tapped
-          context.push(
-            context,
-            target: SongPlayerScreen(songList: songList, initialIndex: index),
-          );
+          context.push(context, target: SongPlayerScreen(songList: songList, initialIndex: index));
         },
       ),
     );
   }
 
-  Widget _buildSongThumbnail(
-    SongData song,
-    bool isLargeScreen,
-    BuildContext context,
-  ) {
+  Widget _buildSongThumbnail(SongData song, bool isLargeScreen, BuildContext context) {
     final ThemeData theme = Theme.of(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
