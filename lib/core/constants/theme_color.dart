@@ -18,9 +18,7 @@ class ThemeColor {
 
   // Get colors based on the current theme brightness
   static Color getBackgroundColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.light
-        ? white
-        : const Color(0xFF121212);
+    return Theme.of(context).brightness == Brightness.light ? white : const Color(0xFF121212);
   }
 
   static Color getTextColor(BuildContext context) {
@@ -28,20 +26,14 @@ class ThemeColor {
   }
 
   static Color getSecondaryTextColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.light
-        ? Colors.black54
-        : Colors.white70;
+    return Theme.of(context).brightness == Brightness.light ? Colors.black54 : Colors.white70;
   }
 
   static Color getCardColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.light
-        ? Colors.grey[100]!
-        : Colors.white10;
+    return Theme.of(context).brightness == Brightness.light ? Colors.grey[100]! : Colors.white10;
   }
 
   static Color getPrimaryColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.light
-        ? blueColor
-        : const Color(0xFF60A5FA);
+    return Theme.of(context).brightness == Brightness.light ? blueColor : const Color(0xFF60A5FA);
   }
 }

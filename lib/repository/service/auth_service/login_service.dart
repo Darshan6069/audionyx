@@ -7,13 +7,9 @@ import '../api_service.dart';
 class LoginService {
   final ApiService _apiService;
 
-  LoginService(GlobalKey<NavigatorState> navigatorKey)
-    : _apiService = ApiService(navigatorKey);
+  LoginService(GlobalKey<NavigatorState> navigatorKey) : _apiService = ApiService(navigatorKey);
 
-  Future<String> loginUser({
-    required String email,
-    required String password,
-  }) async {
+  Future<String> loginUser({required String email, required String password}) async {
     if (email.isEmpty || password.isEmpty) {
       throw Exception('All fields are required');
     }

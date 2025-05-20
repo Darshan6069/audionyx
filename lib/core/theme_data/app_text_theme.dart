@@ -39,93 +39,39 @@ class AppTextTheme {
   ];
 
   static final bodyLarge = [
-    _bodyBaseTextStyle.copyWith(
-      fontSize: 16,
-      fontWeight: FontWeight.w400,
-    ), // Mobile
-    _bodyBaseTextStyle.copyWith(
-      fontSize: 18,
-      fontWeight: FontWeight.w400,
-    ), // Tablet
-    _bodyBaseTextStyle.copyWith(
-      fontSize: 20,
-      fontWeight: FontWeight.w400,
-    ), // Desktop
+    _bodyBaseTextStyle.copyWith(fontSize: 16, fontWeight: FontWeight.w400), // Mobile
+    _bodyBaseTextStyle.copyWith(fontSize: 18, fontWeight: FontWeight.w400), // Tablet
+    _bodyBaseTextStyle.copyWith(fontSize: 20, fontWeight: FontWeight.w400), // Desktop
   ];
 
   static final bodyMedium = [
-    _bodyBaseTextStyle.copyWith(
-      fontSize: 14,
-      fontWeight: FontWeight.w400,
-    ), // Mobile
-    _bodyBaseTextStyle.copyWith(
-      fontSize: 16,
-      fontWeight: FontWeight.w400,
-    ), // Tablet
-    _bodyBaseTextStyle.copyWith(
-      fontSize: 18,
-      fontWeight: FontWeight.w400,
-    ), // Desktop
+    _bodyBaseTextStyle.copyWith(fontSize: 14, fontWeight: FontWeight.w400), // Mobile
+    _bodyBaseTextStyle.copyWith(fontSize: 16, fontWeight: FontWeight.w400), // Tablet
+    _bodyBaseTextStyle.copyWith(fontSize: 18, fontWeight: FontWeight.w400), // Desktop
   ];
 
   static final bodySmall = [
-    _bodyBaseTextStyle.copyWith(
-      fontSize: 12,
-      fontWeight: FontWeight.w400,
-    ), // Mobile
-    _bodyBaseTextStyle.copyWith(
-      fontSize: 14,
-      fontWeight: FontWeight.w400,
-    ), // Tablet
-    _bodyBaseTextStyle.copyWith(
-      fontSize: 16,
-      fontWeight: FontWeight.w400,
-    ), // Desktop
+    _bodyBaseTextStyle.copyWith(fontSize: 12, fontWeight: FontWeight.w400), // Mobile
+    _bodyBaseTextStyle.copyWith(fontSize: 14, fontWeight: FontWeight.w400), // Tablet
+    _bodyBaseTextStyle.copyWith(fontSize: 16, fontWeight: FontWeight.w400), // Desktop
   ];
 
   static final titleLarge = [
-    _bodyBaseTextStyle.copyWith(
-      fontSize: 16,
-      fontWeight: FontWeight.w600,
-    ), // Mobile
-    _bodyBaseTextStyle.copyWith(
-      fontSize: 18,
-      fontWeight: FontWeight.w600,
-    ), // Tablet
-    _bodyBaseTextStyle.copyWith(
-      fontSize: 20,
-      fontWeight: FontWeight.w600,
-    ), // Desktop
+    _bodyBaseTextStyle.copyWith(fontSize: 16, fontWeight: FontWeight.w600), // Mobile
+    _bodyBaseTextStyle.copyWith(fontSize: 18, fontWeight: FontWeight.w600), // Tablet
+    _bodyBaseTextStyle.copyWith(fontSize: 20, fontWeight: FontWeight.w600), // Desktop
   ];
 
   static final titleMedium = [
-    _bodyBaseTextStyle.copyWith(
-      fontSize: 14,
-      fontWeight: FontWeight.w600,
-    ), // Mobile
-    _bodyBaseTextStyle.copyWith(
-      fontSize: 16,
-      fontWeight: FontWeight.w600,
-    ), // Tablet
-    _bodyBaseTextStyle.copyWith(
-      fontSize: 18,
-      fontWeight: FontWeight.w600,
-    ), // Desktop
+    _bodyBaseTextStyle.copyWith(fontSize: 14, fontWeight: FontWeight.w600), // Mobile
+    _bodyBaseTextStyle.copyWith(fontSize: 16, fontWeight: FontWeight.w600), // Tablet
+    _bodyBaseTextStyle.copyWith(fontSize: 18, fontWeight: FontWeight.w600), // Desktop
   ];
 
   static final titleSmall = [
-    _bodyBaseTextStyle.copyWith(
-      fontSize: 12,
-      fontWeight: FontWeight.w600,
-    ), // Mobile
-    _bodyBaseTextStyle.copyWith(
-      fontSize: 14,
-      fontWeight: FontWeight.w600,
-    ), // Tablet
-    _bodyBaseTextStyle.copyWith(
-      fontSize: 16,
-      fontWeight: FontWeight.w600,
-    ), // Desktop
+    _bodyBaseTextStyle.copyWith(fontSize: 12, fontWeight: FontWeight.w600), // Mobile
+    _bodyBaseTextStyle.copyWith(fontSize: 14, fontWeight: FontWeight.w600), // Tablet
+    _bodyBaseTextStyle.copyWith(fontSize: 16, fontWeight: FontWeight.w600), // Desktop
   ];
 
   static const _headlineBaseTextStyle = TextStyle(
@@ -134,10 +80,7 @@ class AppTextTheme {
     fontFamily: _interFontFamily,
   );
 
-  static const _bodyBaseTextStyle = TextStyle(
-    fontFamily: _interFontFamily,
-    letterSpacing: 0,
-  );
+  static const _bodyBaseTextStyle = TextStyle(fontFamily: _interFontFamily, letterSpacing: 0);
 
   // Mobile text theme
   static final mobileTextTheme = TextTheme(

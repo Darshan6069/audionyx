@@ -56,9 +56,7 @@ class PlaylistService {
         throw Exception('Missing userId/playlistId');
       }
 
-      final response = await _apiService.delete(
-        'playlists/users/$userId/playlists/$playlistId',
-      );
+      final response = await _apiService.delete('playlists/users/$userId/playlists/$playlistId');
 
       if (response.statusCode != 200) {
         throw Exception('Failed to delete playlist: ${response.data}');
@@ -71,10 +69,7 @@ class PlaylistService {
     }
   }
 
-  Future<Map<String, dynamic>> addSongToPlaylist(
-    String playlistId,
-    List<String> songIds,
-  ) async {
+  Future<Map<String, dynamic>> addSongToPlaylist(String playlistId, List<String> songIds) async {
     try {
       final response = await _apiService.post(
         'playlists/add-song',
@@ -98,8 +93,7 @@ class PlaylistService {
 
       if (response.statusCode == 200) {
         final data = response.data['songs']; // List<dynamic>
-        final List<SongData> songs =
-            data.map<SongData>((json) => SongData.fromJson(json)).toList();
+        final List<SongData> songs = data.map<SongData>((json) => SongData.fromJson(json)).toList();
 
         return songs;
       } else {

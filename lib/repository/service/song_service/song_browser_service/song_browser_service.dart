@@ -27,10 +27,7 @@ class SongBrowserService {
     String? artist,
     String? album,
   ) {
-    if (searchQuery.isEmpty &&
-        genre == null &&
-        artist == null &&
-        album == null) {
+    if (searchQuery.isEmpty && genre == null && artist == null && album == null) {
       return songs;
     }
 
@@ -68,9 +65,7 @@ class SongBrowserService {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder:
-              (context) =>
-                  SongPlayerScreen(songList: songs, initialIndex: index),
+          builder: (context) => SongPlayerScreen(songList: songs, initialIndex: index),
         ),
       );
     } catch (e) {

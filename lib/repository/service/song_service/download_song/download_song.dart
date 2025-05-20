@@ -1,20 +1,28 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../../../domain/song_model/song_model.dart';
 
 class DownloadSong {
+  final Function(double)? onProgress;
+  final Function(String, bool)? onStatusUpdate;
+
+  DownloadSong({this.onProgress, this.onStatusUpdate});
+
   Future<void> downloadSong(
-    String url,
-    String fileName,
-    String thumbnailUrl,
-    SongData songData,
-    BuildContext context,
-  ) async {
+      String url,
+      String fileName,
+      String thumbnailUrl,
+      SongData songData,
+      BuildContext context,
+      ) async {
+    // Notify start of download
+    onStatusUpdate?.call('Starting download for ${songData.title}', true);
+
     // Check Android version to determine if permission is needed
     bool needsStoragePermission = false;
     if (Platform.isAndroid) {
@@ -25,7 +33,6 @@ class DownloadSong {
         needsStoragePermission = sdkInt < 30;
       } catch (e) {
         print('Failed to get device info: $e');
-        // Fallback: Assume Android 11+ (no permission needed for app-specific storage)
         needsStoragePermission = false;
       }
     }
@@ -42,7 +49,6 @@ class DownloadSong {
     // Handle denied or permanently denied permissions
     if (status.isDenied || status.isPermanentlyDenied) {
       if (status.isPermanentlyDenied) {
-        // Prompt user to enable permission in settings
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text(
@@ -61,33 +67,23 @@ class DownloadSong {
           const SnackBar(content: Text('Storage permission not granted')),
         );
       }
+      onStatusUpdate?.call('Download failed: Permission not granted', false);
       return;
     }
 
     try {
-      // Fetch file size to validate URL
-      final headResponse = await http.head(Uri.parse(url));
-      if (headResponse.statusCode != 200) {
-        throw Exception(
-          'Failed to fetch file info: ${headResponse.statusCode}',
-        );
-      }
-      final contentLength = int.parse(
-        headResponse.headers['content-length'] ?? '0',
-      );
-      print('File size from server: $contentLength bytes');
+      // Initialize Dio
+      final dio = Dio();
 
       // Use app-specific storage directory
       Directory downloadDir;
       if (Platform.isAndroid) {
-        // Use app-specific external storage (no permission needed on Android 11+)
         final externalDir = await getExternalStorageDirectory();
         if (externalDir == null) {
           throw Exception('Unable to access external storage directory');
         }
         downloadDir = Directory('${externalDir.path}/Downloads');
       } else {
-        // Use documents directory for iOS
         downloadDir = await getApplicationDocumentsDirectory();
       }
 
@@ -97,37 +93,43 @@ class DownloadSong {
       }
       print('Saving files to: ${downloadDir.path}');
 
-      // Download the song using http
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode != 200) {
-        throw Exception('Failed to download song: ${response.statusCode}');
-      }
-
-      // Save the song file
-      final songFile = File('${downloadDir.path}/$fileName');
-      await songFile.writeAsBytes(response.bodyBytes);
-      print('Song saved to: ${songFile.path}');
+      // Download the song with Dio
+      final songFilePath = '${downloadDir.path}/$fileName';
+      await dio.download(
+        url,
+        songFilePath,
+        onReceiveProgress: (received, total) {
+          if (total != -1) {
+            final progress = received / total;
+            onProgress?.call(progress.clamp(0.0, 1.0));
+          }
+        },
+      );
+      print('Song saved to: $songFilePath');
 
       // Download and save thumbnail
       if (thumbnailUrl.isNotEmpty) {
-        final thumbnailResponse = await http.get(Uri.parse(thumbnailUrl));
-        if (thumbnailResponse.statusCode == 200) {
-          final thumbnailFileName =
-              '${fileName.replaceAll('.mp3', '')}_thumbnail.jpg';
-          final thumbnailFile = File('${downloadDir.path}/$thumbnailFileName');
-          await thumbnailFile.writeAsBytes(thumbnailResponse.bodyBytes);
-          print('Thumbnail saved to: ${thumbnailFile.path}');
-        } else {
-          print(
-            'Failed to download thumbnail: ${thumbnailResponse.statusCode}',
+        final thumbnailFileName = '${fileName.replaceAll('.mp3', '')}_thumbnail.jpg';
+        final thumbnailFilePath = '${downloadDir.path}/$thumbnailFileName';
+        try {
+          await dio.download(
+            thumbnailUrl,
+            thumbnailFilePath,
+            onReceiveProgress: (received, total) {
+              if (total != -1) {
+                final progress = received / total;
+                onProgress?.call(progress.clamp(0.0, 1.0));
+              }
+            },
           );
+          print('Thumbnail saved to: $thumbnailFilePath');
+        } catch (e) {
+          print('Failed to download thumbnail: $e');
         }
       }
 
       // Save metadata
-      final metadataFile = File(
-        '${downloadDir.path}/${fileName.replaceAll('.mp3', '.json')}',
-      );
+      final metadataFile = File('${downloadDir.path}/${fileName.replaceAll('.mp3', '.json')}');
       final metadata = {
         'id': songData.id,
         'title': songData.title,
@@ -135,6 +137,7 @@ class DownloadSong {
         'album': songData.album,
         'thumbnail': '${fileName.replaceAll('.mp3', '')}_thumbnail.jpg',
         'genre': songData.genre,
+        'downloadDate': DateTime.now().toIso8601String(),
       };
       await metadataFile.writeAsString(jsonEncode(metadata));
       print('Metadata saved to: ${metadataFile.path}');
@@ -142,11 +145,13 @@ class DownloadSong {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Downloaded: $fileName to ${downloadDir.path}')),
       );
+      onStatusUpdate?.call('Download completed: ${songData.title}', true);
     } catch (e) {
       print('Download error: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Download failed: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Download failed: $e')),
+      );
+      onStatusUpdate?.call('Download failed: ${songData.title} - $e', false);
     }
   }
 }

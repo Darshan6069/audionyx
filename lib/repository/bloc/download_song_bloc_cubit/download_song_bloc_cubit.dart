@@ -18,13 +18,7 @@ class DownloadSongBlocCubit extends Cubit<DownloadSongState> {
   }) async {
     emit(const DownloadSongState.downloading());
     try {
-      await _downloadSongService.downloadSong(
-        url,
-        fileName,
-        thumbnailUrl,
-        songData,
-        context,
-      );
+      await _downloadSongService.downloadSong(url, fileName, thumbnailUrl, songData, context);
       emit(const DownloadSongState.success());
     } catch (e) {
       emit(DownloadSongState.failure(e.toString()));

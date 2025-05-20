@@ -35,11 +35,7 @@ class SongData {
       'subtitleUrl': subtitleUrl,
     }..removeWhere(
       (key, value) =>
-          value == null &&
-          key != 'id' &&
-          key != 'mp3Url' &&
-          key != 'title' &&
-          key != 'artist',
+          value == null && key != 'id' && key != 'mp3Url' && key != 'title' && key != 'artist',
     );
   }
 
@@ -52,8 +48,7 @@ class SongData {
       thumbnailUrl: json['thumbnailUrl'] ?? '',
       album: json['album'] ?? '',
       genre: json['genre'] ?? 'Unknown',
-      createdAt:
-          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
       subtitleUrl: json['subtitleUrl'],
     );
   }

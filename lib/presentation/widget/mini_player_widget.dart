@@ -31,13 +31,9 @@ class MiniPlayerWidget extends StatelessWidget {
         return LayoutBuilder(
           builder: (context, constraints) {
             final minHeight =
-                constraints.maxHeight * 0.08 > 60
-                    ? 60.0
-                    : constraints.maxHeight * 0.08;
+                constraints.maxHeight * 0.08 > 60 ? 60.0 : constraints.maxHeight * 0.08;
             final maxHeight =
-                constraints.maxHeight * 0.6 > 400
-                    ? 400.0
-                    : constraints.maxHeight * 0.6;
+                constraints.maxHeight * 0.6 > 400 ? 400.0 : constraints.maxHeight * 0.6;
 
             return Miniplayer(
               minHeight: minHeight,
@@ -61,16 +57,12 @@ class MiniPlayerWidget extends StatelessWidget {
                       gradient: LinearGradient(
                         colors: [
                           theme.colorScheme.surface.withOpacity(0.95),
-                          theme.colorScheme.surfaceContainerHighest.withOpacity(
-                            0.95,
-                          ),
+                          theme.colorScheme.surfaceContainerHighest.withOpacity(0.95),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                       ),
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(16),
-                      ),
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                       boxShadow: [
                         BoxShadow(
                           color: theme.shadowColor.withOpacity(0.3),
@@ -88,11 +80,8 @@ class MiniPlayerWidget extends StatelessWidget {
                             borderRadius: BorderRadius.circular(2),
                             child: LinearProgressIndicator(
                               value: progress,
-                              backgroundColor:
-                                  theme.colorScheme.surfaceContainerHighest,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                theme.colorScheme.primary,
-                              ),
+                              backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                              valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
                             ),
                           ),
                         ),
@@ -109,12 +98,7 @@ class MiniPlayerWidget extends StatelessWidget {
                               // Control buttons with fixed width
                               SizedBox(
                                 width: 120, // Fixed width for buttons
-                                child: _buildControlButtons(
-                                  context,
-                                  state,
-                                  percentage,
-                                  theme,
-                                ),
+                                child: _buildControlButtons(context, state, percentage, theme),
                               ),
                             ],
                           ),
@@ -131,11 +115,7 @@ class MiniPlayerWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildAlbumArt(
-    AudioPlayerState state,
-    double height,
-    ThemeData theme,
-  ) {
+  Widget _buildAlbumArt(AudioPlayerState state, double height, ThemeData theme) {
     final constrainedSize = height * 0.8 > 60 ? 60.0 : height * 0.8;
     return Container(
       width: constrainedSize,
@@ -217,13 +197,8 @@ class MiniPlayerWidget extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            state.currentSong!.artist.isNotEmpty
-                ? state.currentSong!.artist
-                : 'Unknown Artist',
-            style: TextStyle(
-              color: theme.colorScheme.onSurfaceVariant,
-              fontSize: 14,
-            ),
+            state.currentSong!.artist.isNotEmpty ? state.currentSong!.artist : 'Unknown Artist',
+            style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 14),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -254,11 +229,7 @@ class MiniPlayerWidget extends StatelessWidget {
         ),
         const SizedBox(width: 8), // Space between buttons
         AnimatedIconButton(
-          icon: Icon(
-            Icons.skip_next,
-            color: theme.colorScheme.onSurface,
-            size: 28,
-          ),
+          icon: Icon(Icons.skip_next, color: theme.colorScheme.onSurface, size: 28),
           onPressed: () {
             context.read<AudioPlayerBlocCubit>().playNext(state.songList!);
           },

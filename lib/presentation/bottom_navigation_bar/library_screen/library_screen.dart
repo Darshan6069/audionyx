@@ -11,8 +11,7 @@ class LibraryScreen extends StatefulWidget {
   State<LibraryScreen> createState() => _LibraryScreenState();
 }
 
-class _LibraryScreenState extends State<LibraryScreen>
-    with SingleTickerProviderStateMixin {
+class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -54,9 +53,7 @@ class _LibraryScreenState extends State<LibraryScreen>
             Tab(text: 'Playlists'),
             Tab(text: 'Recent'),
           ],
-          labelStyle: textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          labelStyle: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
       ),
       body: TabBarView(

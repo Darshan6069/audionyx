@@ -1,44 +1,52 @@
 import 'dart:convert';
-import 'package:audionyx/domain/song_model/song_model.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../domain/song_model/song_model.dart';
 
 class FavoriteSongService {
-  static const String _favoriteSongsKey = 'favorite_songs';
+  static final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  // Get all favorite songs
+  // Get the user-specific key for SharedPreferences
+  static Future<String> _getUserSpecificKey() async {
+    final userId = await _storage.read(key: 'userId') ?? 'default_user';
+    return 'favorite_songs_$userId';
+  }
+
+  // Get all favorite songs for the current user
   Future<List<SongData>> getFavoriteSongs() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? favoriteList = prefs.getString(_favoriteSongsKey);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final key = await _getUserSpecificKey();
+      final String? favoriteList = prefs.getString(key);
 
-    if (favoriteList == null || favoriteList.isEmpty) {
+      if (favoriteList == null || favoriteList.isEmpty) {
+        return [];
+      }
+
+      List<dynamic> decodedList = jsonDecode(favoriteList);
+      return decodedList.map((item) => SongData.fromJson(item)).toList();
+    } catch (e) {
+      print('Error getting favorite songs: $e');
       return [];
     }
-
-    List<dynamic> decodedList = jsonDecode(favoriteList);
-    return decodedList.map((item) => SongData.fromJson(item)).toList();
   }
 
-  // Check if a song is in favorites
+  // Check if a song is in favorites for the current user
   Future<bool> isSongFavorite(SongData song) async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? favoriteList = prefs.getString(_favoriteSongsKey);
-
-    if (favoriteList == null || favoriteList.isEmpty) {
+    try {
+      final List<SongData> songs = await getFavoriteSongs();
+      return songs.any((favSong) => favSong.id == song.id);
+    } catch (e) {
+      print('Error checking favorite song: $e');
       return false;
     }
-
-    List<dynamic> decodedList = jsonDecode(favoriteList);
-    List<SongData> songs =
-        decodedList.map((item) => SongData.fromJson(item)).toList();
-
-    // Check if song exists by its ID or unique identifier
-    return songs.any((favSong) => favSong.id == song.id);
   }
 
-  // Add a song to favorites
+  // Add a song to favorites for the current user
   Future<bool> addToFavorites(SongData song) async {
     try {
       final prefs = await SharedPreferences.getInstance();
+      final key = await _getUserSpecificKey();
       final List<SongData> currentFavorites = await getFavoriteSongs();
 
       // Check if the song already exists in favorites
@@ -50,9 +58,8 @@ class FavoriteSongService {
       currentFavorites.add(song);
 
       // Convert list to JSON and save
-      List<Map<String, dynamic>> jsonList =
-          currentFavorites.map((song) => song.toMap()).toList();
-      await prefs.setString(_favoriteSongsKey, jsonEncode(jsonList));
+      List<Map<String, dynamic>> jsonList = currentFavorites.map((song) => song.toMap()).toList();
+      await prefs.setString(key, jsonEncode(jsonList));
 
       return true;
     } catch (e) {
@@ -61,19 +68,19 @@ class FavoriteSongService {
     }
   }
 
-  // Remove a song from favorites
+  // Remove a song from favorites for the current user
   Future<bool> removeFromFavorites(SongData song) async {
     try {
       final prefs = await SharedPreferences.getInstance();
+      final key = await _getUserSpecificKey();
       final List<SongData> currentFavorites = await getFavoriteSongs();
 
       // Remove the song if it exists
       currentFavorites.removeWhere((favSong) => favSong.id == song.id);
 
       // Convert list to JSON and save
-      List<Map<String, dynamic>> jsonList =
-          currentFavorites.map((song) => song.toMap()).toList();
-      await prefs.setString(_favoriteSongsKey, jsonEncode(jsonList));
+      List<Map<String, dynamic>> jsonList = currentFavorites.map((song) => song.toMap()).toList();
+      await prefs.setString(key, jsonEncode(jsonList));
 
       return true;
     } catch (e) {
@@ -82,14 +89,25 @@ class FavoriteSongService {
     }
   }
 
-  // Toggle favorite status
+  // Toggle favorite status for the current user
   Future<bool> toggleFavorite(SongData song) async {
-    final bool isFavorite = await isSongFavorite(song);
+    try {
+      final bool isFavorite = await isSongFavorite(song);
+      return isFavorite ? await removeFromFavorites(song) : await addToFavorites(song);
+    } catch (e) {
+      print('Error toggling favorite: $e');
+      return false;
+    }
+  }
 
-    if (isFavorite) {
-      return await removeFromFavorites(song);
-    } else {
-      return await addToFavorites(song);
+  // Clear favorite songs for the current user
+  Future<void> clearFavoriteSongs() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final key = await _getUserSpecificKey();
+      await prefs.remove(key);
+    } catch (e) {
+      print('Error clearing favorite songs: $e');
     }
   }
 }

@@ -39,9 +39,7 @@ class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
-        ),
+        border: Border.all(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).colorScheme.shadow.withOpacity(0.2),
@@ -65,21 +63,19 @@ class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
       stream: widget.audioPlayerService.playerStateStream,
       builder: (context, snapshot) {
         final playerState = snapshot.data;
-        final isPlaying =
-            playerState?.playing ?? widget.audioPlayerService.isPlaying;
+        final isPlaying = playerState?.playing ?? widget.audioPlayerService.isPlaying;
 
         final currentIndex = widget.audioPlayerService.currentIndex ?? 0;
         final canPlayPrevious =
-            currentIndex > 0 ||
-                widget.audioPlayerService.loopMode == LoopMode.all;
+            currentIndex > 0 || widget.audioPlayerService.loopMode == LoopMode.all;
         final canPlayNext =
             currentIndex < widget.songList.length - 1 ||
-                widget.audioPlayerService.loopMode == LoopMode.all;
+            widget.audioPlayerService.loopMode == LoopMode.all;
 
         print(
           'MediaControls: currentIndex=$currentIndex, canPlayPrevious=$canPlayPrevious, '
-              'canPlayNext=$canPlayNext, loopMode=${widget.audioPlayerService.loopMode}, '
-              'songList.length=${widget.songList.length}, isPlaying=$isPlaying',
+          'canPlayNext=$canPlayNext, loopMode=${widget.audioPlayerService.loopMode}, '
+          'songList.length=${widget.songList.length}, isPlaying=$isPlaying',
         );
 
         return Row(
@@ -87,12 +83,8 @@ class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
           children: [
             IconButton(
               icon: Icon(
-                widget.audioPlayerService.isShuffling
-                    ? Icons.shuffle_on
-                    : Icons.shuffle,
-                color: widget.audioPlayerService.isShuffling
-                    ? Colors.greenAccent
-                    : Colors.white,
+                widget.audioPlayerService.isShuffling ? Icons.shuffle_on : Icons.shuffle,
+                color: widget.audioPlayerService.isShuffling ? Colors.greenAccent : Colors.white,
               ),
               onPressed: () {
                 setState(() {
@@ -102,36 +94,34 @@ class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
               splashRadius: 24,
             ),
             IconButton(
-              icon: const Icon(
-                Icons.skip_previous,
-                color: Colors.white,
-                size: 32,
-              ),
-              onPressed: canPlayPrevious
-                  ? () {
-                print(
-                  'Previous button pressed, currentIndex: $currentIndex, '
-                      'songList.length: ${widget.songList.length}',
-                );
-                widget.audioPlayerService.playPrevious(widget.songList);
-                setState(() {});
-              }
-                  : null,
+              icon: const Icon(Icons.skip_previous, color: Colors.white, size: 32),
+              onPressed:
+                  canPlayPrevious
+                      ? () {
+                        print(
+                          'Previous button pressed, currentIndex: $currentIndex, '
+                          'songList.length: ${widget.songList.length}',
+                        );
+                        widget.audioPlayerService.playPrevious(widget.songList);
+                        setState(() {});
+                      }
+                      : null,
               splashRadius: 24,
             ),
             _buildPlayPauseButton(isPlaying),
             IconButton(
               icon: const Icon(Icons.skip_next, color: Colors.white, size: 32),
-              onPressed: canPlayNext
-                  ? () {
-                print(
-                  'Next button pressed, currentIndex: $currentIndex, '
-                      'songList.length: ${widget.songList.length}',
-                );
-                widget.audioPlayerService.playNext(widget.songList);
-                setState(() {});
-              }
-                  : null,
+              onPressed:
+                  canPlayNext
+                      ? () {
+                        print(
+                          'Next button pressed, currentIndex: $currentIndex, '
+                          'songList.length: ${widget.songList.length}',
+                        );
+                        widget.audioPlayerService.playNext(widget.songList);
+                        setState(() {});
+                      }
+                      : null,
               splashRadius: 24,
             ),
             IconButton(
@@ -139,9 +129,10 @@ class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
                 widget.audioPlayerService.loopMode == LoopMode.one
                     ? Icons.repeat_one
                     : Icons.repeat,
-                color: widget.audioPlayerService.loopMode != LoopMode.off
-                    ? Colors.greenAccent
-                    : Colors.white,
+                color:
+                    widget.audioPlayerService.loopMode != LoopMode.off
+                        ? Colors.greenAccent
+                        : Colors.white,
               ),
               onPressed: () {
                 setState(() {
@@ -166,11 +157,7 @@ class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
         onTap: widget.audioPlayerService.togglePlayPause,
         child: Container(
           padding: const EdgeInsets.all(16),
-          child: Icon(
-            isPlaying ? Icons.pause : Icons.play_arrow,
-            color: Colors.black,
-            size: 32,
-          ),
+          child: Icon(isPlaying ? Icons.pause : Icons.play_arrow, color: Colors.black, size: 32),
         ),
       ),
     );
@@ -218,21 +205,22 @@ class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
             icon: Icons.lyrics,
             label: 'Lyrics',
             color: hasLyrics ? Colors.purpleAccent : Colors.white70,
-            onPressed: hasLyrics
-                ? () {
-              print('Lyrics button pressed for song: ${widget.currentSong.id}');
-              context.read<AudioPlayerBlocCubit>().toggleLyrics();
-            }
-                : () {
-              print('No lyrics available for song: ${widget.currentSong.id}');
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('No lyrics available for this song'),
-                  behavior: SnackBarBehavior.floating,
-                  backgroundColor: Colors.redAccent,
-                ),
-              );
-            },
+            onPressed:
+                hasLyrics
+                    ? () {
+                      print('Lyrics button pressed for song: ${widget.currentSong.id}');
+                      context.read<AudioPlayerBlocCubit>().toggleLyrics();
+                    }
+                    : () {
+                      print('No lyrics available for song: ${widget.currentSong.id}');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('No lyrics available for this song'),
+                          behavior: SnackBarBehavior.floating,
+                          backgroundColor: Colors.redAccent,
+                        ),
+                      );
+                    },
           ),
         ],
       ),
@@ -261,10 +249,7 @@ class _PlayerControlsWidgetState extends State<PlayerControlsWidget> {
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12),
-        ),
+        Text(label, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12)),
       ],
     );
   }

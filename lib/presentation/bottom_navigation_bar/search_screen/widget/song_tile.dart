@@ -39,9 +39,7 @@ class SongTile extends StatelessWidget {
                       width: 60,
                       height: 60,
                       color:
-                          theme.brightness == Brightness.dark
-                              ? Colors.white10
-                              : Colors.grey[200],
+                          theme.brightness == Brightness.dark ? Colors.white10 : Colors.grey[200],
                       child: Center(
                         child: CircularProgressIndicator(
                           color: theme.colorScheme.secondary,
@@ -54,13 +52,8 @@ class SongTile extends StatelessWidget {
                       width: 60,
                       height: 60,
                       color:
-                          theme.brightness == Brightness.dark
-                              ? Colors.white10
-                              : Colors.grey[200],
-                      child: Icon(
-                        Icons.music_note,
-                        color: theme.iconTheme.color,
-                      ),
+                          theme.brightness == Brightness.dark ? Colors.white10 : Colors.grey[200],
+                      child: Icon(Icons.music_note, color: theme.iconTheme.color),
                     ),
               ),
             ),
@@ -82,9 +75,7 @@ class SongTile extends StatelessWidget {
                   Text(
                     '${song.artist} • ${song.album}',
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.textTheme.bodyMedium?.color?.withOpacity(
-                        0.7,
-                      ),
+                      color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -104,8 +95,7 @@ class SongTile extends StatelessWidget {
 
     return PopupMenuButton<String>(
       icon: Icon(Icons.more_vert, color: theme.iconTheme.color),
-      color:
-          theme.brightness == Brightness.dark ? Colors.white10 : Colors.white,
+      color: theme.brightness == Brightness.dark ? Colors.white10 : Colors.white,
       onSelected: (value) {
         switch (value) {
           case 'play':
@@ -125,16 +115,9 @@ class SongTile extends StatelessWidget {
               value: 'play',
               child: Row(
                 children: [
-                  Icon(
-                    Icons.play_arrow,
-                    color: theme.iconTheme.color,
-                    size: 20,
-                  ),
+                  Icon(Icons.play_arrow, color: theme.iconTheme.color, size: 20),
                   const SizedBox(width: 8),
-                  Text(
-                    'Play',
-                    style: TextStyle(color: theme.textTheme.bodyLarge?.color),
-                  ),
+                  Text('Play', style: TextStyle(color: theme.textTheme.bodyLarge?.color)),
                 ],
               ),
             ),
@@ -142,11 +125,7 @@ class SongTile extends StatelessWidget {
               value: 'add_to_playlist',
               child: Row(
                 children: [
-                  Icon(
-                    Icons.playlist_add,
-                    color: theme.iconTheme.color,
-                    size: 20,
-                  ),
+                  Icon(Icons.playlist_add, color: theme.iconTheme.color, size: 20),
                   const SizedBox(width: 8),
                   Text(
                     'Add to Playlist',
@@ -161,10 +140,7 @@ class SongTile extends StatelessWidget {
                 children: [
                   Icon(Icons.download, color: theme.iconTheme.color, size: 20),
                   const SizedBox(width: 8),
-                  Text(
-                    'Download',
-                    style: TextStyle(color: theme.textTheme.bodyLarge?.color),
-                  ),
+                  Text('Download', style: TextStyle(color: theme.textTheme.bodyLarge?.color)),
                 ],
               ),
             ),

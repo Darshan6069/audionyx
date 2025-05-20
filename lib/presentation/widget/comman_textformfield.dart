@@ -37,9 +37,7 @@ class _CommonTextformfieldState extends State<CommonTextformfield> {
       // Pass enabled property to TextFormField
       decoration: InputDecoration(
         labelText: widget.labelText,
-        labelStyle: TextStyle(
-          color: theme.colorScheme.onSurface.withOpacity(0.6),
-        ),
+        labelStyle: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(color: theme.colorScheme.outline),
@@ -58,15 +56,11 @@ class _CommonTextformfieldState extends State<CommonTextformfield> {
         ),
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-            color: theme.colorScheme.outline.withOpacity(0.3),
-          ),
+          borderSide: BorderSide(color: theme.colorScheme.outline.withOpacity(0.3)),
         ),
         filled: true,
         fillColor:
-            widget.enabled
-                ? theme.colorScheme.surface
-                : theme.colorScheme.surface.withOpacity(0.5),
+            widget.enabled ? theme.colorScheme.surface : theme.colorScheme.surface.withOpacity(0.5),
         // Adjust fill color for disabled state
         // Add suffix icon for password fields to toggle visibility
         suffixIcon:
@@ -80,8 +74,7 @@ class _CommonTextformfieldState extends State<CommonTextformfield> {
                       widget.enabled
                           ? () {
                             setState(() {
-                              _obscureText =
-                                  !_obscureText; // Toggle password visibility
+                              _obscureText = !_obscureText; // Toggle password visibility
                             });
                           }
                           : null, // Disable suffix icon when field is disabled

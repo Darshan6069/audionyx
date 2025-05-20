@@ -33,9 +33,7 @@ class CreatePlaylistDialogWidget extends StatelessWidget {
         style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
         decoration: InputDecoration(
           hintText: 'Enter playlist name',
-          hintStyle: textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onSurface.withOpacity(0.6),
-          ),
+          hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface.withOpacity(0.6)),
           filled: true,
           fillColor: colorScheme.surface,
           border: OutlineInputBorder(

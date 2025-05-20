@@ -24,11 +24,7 @@ class PlayerAppBar extends StatelessWidget {
           ),
           const Text(
             'Now Playing',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
           ),
           Row(
             children: [
@@ -61,9 +57,7 @@ class PlayerAppBar extends StatelessWidget {
                         height: 24,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.white,
-                          ),
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       );
                     }
@@ -73,9 +67,7 @@ class PlayerAppBar extends StatelessWidget {
                         final url = currentSong.mp3Url;
                         if (url.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Download URL is not available'),
-                            ),
+                            const SnackBar(content: Text('Download URL is not available')),
                           );
                           return;
                         }

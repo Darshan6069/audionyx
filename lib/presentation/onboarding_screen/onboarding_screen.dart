@@ -31,10 +31,7 @@ class OnboardingScreen extends StatelessWidget {
                 flex: 2,
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
-                  child: Image.asset(
-                    AppImage.onboardingBackground,
-                    fit: BoxFit.contain,
-                  ),
+                  child: Image.asset(AppImage.onboardingBackground, fit: BoxFit.contain),
                 ),
               ),
 
@@ -84,24 +81,16 @@ class OnboardingScreen extends StatelessWidget {
 
               // Get Started Button
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40.0,
-                  vertical: 30.0,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 30.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    context.pushAndRemoveUntil(
-                      context,
-                      target: const RegistrationScreen(),
-                    );
+                    context.pushAndRemoveUntil(context, target: const RegistrationScreen());
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ThemeColor.greenAccent,
                     foregroundColor: ThemeColor.blackColor,
                     minimumSize: const Size(double.infinity, 56),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                     elevation: 5,
                     shadowColor: Colors.black.withOpacity(0.3),
                   ),

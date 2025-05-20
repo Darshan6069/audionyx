@@ -28,24 +28,12 @@ class LyricsAllView extends StatelessWidget {
               children: [
                 TextButton.icon(
                   onPressed: backToFocusedView,
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.white70,
-                    size: 18,
-                  ),
-                  label: const Text(
-                    'Back to Current',
-                    style: TextStyle(color: Colors.white70),
-                  ),
+                  icon: const Icon(Icons.arrow_back, color: Colors.white70, size: 18),
+                  label: const Text('Back to Current', style: TextStyle(color: Colors.white70)),
                   style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     backgroundColor: Colors.white10,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                   ),
                 ),
               ],
@@ -62,15 +50,13 @@ class LyricsAllView extends StatelessWidget {
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
-                padding: EdgeInsets.symmetric(
-                  vertical: isCurrent ? 16.0 : 12.0,
-                  horizontal: 16.0,
-                ),
+                padding: EdgeInsets.symmetric(vertical: isCurrent ? 16.0 : 12.0, horizontal: 16.0),
                 margin: const EdgeInsets.only(bottom: 8.0),
                 decoration: BoxDecoration(
-                  color: isCurrent
-                      ? Theme.of(context).primaryColor.withOpacity(0.15)
-                      : Colors.transparent,
+                  color:
+                      isCurrent
+                          ? Theme.of(context).primaryColor.withOpacity(0.15)
+                          : Colors.transparent,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: InkWell(
@@ -94,8 +80,7 @@ class LyricsAllView extends StatelessWidget {
                           style: TextStyle(
                             color: isCurrent ? Colors.white : Colors.white70,
                             fontSize: isCurrent ? 18 : 16,
-                            fontWeight:
-                            isCurrent ? FontWeight.bold : FontWeight.normal,
+                            fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
                             letterSpacing: isCurrent ? 0.5 : 0.3,
                           ),
                           child: Text(lyric.text, textAlign: TextAlign.center),

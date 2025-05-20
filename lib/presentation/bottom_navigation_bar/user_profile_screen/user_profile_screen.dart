@@ -6,7 +6,8 @@ import 'package:audionyx/presentation/bottom_navigation_bar/user_profile_screen/
 import 'package:audionyx/repository/bloc/auth_bloc_cubit/login_bloc_cubit/login_bloc_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../../../repository/bloc/auth_bloc_cubit/google_auth_bloc_cubit/google_auth_bloc_cubit.dart';
 import '../../../repository/bloc/theme_cubit/theme_cubit.dart';
 
 class UserProfileScreen extends StatefulWidget {
@@ -20,14 +21,16 @@ class UserProfileScreen extends StatefulWidget {
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
   late Map<String, dynamic> _userData;
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   @override
   void initState() {
     super.initState();
-    _userData = {
-      'name': 'John Doe',
-      'profilePicture': 'https://via.placeholder.com/150',
-    };
+    _userData = {'name': 'John Doe', 'profilePicture': 'https://via.placeholder.com/150'};
+  }
+
+  Future<String?> _getAuthType() async {
+    return await _storage.read(key: 'authType');
   }
 
   @override
@@ -37,24 +40,28 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     final verticalSpacing = context.height(context) * 0.04;
     final horizontalPadding = screenWidth * 0.06;
 
-    return BlocBuilder<ThemeCubit, bool>(
-      builder: (context, isDarkMode) {
-        return Scaffold(
-          appBar: AppBar(
-            elevation: 0,
-            title: Text(
-              'Profile',
-              style: TextStyle(
-                fontSize: 20 * fontScale,
-                fontWeight: FontWeight.bold,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<LoginBlocCubit>(
+          create: (context) => LoginBlocCubit(),
+        ),
+        BlocProvider<GoogleLoginBlocCubit>(
+          create: (context) => GoogleLoginBlocCubit(),
+        ),
+      ],
+      child: BlocBuilder<ThemeCubit, bool>(
+        builder: (context, isDarkMode) {
+          return Scaffold(
+            appBar: AppBar(
+              elevation: 0,
+              title: Text(
+                'Profile',
+                style: TextStyle(fontSize: 20 * fontScale, fontWeight: FontWeight.bold),
               ),
+              centerTitle: true,
             ),
-            centerTitle: true,
-          ),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: context.height(context)),
+            body: SafeArea(
+              child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -83,55 +90,45 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     ),
                     SizedBox(height: verticalSpacing),
                     Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: horizontalPadding,
-                      ),
+                      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                       child: Column(
                         children: [
                           _buildActionButton(
-                            icon:
-                                isDarkMode ? Icons.dark_mode : Icons.light_mode,
-                            label:
-                                'Toggle ${isDarkMode ? "Light" : "Dark"} Mode',
-                            onPressed:
-                                () => context.read<ThemeCubit>().toggleTheme(),
+                            icon: isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                            label: 'Toggle ${isDarkMode ? "Light" : "Dark"} Mode',
+                            onPressed: () => context.read<ThemeCubit>().toggleTheme(),
                             fontScale: fontScale,
                           ),
                           SizedBox(height: verticalSpacing * 0.5),
                           _buildActionButton(
                             icon: Icons.download,
                             label: 'Downloads',
-                            onPressed:
-                                () => context.push(
-                                  context,
-                                  target: const DownloadedSongsScreen(),
-                                ),
+                            onPressed: () =>
+                                context.push(context, target: const DownloadedSongsScreen()),
                             fontScale: fontScale,
                           ),
                           SizedBox(height: verticalSpacing * 0.5),
                           _buildActionButton(
                             icon: Icons.add,
                             label: 'Add Song',
-                            onPressed:
-                                () => context.push(
-                                  context,
-                                  target: const AddSongsScreen(),
-                                ),
+                            onPressed: () => context.push(context, target: const AddSongsScreen()),
                             fontScale: fontScale,
                           ),
                           SizedBox(height: verticalSpacing * 0.5),
                           _buildActionButton(
                             icon: Icons.logout,
                             label: 'Logout',
-                            onPressed: () {
-                              context.read<LoginBlocCubit>().logout();
+                            onPressed: () async {
+                              final authType = await _getAuthType();
+                              if (authType == 'google') {
+                                await context.read<GoogleLoginBlocCubit>().signOut();
+                              } else {
+                                await context.read<LoginBlocCubit>().logout();
+                              }
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text('Logged out')),
                               );
-                              context.pushAndRemoveUntil(
-                                context,
-                                target: const LoginScreen(),
-                              );
+                              context.pushAndRemoveUntil(context, target: const LoginScreen());
                             },
                             fontScale: fontScale,
                           ),
@@ -143,9 +140,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
@@ -160,9 +157,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
-          color: Theme.of(
-            context,
-          ).colorScheme.surfaceContainerHighest.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.2),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -170,13 +165,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           children: [
             Icon(icon, size: 24 * fontScale),
             const SizedBox(width: 12),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 16 * fontScale,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            Text(label, style: TextStyle(fontSize: 16 * fontScale, fontWeight: FontWeight.w600)),
           ],
         ),
       ),

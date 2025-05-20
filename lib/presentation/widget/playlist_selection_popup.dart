@@ -82,15 +82,9 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
     );
   }
 
-  Widget _buildPlaylistContent(
-    BuildContext context,
-    PlaylistState state,
-    ThemeData theme,
-  ) {
+  Widget _buildPlaylistContent(BuildContext context, PlaylistState state, ThemeData theme) {
     if (state is PlaylistLoading) {
-      return Center(
-        child: CircularProgressIndicator(color: theme.colorScheme.primary),
-      );
+      return Center(child: CircularProgressIndicator(color: theme.colorScheme.primary));
     } else if (state is PlaylistFailure) {
       print('Playlist fetch error: ${state.error}');
       return Center(
@@ -152,10 +146,7 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
               ),
               value: selectedPlaylistId,
               isExpanded: true,
-              icon: Icon(
-                Icons.arrow_drop_down,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              icon: Icon(Icons.arrow_drop_down, color: theme.colorScheme.onSurfaceVariant),
               underline: const SizedBox(),
               dropdownColor: theme.colorScheme.surface,
               onChanged: (value) {
@@ -194,21 +185,16 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
                   return;
                 }
 
-                print(
-                  'Adding song ${widget.song.id} to playlist $selectedPlaylistId',
-                );
-                context.read<PlaylistBlocCubit>().addSongToPlaylist(
-                  selectedPlaylistId!,
-                  [widget.song.id],
-                );
+                print('Adding song ${widget.song.id} to playlist $selectedPlaylistId');
+                context.read<PlaylistBlocCubit>().addSongToPlaylist(selectedPlaylistId!, [
+                  widget.song.id,
+                ]);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary,
                 foregroundColor: theme.colorScheme.onPrimary,
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
               child: const Text('Add Song'),
             ),
@@ -217,10 +203,7 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
       );
     }
     return Center(
-      child: Text(
-        'Please wait...',
-        style: TextStyle(color: theme.colorScheme.onSurface),
-      ),
+      child: Text('Please wait...', style: TextStyle(color: theme.colorScheme.onSurface)),
     );
   }
 }

@@ -21,17 +21,12 @@ class _CommonSongCardState extends State<CommonSongCard> {
 
     return GestureDetector(
       onTap: () async {
-        await RecentlyPlayedManager.addSongToRecentlyPlayed(
-          widget.song[widget.index],
-        );
+        await RecentlyPlayedManager.addSongToRecentlyPlayed(widget.song[widget.index]);
         Navigator.push(
           context,
           MaterialPageRoute(
             builder:
-                (context) => SongPlayerScreen(
-                  songList: widget.song,
-                  initialIndex: widget.index,
-                ),
+                (context) => SongPlayerScreen(songList: widget.song, initialIndex: widget.index),
           ),
         );
       },

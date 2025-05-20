@@ -14,8 +14,7 @@ class PlaylistManagementScreen extends StatefulWidget {
   const PlaylistManagementScreen({super.key, this.showAppBar = true});
 
   @override
-  State<PlaylistManagementScreen> createState() =>
-      _PlaylistManagementScreenState();
+  State<PlaylistManagementScreen> createState() => _PlaylistManagementScreenState();
 }
 
 class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
@@ -60,10 +59,7 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
             );
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.error),
-                backgroundColor: colorScheme.error,
-              ),
+              SnackBar(content: Text(state.error), backgroundColor: colorScheme.error),
             );
           }
         } else if (state is PlaylistSuccess && state.isNewPlaylistCreated) {
@@ -137,9 +133,7 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
     TextTheme textTheme,
   ) {
     if (state is PlaylistInitial || state is PlaylistLoading) {
-      return Center(
-        child: CircularProgressIndicator(color: colorScheme.primary),
-      );
+      return Center(child: CircularProgressIndicator(color: colorScheme.primary));
     } else if (state is PlaylistSuccess) {
       if (state.playlists.isEmpty) {
         return Center(
@@ -166,18 +160,10 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
               ElevatedButton.icon(
                 onPressed: _showCreatePlaylistDialog,
                 icon: Icon(Icons.add, color: colorScheme.onPrimary),
-                label: Text(
-                  'Create Playlist',
-                  style: TextStyle(color: colorScheme.onPrimary),
-                ),
+                label: Text('Create Playlist', style: TextStyle(color: colorScheme.onPrimary)),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                 ),
               ),
             ],
@@ -198,10 +184,7 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
             onTap:
                 () => context.push(
                   context,
-                  target: PlaylistSongsScreen(
-                    playlistId: playlistId,
-                    playlistName: title,
-                  ),
+                  target: PlaylistSongsScreen(playlistId: playlistId, playlistName: title),
                 ),
             onDelete: () {
               if (playlistId.isEmpty) {
@@ -230,29 +213,18 @@ class _PlaylistManagementScreenState extends State<PlaylistManagementScreen> {
             const SizedBox(height: 16),
             Text(
               state.error,
-              style: textTheme.bodyLarge?.copyWith(
-                color: colorScheme.onSurface,
-              ),
+              style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed:
-                  () => context.read<PlaylistBlocCubit>().fetchPlaylists(),
+              onPressed: () => context.read<PlaylistBlocCubit>().fetchPlaylists(),
               style: ElevatedButton.styleFrom(
                 backgroundColor: colorScheme.primary,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
               ),
-              child: Text(
-                'Retry',
-                style: TextStyle(color: colorScheme.onPrimary),
-              ),
+              child: Text('Retry', style: TextStyle(color: colorScheme.onPrimary)),
             ),
           ],
         ),

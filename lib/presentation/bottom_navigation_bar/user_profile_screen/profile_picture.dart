@@ -31,18 +31,12 @@ class ProfilePicture extends StatelessWidget {
           placeholder:
               (context, url) => Container(
                 color: ThemeColor.grey,
-                child: const Center(
-                  child: CircularProgressIndicator(color: ThemeColor.white),
-                ),
+                child: const Center(child: CircularProgressIndicator(color: ThemeColor.white)),
               ),
           errorWidget:
               (context, url, error) => Container(
                 color: ThemeColor.grey,
-                child: const Icon(
-                  Icons.person,
-                  color: ThemeColor.white,
-                  size: 50,
-                ),
+                child: const Icon(Icons.person, color: ThemeColor.white, size: 50),
               ),
         ),
       ),

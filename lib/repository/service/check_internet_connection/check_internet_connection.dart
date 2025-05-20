@@ -13,8 +13,7 @@ class CheckInternetConnection extends StatefulWidget {
   const CheckInternetConnection({super.key});
 
   @override
-  State<CheckInternetConnection> createState() =>
-      _CheckInternetConnectionState();
+  State<CheckInternetConnection> createState() => _CheckInternetConnectionState();
 }
 
 class _CheckInternetConnectionState extends State<CheckInternetConnection> {
@@ -74,8 +73,7 @@ class _CheckInternetConnectionState extends State<CheckInternetConnection> {
 
     final connectivityResults = await Connectivity().checkConnectivity();
     bool hasNetwork =
-        !(connectivityResults.contains(ConnectivityResult.none) &&
-            connectivityResults.length == 1);
+        !(connectivityResults.contains(ConnectivityResult.none) && connectivityResults.length == 1);
 
     if (!hasNetwork) {
       currentlyOffline = true;

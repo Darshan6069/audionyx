@@ -23,11 +23,7 @@ class HorizontalListView<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return Center(
-        child: CircularProgressIndicator(
-          color: Theme.of(context).colorScheme.primary,
-        ),
-      );
+      return Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary));
     } else if (isFailed) {
       return Center(
         child: Column(
@@ -35,18 +31,14 @@ class HorizontalListView<T> extends StatelessWidget {
           children: [
             Text(
               errorMessage ?? 'Unable to load items',
-              style: TextStyle(
-                color: Theme.of(context).textTheme.bodyLarge!.color,
-              ),
+              style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color),
             ),
             if (onRetry != null)
               TextButton(
                 onPressed: onRetry,
                 child: Text(
                   'Retry',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                  style: TextStyle(color: Theme.of(context).colorScheme.primary),
                 ),
               ),
           ],
@@ -64,8 +56,7 @@ class HorizontalListView<T> extends StatelessWidget {
     return ListView.builder(
       scrollDirection: Axis.horizontal,
       itemCount: items.length,
-      itemBuilder:
-          (context, index) => itemBuilder(context, items[index], index),
+      itemBuilder: (context, index) => itemBuilder(context, items[index], index),
     );
   }
 }

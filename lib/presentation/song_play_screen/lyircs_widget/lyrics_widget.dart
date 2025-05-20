@@ -7,23 +7,17 @@ import 'lyrcs_focused_view.dart';
 import 'lyrics_all_view.dart';
 import 'lyrics_empty_view.dart';
 
-
 class LyricsWidget extends StatefulWidget {
   final List<Lyric> lyrics;
   final Function(Duration) onLyricTap;
 
-  const LyricsWidget({
-    super.key,
-    required this.lyrics,
-    required this.onLyricTap,
-  });
+  const LyricsWidget({super.key, required this.lyrics, required this.onLyricTap});
 
   @override
   State<LyricsWidget> createState() => _LyricsWidgetState();
 }
 
-class _LyricsWidgetState extends State<LyricsWidget>
-    with SingleTickerProviderStateMixin {
+class _LyricsWidgetState extends State<LyricsWidget> with SingleTickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
   int _previousIndex = -1;
   bool _showAllLyrics = false;
@@ -39,9 +33,10 @@ class _LyricsWidgetState extends State<LyricsWidget>
       duration: const Duration(milliseconds: 1500),
     )..repeat(reverse: true);
 
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.08).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
+    _pulseAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.08,
+    ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
   }
 
   @override
@@ -60,8 +55,7 @@ class _LyricsWidgetState extends State<LyricsWidget>
   int _getCurrentLyricIndex(Duration position) {
     for (int i = 0; i < widget.lyrics.length; i++) {
       if (position >= widget.lyrics[i].startTime &&
-          (i == widget.lyrics.length - 1 ||
-              position < widget.lyrics[i + 1].startTime)) {
+          (i == widget.lyrics.length - 1 || position < widget.lyrics[i + 1].startTime)) {
         return i;
       }
     }
@@ -69,18 +63,13 @@ class _LyricsWidgetState extends State<LyricsWidget>
   }
 
   void _scrollToCurrentLyric(int currentIndex) {
-    if (currentIndex != -1 &&
-        currentIndex != _previousIndex &&
-        !_showAllLyrics) {
+    if (currentIndex != -1 && currentIndex != _previousIndex && !_showAllLyrics) {
       _previousIndex = currentIndex;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_scrollController.hasClients) {
           final viewportHeight = _scrollController.position.viewportDimension;
           final itemHeight = 60.0;
-          final offset =
-              (currentIndex * itemHeight) -
-                  (viewportHeight / 2) +
-                  (itemHeight / 2);
+          final offset = (currentIndex * itemHeight) - (viewportHeight / 2) + (itemHeight / 2);
 
           _scrollController.animateTo(
             offset.clamp(0.0, _scrollController.position.maxScrollExtent),
@@ -117,32 +106,31 @@ class _LyricsWidgetState extends State<LyricsWidget>
               overscroll.disallowIndicator();
               return true;
             },
-            child: currentIndex != -1 && !_showAllLyrics
-                ? LyricsFocusedView(
-              lyrics: widget.lyrics,
-              currentIndex: currentIndex,
-              position: state.position,
-              pulseAnimation: _pulseAnimation,
-              animationController: _animationController,
-              formatDuration: _formatDuration,
-              onLyricTap: widget.onLyricTap,
-              showAllLyricsCallback: () =>
-                  setState(() => _showAllLyrics = true),
-            )
-                : LyricsAllView(
-              lyrics: widget.lyrics,
-              currentIndex: currentIndex,
-              scrollController: _scrollController,
-              onLyricTap: (duration, index) {
-                widget.onLyricTap(duration);
-                setState(() {
-                  _previousIndex = index;
-                  _showAllLyrics = false;
-                });
-              },
-              backToFocusedView: () =>
-                  setState(() => _showAllLyrics = false),
-            ),
+            child:
+                currentIndex != -1 && !_showAllLyrics
+                    ? LyricsFocusedView(
+                      lyrics: widget.lyrics,
+                      currentIndex: currentIndex,
+                      position: state.position,
+                      pulseAnimation: _pulseAnimation,
+                      animationController: _animationController,
+                      formatDuration: _formatDuration,
+                      onLyricTap: widget.onLyricTap,
+                      showAllLyricsCallback: () => setState(() => _showAllLyrics = true),
+                    )
+                    : LyricsAllView(
+                      lyrics: widget.lyrics,
+                      currentIndex: currentIndex,
+                      scrollController: _scrollController,
+                      onLyricTap: (duration, index) {
+                        widget.onLyricTap(duration);
+                        setState(() {
+                          _previousIndex = index;
+                          _showAllLyrics = false;
+                        });
+                      },
+                      backToFocusedView: () => setState(() => _showAllLyrics = false),
+                    ),
           ),
         );
       },

@@ -12,11 +12,7 @@ import '../../../widget/song_selection_screen.dart';
 class PlaylistSongsScreen extends StatefulWidget {
   final String playlistId, playlistName;
 
-  const PlaylistSongsScreen({
-    super.key,
-    required this.playlistId,
-    required this.playlistName,
-  });
+  const PlaylistSongsScreen({super.key, required this.playlistId, required this.playlistName});
 
   @override
   State<PlaylistSongsScreen> createState() => _PlaylistSongsScreenState();
@@ -56,9 +52,7 @@ class _PlaylistSongsScreenState extends State<PlaylistSongsScreen> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(widget.playlistName),
-        actions: [
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _loadSongs),
-        ],
+        actions: [IconButton(icon: const Icon(Icons.refresh), onPressed: _loadSongs)],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -128,9 +122,7 @@ class _PlaylistSongsScreenState extends State<PlaylistSongsScreen> {
     }
 
     if (_songs.isEmpty) {
-      return const Center(
-        child: Text('No songs in this playlist.\nTap + to add songs.'),
-      );
+      return const Center(child: Text('No songs in this playlist.\nTap + to add songs.'));
     }
 
     return RefreshIndicator(
@@ -159,10 +151,7 @@ class _PlaylistSongsScreenState extends State<PlaylistSongsScreen> {
                 errorWidget: (_, __, ___) => const Icon(Icons.music_note),
               ),
               title: Text(song.title, overflow: TextOverflow.ellipsis),
-              subtitle: Text(
-                song.artist ?? 'Unknown Artist',
-                overflow: TextOverflow.ellipsis,
-              ),
+              subtitle: Text(song.artist ?? 'Unknown Artist', overflow: TextOverflow.ellipsis),
               trailing: IconButton(
                 icon: Icon(Icons.remove_circle, color: colorScheme.error),
                 onPressed: () => _confirmSongRemoval(context, song),
@@ -170,10 +159,7 @@ class _PlaylistSongsScreenState extends State<PlaylistSongsScreen> {
               onTap:
                   () => context.push(
                     context,
-                    target: SongPlayerScreen(
-                      songList: _songs,
-                      initialIndex: index,
-                    ),
+                    target: SongPlayerScreen(songList: _songs, initialIndex: index),
                   ),
             ),
           );
@@ -193,37 +179,24 @@ class _PlaylistSongsScreenState extends State<PlaylistSongsScreen> {
           (dialogContext) => AlertDialog(
             title: Text(
               'Remove Song',
-              style: textTheme.titleMedium?.copyWith(
-                color: colorScheme.onSurface,
-              ),
+              style: textTheme.titleMedium?.copyWith(color: colorScheme.onSurface),
             ),
             content: Text(
               'Are you sure you want to remove "${song.title}" from "${widget.playlistName}"?',
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurface.withOpacity(0.7),
-              ),
+              style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface.withOpacity(0.7)),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext, false),
-                child: Text(
-                  'Cancel',
-                  style: TextStyle(color: colorScheme.onSurface),
-                ),
+                child: Text('Cancel', style: TextStyle(color: colorScheme.onSurface)),
               ),
               TextButton(
                 onPressed: () {
-                  _playlistCubit.removeSongFromPlaylist(
-                    widget.playlistId,
-                    song.id,
-                  );
+                  _playlistCubit.removeSongFromPlaylist(widget.playlistId, song.id);
                   _playlistCubit.fetchSongsFromPlaylist(widget.playlistId);
                   Navigator.pop(dialogContext, true);
                 },
-                child: Text(
-                  'Remove',
-                  style: TextStyle(color: colorScheme.error),
-                ),
+                child: Text('Remove', style: TextStyle(color: colorScheme.error)),
               ),
             ],
           ),

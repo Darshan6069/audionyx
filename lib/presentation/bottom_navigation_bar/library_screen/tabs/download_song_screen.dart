@@ -24,16 +24,9 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
   }
 
   Future<void> _loadDownloadedSongs() async {
-    final dir = Directory(
-      '/storage/emulated/0/Android/data/com.example.audionyx/files/Downloads',
-    );
+    final dir = Directory('/storage/emulated/0/Android/data/com.example.audionyx/files/Downloads');
     final files =
-        dir.existsSync()
-            ? dir
-                .listSync()
-                .where((file) => file.path.endsWith('.mp3'))
-                .toList()
-            : [];
+        dir.existsSync() ? dir.listSync().where((file) => file.path.endsWith('.mp3')).toList() : [];
 
     if (mounted) {
       setState(() {
@@ -54,14 +47,11 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
             artist: '',
             album: '',
             id: '',
-            subtitleUrl: ''
+            subtitleUrl: '',
           );
         }).toList();
 
-    context.push(
-      context,
-      target: SongPlayerScreen(songList: songDataList, initialIndex: index),
-    );
+    context.push(context, target: SongPlayerScreen(songList: songDataList, initialIndex: index));
   }
 
   void _deleteSong(int index) async {
@@ -97,12 +87,7 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
     if (File(thumbnailPath).existsSync()) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        child: Image.file(
-          File(thumbnailPath),
-          width: 60,
-          height: 60,
-          fit: BoxFit.cover,
-        ),
+        child: Image.file(File(thumbnailPath), width: 60, height: 60, fit: BoxFit.cover),
       );
     } else {
       return Container(
@@ -153,11 +138,7 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.music_off,
-                      size: 80,
-                      color: colorScheme.secondary.withOpacity(0.5),
-                    ),
+                    Icon(Icons.music_off, size: 80, color: colorScheme.secondary.withOpacity(0.5)),
                     const SizedBox(height: 20),
                     Text(
                       'No downloaded songs found.',
@@ -174,13 +155,8 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
                   final file = downloadedFiles[index];
                   final fileName = file.path.split('/').last;
                   return Card(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                    margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     color: colorScheme.surface,
                     child: Padding(
                       padding: const EdgeInsets.all(10),
@@ -204,19 +180,14 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
                                 Text(
                                   'Tap play to listen or delete to remove',
                                   style: textTheme.bodySmall?.copyWith(
-                                    color: colorScheme.onSurface.withOpacity(
-                                      0.7,
-                                    ),
+                                    color: colorScheme.onSurface.withOpacity(0.7),
                                   ),
                                 ),
                               ],
                             ),
                           ),
                           IconButton(
-                            icon: Icon(
-                              Icons.play_arrow,
-                              color: colorScheme.primary,
-                            ),
+                            icon: Icon(Icons.play_arrow, color: colorScheme.primary),
                             onPressed: () => _playSong(index),
                           ),
                           IconButton(

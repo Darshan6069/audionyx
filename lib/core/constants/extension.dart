@@ -14,13 +14,9 @@ extension BuildContextExtension on BuildContext {
     Navigator.of(context).pop();
   }
 
-  Future<void> pushAndRemoveUntil(
-    BuildContext context, {
-    required Widget target,
-  }) async {
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => target),
-      (route) => false,
-    );
+  Future<void> pushAndRemoveUntil(BuildContext context, {required Widget target}) async {
+    Navigator.of(
+      context,
+    ).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => target), (route) => false);
   }
 }

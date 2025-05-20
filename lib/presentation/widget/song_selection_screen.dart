@@ -39,10 +39,7 @@ class _SongSelectionScreenState extends State<SongSelectionScreen> {
           print('SongSelectionScreen PlaylistBlocCubit state: $state');
           if (state is PlaylistFailure && mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.error),
-                backgroundColor: theme.colorScheme.error,
-              ),
+              SnackBar(content: Text(state.error), backgroundColor: theme.colorScheme.error),
             );
           }
         },
@@ -52,9 +49,7 @@ class _SongSelectionScreenState extends State<SongSelectionScreen> {
             backgroundColor: theme.scaffoldBackgroundColor,
             title: Text(
               'Add Songs to ${widget.playlistName}',
-              style: textTheme.titleLarge?.copyWith(
-                color: colorScheme.onSurface,
-              ),
+              style: textTheme.titleLarge?.copyWith(color: colorScheme.onSurface),
             ),
             iconTheme: IconThemeData(color: colorScheme.onSurface),
             actions: [
@@ -63,9 +58,7 @@ class _SongSelectionScreenState extends State<SongSelectionScreen> {
                     _selectedSongIds.isEmpty
                         ? null
                         : () async {
-                          print(
-                            'Adding songs to playlist ${widget.playlistId}: $_selectedSongIds',
-                          );
+                          print('Adding songs to playlist ${widget.playlistId}: $_selectedSongIds');
                           await widget.playlistCubit.addSongToPlaylist(
                             widget.playlistId,
                             _selectedSongIds,
@@ -75,9 +68,7 @@ class _SongSelectionScreenState extends State<SongSelectionScreen> {
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(
-                                'Songs added to ${widget.playlistName}',
-                              ),
+                              content: Text('Songs added to ${widget.playlistName}'),
                               backgroundColor: colorScheme.primary,
                             ),
                           );
@@ -98,16 +89,12 @@ class _SongSelectionScreenState extends State<SongSelectionScreen> {
             builder: (context, state) {
               print('SongSelectionScreen FetchSongBlocCubit state: $state');
               if (state is FetchSongLoading) {
-                return Center(
-                  child: CircularProgressIndicator(color: colorScheme.primary),
-                );
+                return Center(child: CircularProgressIndicator(color: colorScheme.primary));
               } else if (state is FetchSongFailure) {
                 return Center(
                   child: Text(
                     state.error,
-                    style: textTheme.bodyLarge?.copyWith(
-                      color: colorScheme.error,
-                    ),
+                    style: textTheme.bodyLarge?.copyWith(color: colorScheme.error),
                     textAlign: TextAlign.center,
                   ),
                 );
@@ -116,9 +103,7 @@ class _SongSelectionScreenState extends State<SongSelectionScreen> {
                   return Center(
                     child: Text(
                       'No songs available to add.',
-                      style: textTheme.bodyLarge?.copyWith(
-                        color: colorScheme.onSurface,
-                      ),
+                      style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
                     ),
                   );
                 }
@@ -133,19 +118,13 @@ class _SongSelectionScreenState extends State<SongSelectionScreen> {
                         width: 50,
                         height: 50,
                         fit: BoxFit.cover,
-                        placeholder:
-                            (_, __) => Container(color: colorScheme.surface),
+                        placeholder: (_, __) => Container(color: colorScheme.surface),
                         errorWidget:
-                            (_, __, ___) => Icon(
-                              Icons.music_note,
-                              color: colorScheme.onSurface,
-                            ),
+                            (_, __, ___) => Icon(Icons.music_note, color: colorScheme.onSurface),
                       ),
                       title: Text(
                         song.title,
-                        style: textTheme.bodyLarge?.copyWith(
-                          color: colorScheme.onSurface,
-                        ),
+                        style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
                         overflow: TextOverflow.ellipsis,
                       ),
                       subtitle: Text(
@@ -184,9 +163,7 @@ class _SongSelectionScreenState extends State<SongSelectionScreen> {
               return Center(
                 child: Text(
                   'No songs available.',
-                  style: textTheme.bodyLarge?.copyWith(
-                    color: colorScheme.onSurface,
-                  ),
+                  style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
                 ),
               );
             },
