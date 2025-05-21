@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 
 class PlayerErrorScreen extends StatelessWidget {
   final VoidCallback onRetry;
@@ -14,6 +15,40 @@ class PlayerErrorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Responsive values
+    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
+    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
+    final iconSize =
+        isDesktop
+            ? 80.0
+            : isTablet
+            ? 60.0
+            : 40.0;
+    final textSize =
+        isDesktop
+            ? 20.0
+            : isTablet
+            ? 18.0
+            : 15.0;
+    final buttonPaddingH =
+        isDesktop
+            ? 32.0
+            : isTablet
+            ? 24.0
+            : 12.0;
+    final buttonPaddingV =
+        isDesktop
+            ? 16.0
+            : isTablet
+            ? 12.0
+            : 6.0;
+    final spacing =
+        isDesktop
+            ? 24.0
+            : isTablet
+            ? 16.0
+            : 10.0;
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -24,39 +59,62 @@ class PlayerErrorScreen extends StatelessWidget {
           ),
         ),
         child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.error_outline, size: 60, color: Colors.white60),
-              const SizedBox(height: 16),
-              Text(
-                errorMessage,
-                style: const TextStyle(color: Colors.white, fontSize: 18),
-                textAlign: TextAlign.center,
+          child: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 280),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.error_outline, size: iconSize, color: Colors.white60),
+                  SizedBox(height: spacing),
+                  Text(
+                    errorMessage,
+                    style: TextStyle(color: Colors.white, fontSize: textSize),
+                    textAlign: TextAlign.center,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(height: spacing),
+                  TextButton.icon(
+                    onPressed: onRetry,
+                    icon: Icon(Icons.refresh, color: Colors.white, size: iconSize / 2),
+                    label: Text(
+                      'Retry',
+                      style: TextStyle(color: Colors.white, fontSize: textSize - 2),
+                    ),
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.white.withOpacity(0.15),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: buttonPaddingH,
+                        vertical: buttonPaddingV,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(buttonPaddingH / 2),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: spacing / 2),
+                  TextButton.icon(
+                    onPressed: onGoBack,
+                    icon: Icon(Icons.arrow_back, color: Colors.white, size: iconSize / 2),
+                    label: Text(
+                      'Go Back',
+                      style: TextStyle(color: Colors.white, fontSize: textSize - 2),
+                    ),
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.white.withOpacity(0.15),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: buttonPaddingH,
+                        vertical: buttonPaddingV,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(buttonPaddingH / 2),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              TextButton.icon(
-                onPressed: onRetry,
-                icon: const Icon(Icons.refresh, color: Colors.white),
-                label: const Text('Retry', style: TextStyle(color: Colors.white)),
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.white.withOpacity(0.1),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextButton.icon(
-                onPressed: onGoBack,
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                label: const Text('Go Back', style: TextStyle(color: Colors.white)),
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.white.withOpacity(0.1),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

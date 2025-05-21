@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import '../../../repository/bloc/audio_player_bloc_cubit/audio_player_bloc_cubit.dart';
 import '../../../repository/bloc/audio_player_bloc_cubit/audio_player_state.dart';
 import 'lyrics_widget.dart';
@@ -10,6 +11,57 @@ void showLyricsModal({
   DraggableScrollableController? controller,
   required VoidCallback onClosed,
 }) {
+  final isTablet = ResponsiveBreakpoints.of(context).isTablet;
+  final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
+  final initialChildSize =
+      isDesktop
+          ? 0.8
+          : isTablet
+          ? 0.75
+          : 0.7;
+  final minChildSize =
+      isDesktop
+          ? 0.4
+          : isTablet
+          ? 0.35
+          : 0.3;
+  final maxChildSize =
+      isDesktop
+          ? 0.95
+          : isTablet
+          ? 0.92
+          : 0.9;
+  final paddingH =
+      isDesktop
+          ? 40.0
+          : isTablet
+          ? 24.0
+          : 16.0;
+  final paddingV =
+      isDesktop
+          ? 20.0
+          : isTablet
+          ? 16.0
+          : 12.0;
+  final thumbnailSize =
+      isDesktop
+          ? 48.0
+          : isTablet
+          ? 44.0
+          : 40.0;
+  final titleFontSize =
+      isDesktop
+          ? 18.0
+          : isTablet
+          ? 17.0
+          : 16.0;
+  final artistFontSize =
+      isDesktop
+          ? 16.0
+          : isTablet
+          ? 15.0
+          : 14.0;
+
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -21,9 +73,9 @@ void showLyricsModal({
         (modalContext) => BlocProvider.value(
           value: context.read<AudioPlayerBlocCubit>(),
           child: DraggableScrollableSheet(
-            initialChildSize: 0.7,
-            minChildSize: 0.3,
-            maxChildSize: 0.9,
+            initialChildSize: initialChildSize,
+            minChildSize: minChildSize,
+            maxChildSize: maxChildSize,
             controller: controller,
             builder:
                 (context, scrollController) => Container(
@@ -35,11 +87,11 @@ void showLyricsModal({
                     children: [
                       // Handle bar and close button
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
+                        padding: EdgeInsets.symmetric(vertical: paddingV, horizontal: paddingH),
                         child: Row(
                           children: [
                             Container(
-                              width: 40,
+                              width: thumbnailSize,
                               height: 5,
                               decoration: BoxDecoration(
                                 color: Colors.grey[400],
@@ -48,7 +100,11 @@ void showLyricsModal({
                             ),
                             const Spacer(),
                             IconButton(
-                              icon: const Icon(Icons.close, color: Colors.white70),
+                              icon: Icon(
+                                Icons.close,
+                                color: Colors.white70,
+                                size: thumbnailSize * 0.6,
+                              ),
                               onPressed: () => Navigator.of(context).pop(),
                             ),
                           ],
@@ -56,35 +112,39 @@ void showLyricsModal({
                       ),
                       // Song info
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: EdgeInsets.symmetric(horizontal: paddingH),
                         child: Row(
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(6),
                               child: Image.network(
                                 state.currentSong?.thumbnailUrl ?? '',
-                                width: 40,
-                                height: 40,
+                                width: thumbnailSize,
+                                height: thumbnailSize,
                                 fit: BoxFit.cover,
                                 errorBuilder:
                                     (context, error, stackTrace) => Container(
-                                      width: 40,
-                                      height: 40,
+                                      width: thumbnailSize,
+                                      height: thumbnailSize,
                                       color: Colors.grey[800],
-                                      child: const Icon(Icons.music_note, color: Colors.white70),
+                                      child: Icon(
+                                        Icons.music_note,
+                                        color: Colors.white70,
+                                        size: thumbnailSize * 0.6,
+                                      ),
                                     ),
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            SizedBox(width: paddingH * 0.5),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     state.currentSong?.title ?? 'Unknown Title',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       color: Colors.white,
-                                      fontSize: 16,
+                                      fontSize: titleFontSize,
                                       fontWeight: FontWeight.bold,
                                     ),
                                     maxLines: 1,
@@ -92,7 +152,10 @@ void showLyricsModal({
                                   ),
                                   Text(
                                     state.currentSong?.artist ?? 'Unknown Artist',
-                                    style: const TextStyle(color: Colors.white70, fontSize: 14),
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: artistFontSize,
+                                    ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -102,7 +165,7 @@ void showLyricsModal({
                           ],
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: paddingV * 0.5),
                       // Lyrics List
                       Expanded(
                         child: LyricsWidget(

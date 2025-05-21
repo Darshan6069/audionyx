@@ -5,7 +5,7 @@ class AppStrings {
 
   static FlutterSecureStorage secureStorage = const FlutterSecureStorage();
 
-  static const baseUrl = 'http://192.168.0.58:4000/api/';
+  static const baseUrl = 'http://192.168.1.49:4000/api/';
 
   static const String onboardingTitleLine1 = "Millions of songs.";
   static const String onboardingTitleLine2 = "Free on Spotify.";

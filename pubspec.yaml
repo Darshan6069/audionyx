@@ -66,6 +66,7 @@ dependencies:
   flutter_local_notifications:
   shimmer:
   animate_do:
+  flutter_responsive_framework:
 
 dev_dependencies:
   flutter_test:

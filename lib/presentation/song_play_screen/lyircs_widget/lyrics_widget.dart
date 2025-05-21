@@ -1,6 +1,7 @@
 import 'package:audionyx/domain/lyrics_model/lyrics_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import '../../../../../repository/bloc/audio_player_bloc_cubit/audio_player_bloc_cubit.dart';
 import '../../../../../repository/bloc/audio_player_bloc_cubit/audio_player_state.dart';
 import 'lyrcs_focused_view.dart';
@@ -63,12 +64,20 @@ class _LyricsWidgetState extends State<LyricsWidget> with SingleTickerProviderSt
   }
 
   void _scrollToCurrentLyric(int currentIndex) {
+    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
+    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
+    final itemHeight =
+        isDesktop
+            ? 80.0
+            : isTablet
+            ? 70.0
+            : 60.0;
+
     if (currentIndex != -1 && currentIndex != _previousIndex && !_showAllLyrics) {
       _previousIndex = currentIndex;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_scrollController.hasClients) {
           final viewportHeight = _scrollController.position.viewportDimension;
-          final itemHeight = 60.0;
           final offset = (currentIndex * itemHeight) - (viewportHeight / 2) + (itemHeight / 2);
 
           _scrollController.animateTo(

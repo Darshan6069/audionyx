@@ -19,6 +19,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'core/theme_data/apptheme.dart';
 import 'firebase_options.dart';
 import 'repository/bloc/upload_song_bloc_cubit/upload_song_bloc_cubit.dart';
@@ -44,22 +45,29 @@ void main() async {
   NotificationService().init();
   NotificationHandler.setupFirebaseMessaging();
   HttpOverrides.global = MyHttpOverrides();
+  runApp(const MyApp());
+}
 
-  // final audioHandler = await AudioService.init(
-  //   builder: () => MyAudioHandler(),
-  //   config: const AudioServiceConfig(
-  //     androidNotificationChannelId: 'com.example.audionyx.channel.audio',
-  //     androidNotificationChannelName: 'Audio playback',
-  //     androidNotificationOngoing: true,
-  //   ),
-  // );
+class ErrorApp extends StatelessWidget {
+  const ErrorApp({super.key});
 
-  runApp(MyApp());
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: Text(
+            'Failed to initialize the app. Please try again later.',
+            style: Theme.of(context).textTheme.headlineSmall,
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
- // final AudioHandler audioHandler;
-
   const MyApp({super.key});
 
   @override
@@ -78,14 +86,23 @@ class MyApp extends StatelessWidget {
       ],
       child: BlocBuilder<ThemeCubit, bool>(
         builder: (context, isDarkMode) {
-          return MaterialApp(
-            title: 'AudioNyx',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-            navigatorKey: navigatorKey,
-            home: const CheckInternetConnection(),
+          return ResponsiveBreakpoints.builder(
+            child: MaterialApp(
+              title: 'AudioNyx',
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+              navigatorKey: navigatorKey,
+              home: const CheckInternetConnection(),
+            ),
+            breakpoints: [
+              const Breakpoint(start: 0, end: 450, name: MOBILE),
+              const Breakpoint(start: 451, end: 800, name: TABLET),
+              const Breakpoint(start: 801, end: 1000, name: DESKTOP),
+              const Breakpoint(start: 1001, end: 1200, name: 'LARGE_DESKTOP'),
+              const Breakpoint(start: 1201, end: double.infinity, name: 'EXTRA_LARGE'),
+            ],
           );
         },
       ),

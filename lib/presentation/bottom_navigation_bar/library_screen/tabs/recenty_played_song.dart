@@ -2,7 +2,7 @@ import 'package:audionyx/core/constants/extension.dart';
 import 'package:audionyx/presentation/song_play_screen/song_play_screen.dart';
 import 'package:audionyx/domain/song_model/song_model.dart';
 import 'package:flutter/material.dart';
-
+import 'package:responsive_framework/responsive_framework.dart';
 import '../../../../repository/service/song_service/recently_play_song/recently_played_manager.dart';
 
 class RecentlyPlayedScreen extends StatelessWidget {
@@ -10,8 +10,17 @@ class RecentlyPlayedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final isLargeScreen = MediaQuery.of(context).size.width > 600;
+    final theme = Theme.of(context);
+    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
+    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
+
+    // Responsive padding
+    final padding =
+        isDesktop
+            ? 40.0
+            : isTablet
+            ? 32.0
+            : 16.0;
 
     return FutureBuilder<List<SongData>>(
       future: RecentlyPlayedManager.loadRecentlyPlayed(),
@@ -24,7 +33,15 @@ class RecentlyPlayedScreen extends StatelessWidget {
           return Center(
             child: Text(
               'Error loading recently played songs.',
-              style: theme.textTheme.titleMedium?.copyWith(color: theme.textTheme.bodyLarge?.color),
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: theme.textTheme.bodyLarge?.color,
+                fontSize:
+                    isDesktop
+                        ? 20.0
+                        : isTablet
+                        ? 18.0
+                        : 16.0,
+              ),
             ),
           );
         }
@@ -33,7 +50,15 @@ class RecentlyPlayedScreen extends StatelessWidget {
           return Center(
             child: Text(
               'No recently played songs.',
-              style: theme.textTheme.titleMedium?.copyWith(color: theme.textTheme.bodyLarge?.color),
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: theme.textTheme.bodyLarge?.color,
+                fontSize:
+                    isDesktop
+                        ? 20.0
+                        : isTablet
+                        ? 18.0
+                        : 16.0,
+              ),
             ),
           );
         }
@@ -41,12 +66,11 @@ class RecentlyPlayedScreen extends StatelessWidget {
         final recentlyPlayedSongs = snapshot.data!;
 
         return ListView.builder(
-          padding: EdgeInsets.all(isLargeScreen ? 24 : 16),
+          padding: EdgeInsets.all(padding),
           itemCount: recentlyPlayedSongs.length,
           itemBuilder: (context, index) {
             final song = recentlyPlayedSongs[index];
-
-            return _buildSongCard(context, song, isLargeScreen, recentlyPlayedSongs, index);
+            return _buildSongCard(context, song, isDesktop, isTablet, recentlyPlayedSongs, index);
           },
         );
       },
@@ -56,11 +80,37 @@ class RecentlyPlayedScreen extends StatelessWidget {
   Widget _buildSongCard(
     BuildContext context,
     SongData song,
-    bool isLargeScreen,
+    bool isDesktop,
+    bool isTablet,
     List<SongData> songList,
     int index,
   ) {
-    final ThemeData theme = Theme.of(context);
+    final theme = Theme.of(context);
+    final thumbnailSize =
+        isDesktop
+            ? 64.0
+            : isTablet
+            ? 60.0
+            : 50.0;
+    final titleFontSize =
+        isDesktop
+            ? 18.0
+            : isTablet
+            ? 16.0
+            : 14.0;
+    final subtitleFontSize =
+        isDesktop
+            ? 14.0
+            : isTablet
+            ? 12.0
+            : 10.0;
+    final contentPadding =
+        isDesktop
+            ? const EdgeInsets.all(16.0)
+            : isTablet
+            ? const EdgeInsets.all(14.0)
+            : const EdgeInsets.all(12.0);
+
     return Card(
       color: theme.brightness == Brightness.dark ? theme.colorScheme.surface : Colors.white,
       elevation: 1,
@@ -71,15 +121,23 @@ class RecentlyPlayedScreen extends StatelessWidget {
           width: 1,
         ),
       ),
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      margin: EdgeInsets.symmetric(
+        horizontal:
+            isDesktop
+                ? 20.0
+                : isTablet
+                ? 16.0
+                : 4.0,
+        vertical: 8.0,
+      ),
       child: ListTile(
-        contentPadding: const EdgeInsets.all(12),
-        leading: _buildSongThumbnail(song, isLargeScreen, context),
+        contentPadding: contentPadding,
+        leading: _buildSongThumbnail(song, isDesktop, isTablet, context),
         title: Text(
           song.title,
           style: theme.textTheme.titleMedium?.copyWith(
             color: theme.textTheme.bodyLarge?.color,
-            fontSize: isLargeScreen ? 18 : 16,
+            fontSize: titleFontSize,
             fontWeight: FontWeight.w600,
           ),
           maxLines: 1,
@@ -89,7 +147,7 @@ class RecentlyPlayedScreen extends StatelessWidget {
           song.artist,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.textTheme.bodyMedium?.color,
-            fontSize: isLargeScreen ? 14 : 12,
+            fontSize: subtitleFontSize,
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -98,10 +156,14 @@ class RecentlyPlayedScreen extends StatelessWidget {
           icon: Icon(
             Icons.play_circle_filled,
             color: theme.colorScheme.secondary,
-            size: isLargeScreen ? 32 : 28,
+            size:
+                isDesktop
+                    ? 32.0
+                    : isTablet
+                    ? 28.0
+                    : 24.0,
           ),
           onPressed: () {
-            // Navigate to SongPlayerScreen when play button is pressed
             context.push(
               context,
               target: SongPlayerScreen(songList: songList, initialIndex: index),
@@ -109,39 +171,61 @@ class RecentlyPlayedScreen extends StatelessWidget {
           },
         ),
         onTap: () {
-          // Navigate to SongPlayerScreen when card is tapped
           context.push(context, target: SongPlayerScreen(songList: songList, initialIndex: index));
         },
       ),
     );
   }
 
-  Widget _buildSongThumbnail(SongData song, bool isLargeScreen, BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+  Widget _buildSongThumbnail(SongData song, bool isDesktop, bool isTablet, BuildContext context) {
+    final theme = Theme.of(context);
+    final thumbnailSize =
+        isDesktop
+            ? 64.0
+            : isTablet
+            ? 60.0
+            : 50.0;
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child:
           song.thumbnailUrl != null
               ? Image.network(
                 song.thumbnailUrl,
-                width: isLargeScreen ? 60 : 50,
-                height: isLargeScreen ? 60 : 50,
+                width: thumbnailSize,
+                height: thumbnailSize,
                 fit: BoxFit.cover,
                 errorBuilder:
                     (context, error, stackTrace) =>
-                        _buildPlaceholderThumbnail(isLargeScreen, context),
+                        _buildPlaceholderThumbnail(isDesktop, isTablet, context),
               )
-              : _buildPlaceholderThumbnail(isLargeScreen, context),
+              : _buildPlaceholderThumbnail(isDesktop, isTablet, context),
     );
   }
 
-  Widget _buildPlaceholderThumbnail(bool isLargeScreen, BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+  Widget _buildPlaceholderThumbnail(bool isDesktop, bool isTablet, BuildContext context) {
+    final theme = Theme.of(context);
+    final thumbnailSize =
+        isDesktop
+            ? 64.0
+            : isTablet
+            ? 60.0
+            : 50.0;
+
     return Container(
-      width: isLargeScreen ? 60 : 50,
-      height: isLargeScreen ? 60 : 50,
+      width: thumbnailSize,
+      height: thumbnailSize,
       color: theme.colorScheme.surface,
-      child: Icon(Icons.music_note, color: theme.iconTheme.color, size: 24),
+      child: Icon(
+        Icons.music_note,
+        color: theme.iconTheme.color,
+        size:
+            isDesktop
+                ? 28.0
+                : isTablet
+                ? 24.0
+                : 20.0,
+      ),
     );
   }
 }

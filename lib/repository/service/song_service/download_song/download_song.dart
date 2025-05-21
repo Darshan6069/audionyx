@@ -14,12 +14,12 @@ class DownloadSong {
   DownloadSong({this.onProgress, this.onStatusUpdate});
 
   Future<void> downloadSong(
-      String url,
-      String fileName,
-      String thumbnailUrl,
-      SongData songData,
-      BuildContext context,
-      ) async {
+    String url,
+    String fileName,
+    String thumbnailUrl,
+    SongData songData,
+    BuildContext context,
+  ) async {
     // Notify start of download
     onStatusUpdate?.call('Starting download for ${songData.title}', true);
 
@@ -63,9 +63,9 @@ class DownloadSong {
           ),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Storage permission not granted')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Storage permission not granted')));
       }
       onStatusUpdate?.call('Download failed: Permission not granted', false);
       return;
@@ -142,15 +142,13 @@ class DownloadSong {
       await metadataFile.writeAsString(jsonEncode(metadata));
       print('Metadata saved to: ${metadataFile.path}');
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Downloaded: $fileName to ${downloadDir.path}')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Downloaded: $fileName to ${downloadDir.path}')));
       onStatusUpdate?.call('Download completed: ${songData.title}', true);
     } catch (e) {
       print('Download error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Download failed: $e')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Download failed: $e')));
       onStatusUpdate?.call('Download failed: ${songData.title} - $e', false);
     }
   }

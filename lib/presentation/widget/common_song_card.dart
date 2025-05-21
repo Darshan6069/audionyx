@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import '../../domain/song_model/song_model.dart';
 import '../../repository/service/song_service/recently_play_song/recently_played_manager.dart';
 import '../song_play_screen/song_play_screen.dart';
@@ -19,6 +20,34 @@ class _CommonSongCardState extends State<CommonSongCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    // Responsive: Use ResponsiveBreakpoints if available, else fallback to MediaQuery
+    final screenWidth = MediaQuery.of(context).size.width;
+    double cardWidth = 150;
+    double imageSize = 150;
+    double titleFontSize = 14;
+    double artistFontSize = 12;
+
+    // Adjust for breakpoints
+    if (ResponsiveBreakpoints.of(context).isTablet) {
+      cardWidth = 180;
+      imageSize = 180;
+      titleFontSize = 16;
+      artistFontSize = 14;
+    }
+    if (ResponsiveBreakpoints.of(context).isDesktop) {
+      cardWidth = 220;
+      imageSize = 220;
+      titleFontSize = 18;
+      artistFontSize = 16;
+    }
+    // Optionally, fallback for very small screens
+    if (screenWidth < 350) {
+      cardWidth = 120;
+      imageSize = 120;
+      titleFontSize = 13;
+      artistFontSize = 11;
+    }
+
     return GestureDetector(
       onTap: () async {
         await RecentlyPlayedManager.addSongToRecentlyPlayed(widget.song[widget.index]);
@@ -31,7 +60,7 @@ class _CommonSongCardState extends State<CommonSongCard> {
         );
       },
       child: Container(
-        width: 150,
+        width: cardWidth,
         margin: const EdgeInsets.symmetric(horizontal: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,33 +69,24 @@ class _CommonSongCardState extends State<CommonSongCard> {
               borderRadius: BorderRadius.circular(12),
               child: CachedNetworkImage(
                 imageUrl: widget.song[widget.index].thumbnailUrl,
-                width: 150,
-                height: 150,
+                width: imageSize,
+                height: imageSize,
                 fit: BoxFit.cover,
                 placeholder:
                     (context, url) => Container(
-                      // Using surface variant color for the placeholder
                       color: theme.colorScheme.surfaceContainerHighest,
-                      width: 150,
-                      height: 150,
+                      width: imageSize,
+                      height: imageSize,
                       child: Center(
-                        child: CircularProgressIndicator(
-                          // Using primary color for the loader
-                          color: theme.colorScheme.primary,
-                        ),
+                        child: CircularProgressIndicator(color: theme.colorScheme.primary),
                       ),
                     ),
                 errorWidget:
                     (context, url, error) => Container(
-                      width: 150,
-                      height: 150,
-                      // Using surface variant for error background
+                      width: imageSize,
+                      height: imageSize,
                       color: theme.colorScheme.surfaceContainerHighest,
-                      child: Icon(
-                        Icons.music_note,
-                        // Using on surface variant for the icon
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
+                      child: Icon(Icons.music_note, color: theme.colorScheme.onSurfaceVariant),
                     ),
               ),
             ),
@@ -74,20 +94,16 @@ class _CommonSongCardState extends State<CommonSongCard> {
             Text(
               widget.song[widget.index].title,
               style: TextStyle(
-                // Using primary text color from theme
                 color: theme.colorScheme.onSurface,
                 fontWeight: FontWeight.bold,
+                fontSize: titleFontSize,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
             Text(
               widget.song[widget.index].artist,
-              style: TextStyle(
-                // Using secondary text color from theme
-                color: theme.colorScheme.onSurfaceVariant,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: artistFontSize),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
