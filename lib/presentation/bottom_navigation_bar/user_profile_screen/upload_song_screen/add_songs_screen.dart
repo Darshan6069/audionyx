@@ -2,7 +2,7 @@ import 'package:audionyx/presentation/widget/comman_textformfield.dart';
 import 'package:audionyx/repository/bloc/upload_song_bloc_cubit/upload_song_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:responsive_framework/responsive_framework.dart';
 import '../../../../core/constants/theme_color.dart';
 import '../../../../repository/bloc/upload_song_bloc_cubit/upload_song_bloc_cubit.dart';
 
@@ -28,8 +28,56 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final fontScale = screenWidth < 360 ? 0.9 : 1.0;
+    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
+    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
+    final horizontalPadding =
+        isDesktop
+            ? 80.0
+            : isTablet
+            ? 40.0
+            : 24.0;
+    final verticalPadding =
+        isDesktop
+            ? 24.0
+            : isTablet
+            ? 20.0
+            : 16.0;
+    final titleFontSize =
+        isDesktop
+            ? 24.0
+            : isTablet
+            ? 20.0
+            : 18.0;
+    final textFieldFontSize =
+        isDesktop
+            ? 18.0
+            : isTablet
+            ? 16.0
+            : 14.0;
+    final buttonFontSize =
+        isDesktop
+            ? 18.0
+            : isTablet
+            ? 16.0
+            : 14.0;
+    final iconSize =
+        isDesktop
+            ? 28.0
+            : isTablet
+            ? 24.0
+            : 20.0;
+    final verticalSpacing =
+        isDesktop
+            ? 24.0
+            : isTablet
+            ? 20.0
+            : 16.0;
+    final buttonPadding =
+        isDesktop
+            ? const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0)
+            : isTablet
+            ? const EdgeInsets.symmetric(vertical: 14.0, horizontal: 18.0)
+            : const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0);
 
     return BlocConsumer<UploadSongBlocCubit, UploadSongState>(
       listener: (context, state) {
@@ -62,20 +110,20 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
               'Add a Song',
               style: TextStyle(
                 color: ThemeColor.getTextColor(context),
-                fontSize: 20 * fontScale,
+                fontSize: titleFontSize,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            iconTheme: IconThemeData(color: ThemeColor.getTextColor(context)),
+            iconTheme: IconThemeData(color: ThemeColor.getTextColor(context), size: iconSize),
           ),
           body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
             child: ListView(
               children: [
                 // Title TextField
                 DefaultTextStyle(
                   style: TextStyle(
-                    fontSize: 16 * fontScale,
+                    fontSize: textFieldFontSize,
                     color: ThemeColor.getTextColor(context),
                   ),
                   child: CommonTextformfield(
@@ -92,11 +140,11 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
                     isPassword: false,
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: verticalSpacing),
                 // Artist TextField
                 DefaultTextStyle(
                   style: TextStyle(
-                    fontSize: 16 * fontScale,
+                    fontSize: textFieldFontSize,
                     color: ThemeColor.getTextColor(context),
                   ),
                   child: CommonTextformfield(
@@ -113,11 +161,11 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
                     isPassword: false,
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: verticalSpacing),
                 // Album TextField
                 DefaultTextStyle(
                   style: TextStyle(
-                    fontSize: 16 * fontScale,
+                    fontSize: textFieldFontSize,
                     color: ThemeColor.getTextColor(context),
                   ),
                   child: CommonTextformfield(
@@ -134,31 +182,37 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
                     isPassword: false,
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: verticalSpacing * 1.5),
                 // Pick MP3 File Button
                 _buildActionButton(
                   icon: Icons.attach_file,
                   label: songFileName.isEmpty ? 'Pick MP3 File' : songFileName,
                   onPressed: isLoading ? null : () => cubit.pickSongFile(),
-                  fontScale: fontScale,
+                  fontSize: buttonFontSize,
+                  iconSize: iconSize,
+                  padding: buttonPadding,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: verticalSpacing),
                 // Pick Thumbnail Button
                 _buildActionButton(
                   icon: Icons.image,
                   label: thumbnailFileName.isEmpty ? 'Pick Thumbnail Image' : thumbnailFileName,
                   onPressed: isLoading ? null : () => cubit.pickThumbnailFile(),
-                  fontScale: fontScale,
+                  fontSize: buttonFontSize,
+                  iconSize: iconSize,
+                  padding: buttonPadding,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: verticalSpacing),
                 // Pick Lyrics File Button
                 _buildActionButton(
                   icon: Icons.description,
                   label: lyricsFileName.isEmpty ? 'Pick Lyrics File' : lyricsFileName,
                   onPressed: isLoading ? null : () => cubit.pickLyricsFile(),
-                  fontScale: fontScale,
+                  fontSize: buttonFontSize,
+                  iconSize: iconSize,
+                  padding: buttonPadding,
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: verticalSpacing * 1.5),
                 // Upload Button
                 _buildUploadButton(
                   isLoading: isLoading,
@@ -184,7 +238,8 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
                               album: albumController.text,
                             );
                           },
-                  fontScale: fontScale,
+                  fontSize: buttonFontSize,
+                  iconSize: iconSize,
                 ),
               ],
             ),
@@ -199,7 +254,9 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
     required IconData icon,
     required String label,
     required VoidCallback? onPressed,
-    required double fontScale,
+    required double fontSize,
+    required double iconSize,
+    required EdgeInsets padding,
   }) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
@@ -212,7 +269,7 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
           child: Transform.scale(
             scale: scale,
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              padding: padding,
               decoration: BoxDecoration(
                 color: isDarkMode ? Colors.white10 : ThemeColor.grey.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(12),
@@ -226,14 +283,14 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
               ),
               child: Row(
                 children: [
-                  Icon(icon, color: ThemeColor.getTextColor(context), size: 24 * fontScale),
+                  Icon(icon, color: ThemeColor.getTextColor(context), size: iconSize),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       label,
                       style: TextStyle(
                         color: ThemeColor.getTextColor(context),
-                        fontSize: 16 * fontScale,
+                        fontSize: fontSize,
                         fontWeight: FontWeight.w600,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -252,28 +309,35 @@ class _AddSongsScreenState extends State<AddSongsScreen> {
   Widget _buildUploadButton({
     required bool isLoading,
     required VoidCallback? onPressed,
-    required double fontScale,
+    required double fontSize,
+    required double iconSize,
   }) {
+    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
+    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
+    final buttonPadding =
+        isDesktop
+            ? const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0)
+            : isTablet
+            ? const EdgeInsets.symmetric(vertical: 15.0, horizontal: 18.0)
+            : const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0);
+
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: ThemeColor.greenColor,
         foregroundColor: ThemeColor.white,
-        padding: const EdgeInsets.symmetric(vertical: 14),
+        padding: buttonPadding,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 2,
       ),
       child:
           isLoading
               ? SizedBox(
-                width: 24 * fontScale,
-                height: 24 * fontScale,
+                width: iconSize,
+                height: iconSize,
                 child: const CircularProgressIndicator(color: ThemeColor.white, strokeWidth: 2),
               )
-              : Text(
-                'Upload',
-                style: TextStyle(fontSize: 16 * fontScale, fontWeight: FontWeight.bold),
-              ),
+              : Text('Upload', style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold)),
     );
   }
 }

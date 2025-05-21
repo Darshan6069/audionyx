@@ -1,6 +1,7 @@
 import 'package:audionyx/domain/song_model/song_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import '../../repository/bloc/playlist_bloc_cubit/playlist_bloc_cubit.dart';
 import '../../repository/bloc/playlist_bloc_cubit/playlist_state.dart';
 
@@ -26,10 +27,36 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
+    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
+    final padding =
+        isDesktop
+            ? 24.0
+            : isTablet
+            ? 20.0
+            : 16.0;
+    final popupHeight =
+        isDesktop
+            ? 400.0
+            : isTablet
+            ? 350.0
+            : 300.0;
+    final titleFontSize =
+        isDesktop
+            ? 24.0
+            : isTablet
+            ? 22.0
+            : 20.0;
+    final buttonHeight =
+        isDesktop
+            ? 48.0
+            : isTablet
+            ? 44.0
+            : 40.0;
 
     return Container(
-      padding: const EdgeInsets.all(16.0),
-      height: 300,
+      padding: EdgeInsets.all(padding),
+      height: popupHeight,
       color: theme.colorScheme.surface,
       child: BlocConsumer<PlaylistBlocCubit, PlaylistState>(
         listener: (context, state) {
@@ -71,10 +98,11 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.onSurface,
+                  fontSize: titleFontSize,
                 ),
               ),
-              const SizedBox(height: 16),
-              Expanded(child: _buildPlaylistContent(context, state, theme)),
+              SizedBox(height: padding),
+              Expanded(child: _buildPlaylistContent(context, state, theme, padding, buttonHeight)),
             ],
           );
         },
@@ -82,7 +110,22 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
     );
   }
 
-  Widget _buildPlaylistContent(BuildContext context, PlaylistState state, ThemeData theme) {
+  Widget _buildPlaylistContent(
+    BuildContext context,
+    PlaylistState state,
+    ThemeData theme,
+    double padding,
+    double buttonHeight,
+  ) {
+    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
+    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
+    final fontSize =
+        isDesktop
+            ? 16.0
+            : isTablet
+            ? 15.0
+            : 14.0;
+
     if (state is PlaylistLoading) {
       return Center(child: CircularProgressIndicator(color: theme.colorScheme.primary));
     } else if (state is PlaylistFailure) {
@@ -93,14 +136,14 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
           children: [
             Text(
               'Failed to load playlists. Please try again.',
-              style: TextStyle(color: theme.colorScheme.onSurface),
+              style: TextStyle(color: theme.colorScheme.onSurface, fontSize: fontSize),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: padding * 0.5),
             ElevatedButton(
               onPressed: () {
                 context.read<PlaylistBlocCubit>().fetchPlaylists();
               },
-              child: const Text('Retry'),
+              child: Text('Retry', style: TextStyle(fontSize: fontSize)),
             ),
           ],
         ),
@@ -109,11 +152,10 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
       return Center(
         child: Text(
           'No playlists found. Create one first.',
-          style: TextStyle(color: theme.colorScheme.onSurface),
+          style: TextStyle(color: theme.colorScheme.onSurface, fontSize: fontSize),
         ),
       );
     } else if (state is PlaylistSuccess) {
-      // Safely convert state.playlists to List<Map<String, dynamic>>
       final playlists =
           state.playlists
               .whereType<Map>()
@@ -126,7 +168,7 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
         return Center(
           child: Text(
             'No valid playlists found.',
-            style: TextStyle(color: theme.colorScheme.onSurface),
+            style: TextStyle(color: theme.colorScheme.onSurface, fontSize: fontSize),
           ),
         );
       }
@@ -138,15 +180,19 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
               color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
               borderRadius: BorderRadius.circular(8),
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: EdgeInsets.symmetric(horizontal: padding * 0.75),
             child: DropdownButton<String>(
               hint: Text(
                 'Select Playlist',
-                style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+                style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: fontSize),
               ),
               value: selectedPlaylistId,
               isExpanded: true,
-              icon: Icon(Icons.arrow_drop_down, color: theme.colorScheme.onSurfaceVariant),
+              icon: Icon(
+                Icons.arrow_drop_down,
+                color: theme.colorScheme.onSurfaceVariant,
+                size: fontSize * 1.5,
+              ),
               underline: const SizedBox(),
               dropdownColor: theme.colorScheme.surface,
               onChanged: (value) {
@@ -161,15 +207,16 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
                       value: playlist['_id'] as String,
                       child: Text(
                         playlist['name'] as String,
-                        style: TextStyle(color: theme.colorScheme.onSurface),
+                        style: TextStyle(color: theme.colorScheme.onSurface, fontSize: fontSize),
                       ),
                     );
                   }).toList(),
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: padding * 1.25),
           SizedBox(
             width: double.infinity,
+            height: buttonHeight,
             child: ElevatedButton(
               onPressed: () {
                 if (selectedPlaylistId == null) {
@@ -193,17 +240,20 @@ class _PlaylistSelectionPopupState extends State<PlaylistSelectionPopup> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary,
                 foregroundColor: theme.colorScheme.onPrimary,
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                padding: EdgeInsets.symmetric(vertical: padding * 0.75),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              child: const Text('Add Song'),
+              child: Text('Add Song', style: TextStyle(fontSize: fontSize)),
             ),
           ),
         ],
       );
     }
     return Center(
-      child: Text('Please wait...', style: TextStyle(color: theme.colorScheme.onSurface)),
+      child: Text(
+        'Please wait...',
+        style: TextStyle(color: theme.colorScheme.onSurface, fontSize: fontSize),
+      ),
     );
   }
 }

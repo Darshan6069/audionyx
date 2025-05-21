@@ -11,6 +11,7 @@ import 'package:audionyx/repository/bloc/playlist_bloc_cubit/playlist_state.dart
 import 'package:audionyx/repository/service/song_service/recently_play_song/recently_played_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import '../../../domain/song_model/song_model.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -57,30 +58,38 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Required for AutomaticKeepAliveClientMixin
+    super.build(context);
+    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
+    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
+    final horizontalPadding =
+        isDesktop
+            ? 80.0
+            : isTablet
+            ? 40.0
+            : 20.0;
+    final sectionSpacing = isTablet || isDesktop ? 30.0 : 20.0;
+    final playlistHeight = isTablet || isDesktop ? 250.0 : 200.0;
+    final songListHeight = isTablet || isDesktop ? 300.0 : 250.0;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: () async {
-            // Allow manual refresh by pulling down
-            _loadData();
-          },
+          onRefresh: () async => _loadData(),
           child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(), // Changed to support RefreshIndicator
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: sectionSpacing),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Header(),
-                const SizedBox(height: 20),
+                SizedBox(height: sectionSpacing),
                 const SectionTitle(AppStrings.goodMorning, fontSize: 24),
-                const SizedBox(height: 20),
+                SizedBox(height: sectionSpacing),
                 const SectionTitle('Featured Playlists'),
                 const SizedBox(height: 10),
                 SizedBox(
-                  height: 200,
+                  height: playlistHeight,
                   child: BlocBuilder<PlaylistBlocCubit, PlaylistState>(
                     builder: (context, state) {
                       return HorizontalListView(
@@ -98,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                 const SectionTitle('Recently Played'),
                 const SizedBox(height: 10),
                 SizedBox(
-                  height: 250,
+                  height: songListHeight,
                   child: HorizontalListView(
                     isLoading: false,
                     isFailed: false,
@@ -112,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                 const SectionTitle('Trending Tracks'),
                 const SizedBox(height: 10),
                 SizedBox(
-                  height: 250,
+                  height: songListHeight,
                   child: BlocBuilder<FetchSongBlocCubit, FetchSongState>(
                     builder: (context, state) {
                       return HorizontalListView(

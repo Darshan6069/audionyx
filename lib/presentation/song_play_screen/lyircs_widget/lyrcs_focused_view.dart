@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:audionyx/domain/lyrics_model/lyrics_model.dart';
-
+import 'package:responsive_framework/responsive_framework.dart';
 import 'lyrics_item.dart';
 
 class LyricsFocusedView extends StatelessWidget {
@@ -28,6 +28,45 @@ class LyricsFocusedView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
+    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
+    final paddingH =
+        isDesktop
+            ? 40.0
+            : isTablet
+            ? 24.0
+            : 16.0;
+    final paddingV =
+        isDesktop
+            ? 24.0
+            : isTablet
+            ? 20.0
+            : 16.0;
+    final fontSize =
+        isDesktop
+            ? 24.0
+            : isTablet
+            ? 22.0
+            : 20.0;
+    final smallFontSize =
+        isDesktop
+            ? 14.0
+            : isTablet
+            ? 13.0
+            : 12.0;
+    final iconSize =
+        isDesktop
+            ? 32.0
+            : isTablet
+            ? 30.0
+            : 28.0;
+    final progressBarWidth =
+        isDesktop
+            ? 240.0
+            : isTablet
+            ? 220.0
+            : 200.0;
+
     final prevLyric = currentIndex > 0 ? lyrics[currentIndex - 1] : null;
     final currentLyric = lyrics[currentIndex];
     final nextLyric = currentIndex < lyrics.length - 1 ? lyrics[currentIndex + 1] : null;
@@ -42,37 +81,48 @@ class LyricsFocusedView extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
+          padding: EdgeInsets.only(top: paddingV, left: paddingH, right: paddingH),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TextButton.icon(
                 onPressed: showAllLyricsCallback,
-                icon: const Icon(Icons.format_list_bulleted, color: Colors.white70, size: 18),
-                label: const Text('All Lyrics', style: TextStyle(color: Colors.white70)),
+                icon: Icon(Icons.format_list_bulleted, color: Colors.white70, size: iconSize * 0.6),
+                label: Text(
+                  'All Lyrics',
+                  style: TextStyle(color: Colors.white70, fontSize: smallFontSize),
+                ),
                 style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: paddingH * 0.75,
+                    vertical: paddingV * 0.5,
+                  ),
                   backgroundColor: Colors.white10,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 ),
               ),
               Text(
                 formatDuration(position),
-                style: const TextStyle(color: Colors.white70, fontSize: 12),
+                style: TextStyle(color: Colors.white70, fontSize: smallFontSize),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: paddingV),
         if (prevLyric != null)
           LyricItem(
             lyric: prevLyric,
             textColor: Colors.white38,
-            fontSize: 16,
+            fontSize:
+                isDesktop
+                    ? 18.0
+                    : isTablet
+                    ? 17.0
+                    : 16.0,
             centered: false,
             onTap: () => onLyricTap(prevLyric.startTime),
           ),
-        const SizedBox(height: 12),
+        SizedBox(height: paddingV * 0.75),
         Expanded(
           flex: 2,
           child: GestureDetector(
@@ -85,8 +135,8 @@ class LyricsFocusedView extends StatelessWidget {
                     scale: pulseAnimation.value,
                     child: Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-                      margin: const EdgeInsets.symmetric(horizontal: 24),
+                      padding: EdgeInsets.symmetric(vertical: paddingV, horizontal: paddingH),
+                      margin: EdgeInsets.symmetric(horizontal: paddingH),
                       decoration: BoxDecoration(
                         color: theme.primaryColor.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(16),
@@ -98,17 +148,17 @@ class LyricsFocusedView extends StatelessWidget {
                           Text(
                             currentLyric.text,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white,
-                              fontSize: 22,
+                              fontSize: fontSize,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 0.5,
                             ),
                           ),
                           if (nextLyric != null)
                             Container(
-                              margin: const EdgeInsets.only(top: 16),
-                              width: 200,
+                              margin: EdgeInsets.only(top: paddingV),
+                              width: progressBarWidth,
                               height: 4,
                               decoration: BoxDecoration(
                                 color: Colors.white24,
@@ -134,17 +184,22 @@ class LyricsFocusedView extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: paddingV * 0.75),
         if (nextLyric != null)
           LyricItem(
             lyric: nextLyric,
             textColor: Colors.white38,
-            fontSize: 16,
+            fontSize:
+                isDesktop
+                    ? 18.0
+                    : isTablet
+                    ? 17.0
+                    : 16.0,
             centered: false,
             onTap: () => onLyricTap(nextLyric.startTime),
           ),
         Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.all(paddingV),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -153,35 +208,38 @@ class LyricsFocusedView extends StatelessWidget {
                 icon: Icon(
                   Icons.skip_previous,
                   color: prevLyric != null ? Colors.white : Colors.white24,
-                  size: 28,
+                  size: iconSize,
                 ),
-                splashRadius: 24,
+                splashRadius: iconSize * 0.8,
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: paddingH * 0.5),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: EdgeInsets.symmetric(
+                  horizontal: paddingH * 0.75,
+                  vertical: paddingV * 0.5,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white10,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   '${currentIndex + 1} / ${lyrics.length}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white70,
-                    fontSize: 12,
+                    fontSize: smallFontSize,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: paddingH * 0.5),
               IconButton(
                 onPressed: nextLyric != null ? () => onLyricTap(nextLyric.startTime) : null,
                 icon: Icon(
                   Icons.skip_next,
                   color: nextLyric != null ? Colors.white : Colors.white24,
-                  size: 28,
+                  size: iconSize,
                 ),
-                splashRadius: 24,
+                splashRadius: iconSize * 0.8,
               ),
             ],
           ),

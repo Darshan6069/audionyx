@@ -8,9 +8,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     // Listen for changes and broadcast state/position updates
     _player.playerStateStream.listen(_broadcastState);
     _player.positionStream.listen((pos) {
-      playbackState.add(playbackState.value.copyWith(
-        updatePosition: pos,
-      ));
+      playbackState.add(playbackState.value.copyWith(updatePosition: pos));
     });
   }
 
@@ -23,14 +21,16 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     String? artUri,
     required String url,
   }) async {
-    mediaItem.add(MediaItem(
-      id: id,
-      title: title,
-      artist: artist,
-      album: album,
-      artUri: artUri != null ? Uri.parse(artUri) : null,
-      extras: {'url': url},
-    ));
+    mediaItem.add(
+      MediaItem(
+        id: id,
+        title: title,
+        artist: artist,
+        album: album,
+        artUri: artUri != null ? Uri.parse(artUri) : null,
+        extras: {'url': url},
+      ),
+    );
     await _player.setUrl(url);
     await _player.play();
   }
@@ -67,9 +67,10 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
         break;
       case ProcessingState.ready:
         audioState = PlaybackState(
-          controls: playing
-              ? [MediaControl.pause, MediaControl.stop]
-              : [MediaControl.play, MediaControl.stop],
+          controls:
+              playing
+                  ? [MediaControl.pause, MediaControl.stop]
+                  : [MediaControl.play, MediaControl.stop],
           playing: playing,
           processingState: AudioProcessingState.ready,
           updatePosition: _player.position,

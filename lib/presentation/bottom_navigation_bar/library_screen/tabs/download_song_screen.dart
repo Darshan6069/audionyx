@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'package:audionyx/core/constants/extension.dart';
 import 'package:flutter/material.dart';
-
+import 'package:responsive_framework/responsive_framework.dart';
 import '../../../../domain/song_model/song_model.dart';
 import '../../../song_play_screen/song_play_screen.dart';
 
 class DownloadedSongsScreen extends StatefulWidget {
-  final bool showAppBar; // New parameter to control AppBar visibility
+  final bool showAppBar;
 
   const DownloadedSongsScreen({super.key, this.showAppBar = true});
 
@@ -79,27 +79,42 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
     }
   }
 
-  Widget _loadThumbnail(int index) {
+  Widget _loadThumbnail(int index, bool isDesktop, bool isTablet, ThemeData theme) {
     final file = downloadedFiles[index];
     final thumbnailPath = file.path.replaceAll('.mp3', '_thumbnail.jpg');
-    final theme = Theme.of(context);
+    final thumbnailSize =
+        isDesktop
+            ? 64.0
+            : isTablet
+            ? 60.0
+            : 56.0;
 
     if (File(thumbnailPath).existsSync()) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        child: Image.file(File(thumbnailPath), width: 60, height: 60, fit: BoxFit.cover),
+        child: Image.file(
+          File(thumbnailPath),
+          width: thumbnailSize,
+          height: thumbnailSize,
+          fit: BoxFit.cover,
+        ),
       );
     } else {
       return Container(
-        width: 60,
-        height: 60,
+        width: thumbnailSize,
+        height: thumbnailSize,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           color: theme.colorScheme.surface,
         ),
         child: Icon(
           Icons.music_note,
-          size: 30,
+          size:
+              isDesktop
+                  ? 32.0
+                  : isTablet
+                  ? 28.0
+                  : 24.0,
           color: theme.colorScheme.onSurface.withOpacity(0.5),
         ),
       );
@@ -111,6 +126,35 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
+    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
+    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
+
+    // Responsive padding and sizes
+    final horizontalPadding =
+        isDesktop
+            ? 80.0
+            : isTablet
+            ? 40.0
+            : 20.0;
+    final verticalPadding = isDesktop || isTablet ? 30.0 : 20.0;
+    final titleFontSize =
+        isDesktop
+            ? 18.0
+            : isTablet
+            ? 16.0
+            : 14.0;
+    final subtitleFontSize =
+        isDesktop
+            ? 14.0
+            : isTablet
+            ? 12.0
+            : 10.0;
+    final cardPadding =
+        isDesktop
+            ? const EdgeInsets.all(16.0)
+            : isTablet
+            ? const EdgeInsets.all(12.0)
+            : const EdgeInsets.all(10.0);
 
     return Scaffold(
       appBar:
@@ -121,12 +165,27 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
                   style: textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: colorScheme.onSurface,
+                    fontSize:
+                        isDesktop
+                            ? 24.0
+                            : isTablet
+                            ? 20.0
+                            : 18.0,
                   ),
                 ),
                 centerTitle: true,
                 actions: [
                   IconButton(
-                    icon: Icon(Icons.refresh, color: colorScheme.primary),
+                    icon: Icon(
+                      Icons.refresh,
+                      color: colorScheme.primary,
+                      size:
+                          isDesktop
+                              ? 28.0
+                              : isTablet
+                              ? 24.0
+                              : 20.0,
+                    ),
                     onPressed: _loadDownloadedSongs,
                   ),
                 ],
@@ -138,32 +197,61 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.music_off, size: 80, color: colorScheme.secondary.withOpacity(0.5)),
-                    const SizedBox(height: 20),
+                    Icon(
+                      Icons.music_off,
+                      size:
+                          isDesktop
+                              ? 100.0
+                              : isTablet
+                              ? 90.0
+                              : 80.0,
+                      color: colorScheme.secondary.withOpacity(0.5),
+                    ),
+                    SizedBox(height: verticalPadding / 2),
                     Text(
                       'No downloaded songs found.',
                       style: textTheme.titleMedium?.copyWith(
                         color: colorScheme.onSurface.withOpacity(0.7),
+                        fontSize:
+                            isDesktop
+                                ? 20.0
+                                : isTablet
+                                ? 18.0
+                                : 16.0,
                       ),
                     ),
                   ],
                 ),
               )
               : ListView.builder(
+                padding: EdgeInsets.symmetric(
+                  horizontal: horizontalPadding,
+                  vertical: verticalPadding,
+                ),
                 itemCount: downloadedFiles.length,
                 itemBuilder: (context, index) {
                   final file = downloadedFiles[index];
                   final fileName = file.path.split('/').last;
                   return Card(
-                    margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    margin: EdgeInsets.symmetric(
+                      horizontal: horizontalPadding / 2,
+                      vertical: verticalPadding / 2,
+                    ),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     color: colorScheme.surface,
                     child: Padding(
-                      padding: const EdgeInsets.all(10),
+                      padding: cardPadding,
                       child: Row(
                         children: [
-                          _loadThumbnail(index),
-                          const SizedBox(width: 10),
+                          _loadThumbnail(index, isDesktop, isTablet, theme),
+                          SizedBox(
+                            width:
+                                isDesktop
+                                    ? 16.0
+                                    : isTablet
+                                    ? 12.0
+                                    : 10.0,
+                          ),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,25 +261,52 @@ class _DownloadedSongsScreenState extends State<DownloadedSongsScreen> {
                                   style: textTheme.bodyLarge?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: colorScheme.onSurface,
+                                    fontSize: titleFontSize,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                const SizedBox(height: 5),
+                                SizedBox(
+                                  height:
+                                      isDesktop
+                                          ? 8.0
+                                          : isTablet
+                                          ? 6.0
+                                          : 5.0,
+                                ),
                                 Text(
                                   'Tap play to listen or delete to remove',
                                   style: textTheme.bodySmall?.copyWith(
                                     color: colorScheme.onSurface.withOpacity(0.7),
+                                    fontSize: subtitleFontSize,
                                   ),
                                 ),
                               ],
                             ),
                           ),
                           IconButton(
-                            icon: Icon(Icons.play_arrow, color: colorScheme.primary),
+                            icon: Icon(
+                              Icons.play_arrow,
+                              color: colorScheme.primary,
+                              size:
+                                  isDesktop
+                                      ? 28.0
+                                      : isTablet
+                                      ? 24.0
+                                      : 20.0,
+                            ),
                             onPressed: () => _playSong(index),
                           ),
                           IconButton(
-                            icon: Icon(Icons.delete, color: colorScheme.error),
+                            icon: Icon(
+                              Icons.delete,
+                              color: colorScheme.error,
+                              size:
+                                  isDesktop
+                                      ? 28.0
+                                      : isTablet
+                                      ? 24.0
+                                      : 20.0,
+                            ),
                             onPressed: () => _deleteSong(index),
                           ),
                         ],

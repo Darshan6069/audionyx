@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 
 class AnimatedIconButton extends StatefulWidget {
   final Icon icon;
@@ -33,6 +34,15 @@ class AnimatedIconButtonState extends State<AnimatedIconButton>
 
   @override
   Widget build(BuildContext context) {
+    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
+    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
+    final padding =
+        isDesktop
+            ? 12.0
+            : isTablet
+            ? 10.0
+            : 8.0;
+
     return GestureDetector(
       onTapDown: (_) => _controller.forward(),
       onTapUp: (_) => _controller.reverse(),
@@ -40,7 +50,7 @@ class AnimatedIconButtonState extends State<AnimatedIconButton>
       onTap: widget.onPressed,
       child: ScaleTransition(
         scale: _scaleAnimation,
-        child: Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: widget.icon),
+        child: Padding(padding: EdgeInsets.symmetric(horizontal: padding), child: widget.icon),
       ),
     );
   }
