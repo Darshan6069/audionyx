@@ -10,7 +10,7 @@ A full-featured and modern music streaming app built using Flutter. This project
 
 - 🔐 **Authentication**
     - Splash screen with logo
-    - Login/Signup (local storage)
+    - Login/Signup 
 
 - 🏠 **Home Screen**
     - Featured playlists
@@ -49,8 +49,6 @@ A full-featured and modern music streaming app built using Flutter. This project
 ### ⚙️ Admin Module (Optional - Flutter Web App)
 
 - 🎵 Upload new songs with metadata
-- 🧑‍🎤 Add artists and albums
-- 🌟 Manage recommended playlists
 
 ---
 
@@ -67,10 +65,11 @@ A full-featured and modern music streaming app built using Flutter. This project
 
 ## 🛠️ Tech Stack
 
-- Flutter (Mobile & Web)
+- Flutter (Mobile)
 - Local Storage (SharedPreferences)
 - just_audio (Audio playback)
 - Node.js + MongoDB (APIs)
+- responsive_framework (Responsive) 
 
 ---
 
