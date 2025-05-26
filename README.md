@@ -75,5 +75,7 @@ A full-featured and modern music streaming app built using Flutter. This project
 
 ## 📸 Screenshots 
 
-<img src="https://github.com/user-attachments/assets/cdc70cd1-a563-4c68-9d60-9777ab9fd4d4" alt="Flutter Music Player App Screenshot" width="600" height="1300">
-
+<img src="https://github.com/user-attachments/assets/cdc70cd1-a563-4c68-9d60-9777ab9fd4d4" alt="Flutter Music Player App Screenshot" height="500">
+<img src="https://github.com/user-attachments/assets/907a9868-c589-431b-a2ec-5f19a59722ab" alt="Flutter Music Player App Screenshot" height="500">
+<img src="https://github.com/user-attachments/assets/36b991fe-c6f1-4069-af17-248d34079f30" alt="Flutter Music Player App Screenshot" height="500">
+<img src="https://github.com/user-attachments/assets/533a4bae-1310-4220-ae97-bac5ecbd6923" alt="Flutter Music Player App Screenshot" height="500">
