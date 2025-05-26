@@ -74,16 +74,6 @@ A full-featured and modern music streaming app built using Flutter. This project
 ---
 
 ## 📸 Screenshots 
-![WhatsApp Image 2025-05-26 at 10 37 02 AM (2)](https://github.com/user-attachments/assets/aac4621f-ec3e-4aca-9be8-a6ea2baace7d)
-![WhatsApp Image 2025-05-26 at 10 37 02 AM (1)](https://github.com/user-attachments/assets/29e5c3ae-d4aa-4e2e-bcb2-508902de6fba)
-![WhatsApp Image 2025-05-26 at 10 37 02 AM](https://github.com/user-attachments/assets/29848fc5-db83-4126-be70-f31837da6895)
-![WhatsApp Image 2025-05-26 at 10 37 04 AM (1)](https://github.com/user-attachments/assets/e855fed2-0e0f-41f6-bbf1-eba6f8823a7e)
-![WhatsApp Image 2025-05-26 at 10 37 04 AM](https://github.com/user-attachments/assets/b52cebf0-097e-48ed-90de-80866ce568c9)
-![WhatsApp Image 2025-05-26 at 10 37 03 AM (2)](https://github.com/user-attachments/assets/f147d19d-2225-42af-bdca-4bb8d1eab168)
-![WhatsApp Image 2025-05-26 at 10 37 03 AM (1)](https://github.com/user-attachments/assets/e70cc180-c65c-4740-bf0c-925230f4c557)
-![WhatsApp Image 2025-05-26 at 10 37 03 AM](https://github.com/user-attachments/assets/f88cabcc-4c73-4bcc-91db-82e6f5193273)
-
-
 
 <img src="https://github.com/user-attachments/assets/cdc70cd1-a563-4c68-9d60-9777ab9fd4d4" alt="Flutter Music Player App Screenshot" height="500">
 <img src="https://github.com/user-attachments/assets/907a9868-c589-431b-a2ec-5f19a59722ab" alt="Flutter Music Player App Screenshot" height="500">
